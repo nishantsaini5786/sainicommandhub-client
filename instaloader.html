@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Instaloader — Instagram Archiving & OSINT Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+<div class="hero"><div class="hero-top"><div class="hero-icon">📸</div><div class="hero-info"><div class="hero-name">INSTALOADER</div><div class="hero-cat">INSTAGRAM ARCHIVING / OSINT / MEDIA COLLECTION</div><div class="hero-badges"><span class="badge badge-advanced">INTERMEDIATE</span><span class="badge badge-count">50+ COMMANDS</span><span class="badge badge-tag">OSINT / ARCHIVING</span></div></div></div>
+<p><strong style="color:var(--secondary)">Instaloader</strong> is a command-line tool for downloading and archiving Instagram media and metadata. It supports public profiles and, with your own authenticated account and appropriate access, targets such as feed, saved posts, stories, highlights and hashtags. It also provides filters, custom file naming, update modes, metadata handling and resume support.</p></div>
+
+<div class="section"><div class="section-title">What is Instaloader? (Deep Theory)</div>
+<p><strong>Instaloader</strong> turns Instagram collection into a repeatable command-line workflow. Instead of manually saving individual posts, you define a target and Instaloader creates a local archive containing media plus useful metadata. Access depends on Instagram's current permissions and whether your session is authenticated.</p>
+<h3>How Instaloader Works</h3><ol><li>Select a target such as a profile, hashtag or single post.</li><li>Instaloader resolves the target and requests matching content.</li><li>Media is saved into a target directory using configurable filename patterns.</li><li>Captions and JSON metadata can be stored alongside media.</li><li>Update/resume features make repeated archive jobs easier to manage.</li><li>Filters can select posts by date, video status, likes, comments, hashtags, mentions and tagged users.</li></ol>
+<h3>Why It Is Useful</h3><ul><li><strong>Personal archiving:</strong> maintain a local copy of content you are allowed to retain.</li><li><strong>OSINT research:</strong> organize publicly available information for legitimate research.</li><li><strong>Cybersecurity learning:</strong> practice collection and metadata analysis in authorized labs.</li><li><strong>Automation:</strong> repeatedly update a local archive without manually checking every post.</li><li><strong>Filtering:</strong> focus on specific content instead of downloading everything.</li><li><strong>Metadata analysis:</strong> use timestamps, IDs, captions and other structured information.</li></ul>
+<div class="info-box"><div class="info-icon">💡</div><div class="info-text"><strong>Key Insight:</strong> Instaloader is an archiving/collection tool, not a mechanism for bypassing Instagram access controls. Authentication only gives your account its existing access; it should not be used to obtain private content you are not authorized to view.</div></div></div>
+
+<div class="section"><div class="section-title">Installation & First Check</div><h3>Install on Kali Linux</h3><div class="code-block"><code>sudo apt update && sudo apt install -y instaloader</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y instaloader',this)">COPY</button></div><p>If the repository version is not suitable for your project, use the official package documentation and an appropriate Python environment.</p><h3>Check Version</h3><div class="code-block"><code>instaloader --version</code><button class="copy-btn" onclick="copyText('instaloader --version',this)">COPY</button></div><h3>View Help</h3><div class="code-block"><code>instaloader --help</code><button class="copy-btn" onclick="copyText('instaloader --help',this)">COPY</button></div></div>
+
+<div class="section"><div class="section-title">Core Concepts</div><h3>Targets</h3><p>Common targets include <code>profile</code>, quoted <code>#hashtag</code>, location targets, <code>-SHORTCODE</code> for a single post, and authenticated targets such as <code>:feed</code>, <code>:saved</code> and <code>:stories</code>. Some targets require login.</p><h3>Authentication</h3><p>Use <code>--login=USERNAME</code> for your own account. If a password is needed, Instaloader can prompt interactively. It also supports browser-cookie loading and custom session files. Avoid putting real passwords directly into shell commands.</p><h3>Metadata</h3><p>JSON metadata and caption files make an archive more useful for later analysis. You can disable them when storage or privacy requirements call for a smaller archive.</p><h3>Update Modes</h3><p><code>--fast-update</code> stops when an already-downloaded item is encountered. <code>--latest-stamps</code> tracks update timestamps and is useful when media is moved or deleted but the archive should still know where it last stopped.</p></div>
+
+<div class="section"><div class="section-title">Instaloader Commands — Complete Reference</div><p>Replace placeholders such as <code>profile_name</code>, <code>YOUR_USERNAME</code> and <code>SHORTCODE</code> with your own authorized values.</p><div class="command"><div class="command-title">1. Show Help</div><div class="command-purpose">Display all available CLI options.</div><div class="code-block"><code>instaloader --help</code><button class="copy-btn" onclick="copyText('instaloader --help',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">2. Show Version</div><div class="command-purpose">Check installed version.</div><div class="code-block"><code>instaloader --version</code><button class="copy-btn" onclick="copyText('instaloader --version',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">3. Download Public Profile</div><div class="command-purpose">Archive an accessible public profile.</div><div class="code-block"><code>instaloader profile_name</code><button class="copy-btn" onclick="copyText('instaloader profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">4. Download Multiple Profiles</div><div class="command-purpose">Process several authorized profiles.</div><div class="code-block"><code>instaloader profile_one profile_two</code><button class="copy-btn" onclick="copyText('instaloader profile_one profile_two',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">5. Fast Update</div><div class="command-purpose">Stop when an already-downloaded item is reached.</div><div class="code-block"><code>instaloader --fast-update profile_name</code><button class="copy-btn" onclick="copyText('instaloader --fast-update profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">6. Latest Stamps</div><div class="command-purpose">Track update time and fetch newer media.</div><div class="code-block"><code>instaloader --latest-stamps -- profile_name</code><button class="copy-btn" onclick="copyText('instaloader --latest-stamps -- profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">7. Download Reels</div><div class="command-purpose">Include Reels from an accessible profile.</div><div class="code-block"><code>instaloader --reels profile_name</code><button class="copy-btn" onclick="copyText('instaloader --reels profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">8. Download Highlights</div><div class="command-purpose">Include accessible profile highlights.</div><div class="code-block"><code>instaloader --highlights profile_name</code><button class="copy-btn" onclick="copyText('instaloader --highlights profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">9. Download Stories</div><div class="command-purpose">Include stories your account is authorized to view.</div><div class="code-block"><code>instaloader --stories profile_name</code><button class="copy-btn" onclick="copyText('instaloader --stories profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">10. Download Tagged Posts</div><div class="command-purpose">Include posts where the profile is tagged.</div><div class="code-block"><code>instaloader --tagged profile_name</code><button class="copy-btn" onclick="copyText('instaloader --tagged profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">11. Download IGTV</div><div class="command-purpose">Include supported IGTV content.</div><div class="code-block"><code>instaloader --igtv profile_name</code><button class="copy-btn" onclick="copyText('instaloader --igtv profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">12. Download Hashtag</div><div class="command-purpose">Download posts for a hashtag; login may be required.</div><div class="code-block"><code>instaloader &quot;#cybersecurity&quot;</code><button class="copy-btn" onclick="copyText('instaloader "#cybersecurity"',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">13. Limit Results</div><div class="command-purpose">Limit matching posts for supported targets.</div><div class="code-block"><code>instaloader --count 25 &quot;#cybersecurity&quot;</code><button class="copy-btn" onclick="copyText('instaloader --count 25 "#cybersecurity"',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">14. Download Your Feed</div><div class="command-purpose">Archive your authenticated feed.</div><div class="code-block"><code>instaloader --login=YOUR_USERNAME :feed</code><button class="copy-btn" onclick="copyText('instaloader --login=YOUR_USERNAME :feed',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">15. Download Your Saved Posts</div><div class="command-purpose">Archive posts saved by your own account.</div><div class="code-block"><code>instaloader --login=YOUR_USERNAME :saved</code><button class="copy-btn" onclick="copyText('instaloader --login=YOUR_USERNAME :saved',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">16. Download Followees</div><div class="command-purpose">Process profiles followed by a profile when authorized.</div><div class="code-block"><code>instaloader --login=YOUR_USERNAME @profile_name</code><button class="copy-btn" onclick="copyText('instaloader --login=YOUR_USERNAME @profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">17. Login to Your Account</div><div class="command-purpose">Create/reuse your own authenticated session.</div><div class="code-block"><code>instaloader --login=YOUR_USERNAME profile_name</code><button class="copy-btn" onclick="copyText('instaloader --login=YOUR_USERNAME profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">18. Load Browser Cookies</div><div class="command-purpose">Load an existing supported browser session.</div><div class="code-block"><code>instaloader --load-cookies firefox profile_name</code><button class="copy-btn" onclick="copyText('instaloader --load-cookies firefox profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">19. Custom Cookie File</div><div class="command-purpose">Specify a browser cookie file.</div><div class="code-block"><code>instaloader --load-cookies firefox --cookiefile=/path/to/cookies profile_name</code><button class="copy-btn" onclick="copyText('instaloader --load-cookies firefox --cookiefile=/path/to/cookies profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">20. Custom Session File</div><div class="command-purpose">Choose where the login session is stored.</div><div class="code-block"><code>instaloader --login=YOUR_USERNAME --sessionfile=/path/to/session profile_name</code><button class="copy-btn" onclick="copyText('instaloader --login=YOUR_USERNAME --sessionfile=/path/to/session profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">21. No Pictures</div><div class="command-purpose">Skip picture downloads.</div><div class="code-block"><code>instaloader --no-pictures profile_name</code><button class="copy-btn" onclick="copyText('instaloader --no-pictures profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">22. No Videos</div><div class="command-purpose">Skip video files.</div><div class="code-block"><code>instaloader --no-videos profile_name</code><button class="copy-btn" onclick="copyText('instaloader --no-videos profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">23. No Video Thumbnails</div><div class="command-purpose">Skip video thumbnail files.</div><div class="code-block"><code>instaloader --no-video-thumbnails profile_name</code><button class="copy-btn" onclick="copyText('instaloader --no-video-thumbnails profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">24. No Captions</div><div class="command-purpose">Do not create caption text files.</div><div class="code-block"><code>instaloader --no-captions profile_name</code><button class="copy-btn" onclick="copyText('instaloader --no-captions profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">25. No Metadata JSON</div><div class="command-purpose">Disable post metadata JSON files.</div><div class="code-block"><code>instaloader --no-metadata-json profile_name</code><button class="copy-btn" onclick="copyText('instaloader --no-metadata-json profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">26. Readable JSON</div><div class="command-purpose">Do not compress JSON metadata.</div><div class="code-block"><code>instaloader --no-compress-json profile_name</code><button class="copy-btn" onclick="copyText('instaloader --no-compress-json profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">27. Download Comments</div><div class="command-purpose">Download comments when authenticated and authorized.</div><div class="code-block"><code>instaloader --comments profile_name</code><button class="copy-btn" onclick="copyText('instaloader --comments profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">28. Download Geotags</div><div class="command-purpose">Save available geotag information when authorized.</div><div class="code-block"><code>instaloader --geotags profile_name</code><button class="copy-btn" onclick="copyText('instaloader --geotags profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">29. Select Carousel Images</div><div class="command-purpose">Download selected sidecar items.</div><div class="code-block"><code>instaloader --slide 1-3 profile_name</code><button class="copy-btn" onclick="copyText('instaloader --slide 1-3 profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">30. Download Single Post</div><div class="command-purpose">Download one post by shortcode.</div><div class="code-block"><code>instaloader -- -SHORTCODE</code><button class="copy-btn" onclick="copyText('instaloader -- -SHORTCODE',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">31. Custom Directory</div><div class="command-purpose">Organize folders using pattern tokens.</div><div class="code-block"><code>instaloader --dirname-pattern=&quot;{profile}&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --dirname-pattern="{profile}" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">32. Custom Filename</div><div class="command-purpose">Control filenames with date/shortcode tokens.</div><div class="code-block"><code>instaloader --filename-pattern=&quot;{date_utc:%Y-%m-%d}_{shortcode}&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --filename-pattern="{date_utc:%Y-%m-%d}_{shortcode}" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">33. Organize by Year</div><div class="command-purpose">Create profile/year/shortcode structure.</div><div class="code-block"><code>instaloader --dirname-pattern=&quot;{profile}&quot; --filename-pattern=&quot;{date_utc:%Y}/{shortcode}&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --dirname-pattern="{profile}" --filename-pattern="{date_utc:%Y}/{shortcode}" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">34. Sanitize Paths</div><div class="command-purpose">Make generated paths cross-platform friendly.</div><div class="code-block"><code>instaloader --sanitize-paths profile_name</code><button class="copy-btn" onclick="copyText('instaloader --sanitize-paths profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">35. Filter Videos</div><div class="command-purpose">Download only video posts.</div><div class="code-block"><code>instaloader --post-filter=&quot;is_video&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="is_video" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">36. Filter Images</div><div class="command-purpose">Download only non-video posts.</div><div class="code-block"><code>instaloader --post-filter=&quot;not is_video&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="not is_video" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">37. Filter by Likes</div><div class="command-purpose">Select posts above a like threshold.</div><div class="code-block"><code>instaloader --post-filter=&quot;likes &gt; 100&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="likes > 100" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">38. Filter by Comments</div><div class="command-purpose">Select posts above a comment threshold.</div><div class="code-block"><code>instaloader --post-filter=&quot;comments &gt; 20&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="comments > 20" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">39. Filter Caption Hashtag</div><div class="command-purpose">Select posts containing a caption hashtag.</div><div class="code-block"><code>instaloader --post-filter=&quot;&#x27;tutorial&#x27; in caption_hashtags&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="\'tutorial\' in caption_hashtags" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">40. Filter Caption Mention</div><div class="command-purpose">Select posts containing a caption mention.</div><div class="code-block"><code>instaloader --post-filter=&quot;&#x27;username&#x27; in caption_mentions&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="\'username\' in caption_mentions" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">41. Filter Tagged User</div><div class="command-purpose">Select posts that tag a username.</div><div class="code-block"><code>instaloader --post-filter=&quot;&#x27;username&#x27; in tagged_users&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="\'username\' in tagged_users" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">42. Filter by Year</div><div class="command-purpose">Download posts matching a year expression.</div><div class="code-block"><code>instaloader --post-filter=&quot;date_utc.year == 2026&quot; profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="date_utc.year == 2026" profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">43. Filter Your Likes</div><div class="command-purpose">Filter your authenticated feed by your own likes.</div><div class="code-block"><code>instaloader --login=YOUR_USERNAME --post-filter=viewer_has_liked :feed</code><button class="copy-btn" onclick="copyText('instaloader --login=YOUR_USERNAME --post-filter=viewer_has_liked :feed',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">44. Quiet Mode</div><div class="command-purpose">Reduce normal output for controlled automation.</div><div class="code-block"><code>instaloader --quiet profile_name</code><button class="copy-btn" onclick="copyText('instaloader --quiet profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">45. Request Timeout</div><div class="command-purpose">Set request timeout in seconds.</div><div class="code-block"><code>instaloader --request-timeout 120 profile_name</code><button class="copy-btn" onclick="copyText('instaloader --request-timeout 120 profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">46. Connection Attempts</div><div class="command-purpose">Set maximum connection attempts.</div><div class="code-block"><code>instaloader --max-connection-attempts 5 profile_name</code><button class="copy-btn" onclick="copyText('instaloader --max-connection-attempts 5 profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">47. Abort on Status</div><div class="command-purpose">Stop on selected HTTP status codes.</div><div class="code-block"><code>instaloader --abort-on=429 profile_name</code><button class="copy-btn" onclick="copyText('instaloader --abort-on=429 profile_name',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">48. Arguments File</div><div class="command-purpose">Read repeatable options from a text file.</div><div class="code-block"><code>instaloader +args.txt</code><button class="copy-btn" onclick="copyText('instaloader +args.txt',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">49. Re-download JSON Structure</div><div class="command-purpose">Use a saved JSON structure as a target.</div><div class="code-block"><code>instaloader post.json.xz</code><button class="copy-btn" onclick="copyText('instaloader post.json.xz',this)">COPY</button></div></div>
+<div class="command"><div class="command-title">50. Combine Profile Options</div><div class="command-purpose">Build a richer authorized archive.</div><div class="code-block"><code>instaloader --reels --highlights --tagged profile_name</code><button class="copy-btn" onclick="copyText('instaloader --reels --highlights --tagged profile_name',this)">COPY</button></div></div></div>
+
+<div class="section"><div class="section-title">Common Workflows</div><h3>1. Archive a Public Profile</h3><div class="code-block"><code>mkdir -p ~/instaloader-archives
+cd ~/instaloader-archives
+instaloader profile_name</code><button class="copy-btn" onclick="copyText('mkdir -p ~/instaloader-archives\ncd ~/instaloader-archives\ninstaloader profile_name',this)">COPY</button></div><p>Creates a local target directory and downloads content available to the public request.</p><h3>2. Keep an Archive Updated</h3><div class="code-block"><code>instaloader --fast-update profile_name</code><button class="copy-btn" onclick="copyText('instaloader --fast-update profile_name',this)">COPY</button></div><h3>3. Organize by Year and Shortcode</h3><div class="code-block"><code>instaloader --dirname-pattern="{profile}" --filename-pattern="{date_utc:%Y}/{shortcode}" profile_name</code><button class="copy-btn" onclick="copyText('instaloader --dirname-pattern="{profile}" --filename-pattern="{date_utc:%Y}/{shortcode}" profile_name',this)">COPY</button></div><h3>4. Collect Only Videos</h3><div class="code-block"><code>instaloader --post-filter="is_video" profile_name</code><button class="copy-btn" onclick="copyText('instaloader --post-filter="is_video" profile_name',this)">COPY</button></div><h3>5. Use Your Own Authenticated Feed</h3><div class="code-block"><code>instaloader --login=YOUR_USERNAME :feed</code><button class="copy-btn" onclick="copyText('instaloader --login=YOUR_USERNAME :feed',this)">COPY</button></div><p>Use interactive password entry and only access content your own account is permitted to view.</p></div>
+
+<div class="section"><div class="section-title">Important Options Reference</div><div class="table-wrap"><table><thead><tr><th>Option</th><th>Purpose</th><th>Example</th></tr></thead><tbody><tr><td>--login</td><td>Authenticate your account</td><td>--login=YOUR_USERNAME</td></tr><tr><td>--load-cookies</td><td>Load supported browser session</td><td>--load-cookies firefox</td></tr><tr><td>--fast-update</td><td>Stop at first known item</td><td>--fast-update</td></tr><tr><td>--latest-stamps</td><td>Track update timestamps</td><td>--latest-stamps</td></tr><tr><td>--reels</td><td>Include Reels</td><td>--reels</td></tr><tr><td>--stories</td><td>Include accessible stories</td><td>--stories</td></tr><tr><td>--highlights</td><td>Include accessible highlights</td><td>--highlights</td></tr><tr><td>--tagged</td><td>Include tagged posts</td><td>--tagged</td></tr><tr><td>--comments</td><td>Download comments</td><td>--comments</td></tr><tr><td>--geotags</td><td>Save geotags</td><td>--geotags</td></tr><tr><td>--count N</td><td>Limit matching posts</td><td>--count 25</td></tr><tr><td>--post-filter</td><td>Filter posts with an expression</td><td>--post-filter="is_video"</td></tr><tr><td>--no-videos</td><td>Skip videos</td><td>--no-videos</td></tr><tr><td>--no-metadata-json</td><td>Skip metadata JSON</td><td>--no-metadata-json</td></tr><tr><td>--dirname-pattern</td><td>Customize directories</td><td>--dirname-pattern="{profile}"</td></tr><tr><td>--filename-pattern</td><td>Customize filenames</td><td>--filename-pattern="{shortcode}"</td></tr><tr><td>--quiet</td><td>Reduce output</td><td>--quiet</td></tr><tr><td>--request-timeout</td><td>Set request timeout</td><td>--request-timeout 120</td></tr></tbody></table></div></div>
+
+<div class="section"><div class="section-title">Metadata & File Structure</div><p>Instaloader normally creates a directory for each target. Media uses configurable names, while JSON metadata can preserve structured information about posts. This makes the output useful for later indexing or research.</p><h3>Useful Filename Tokens</h3><ul><li><code>{profile}</code> — profile/owner username.</li><li><code>{owner_id}</code> — owner ID.</li><li><code>{shortcode}</code> — post shortcode.</li><li><code>{mediaid}</code> — numeric media ID.</li><li><code>{date_utc}</code> — UTC creation time.</li><li><code>{typename}</code> — media type.</li><li><code>{target}</code> — command-line target.</li></ul></div>
+
+<div class="section"><div class="section-title">Troubleshooting & Common Issues</div><h3>Login Failed</h3><ul><li>Verify username and account credentials.</li><li>Use interactive password entry rather than exposing a password in shell history.</li><li>Check whether Instagram requires additional verification.</li></ul><h3>Login Required</h3><ul><li>Some targets such as hashtags and authenticated feed/saved targets require login.</li><li>Use your own account and only content that account is allowed to view.</li></ul><h3>HTTP 429 / Too Many Requests</h3><ul><li>Avoid repeatedly launching large downloads.</li><li>Use update modes instead of downloading everything repeatedly.</li><li>Do not attempt to circumvent platform rate limits.</li></ul><h3>Download Stops</h3><ul><li>Run the same target again; several target types support resume information.</li><li>Check network connectivity and request timeout.</li></ul><h3>Missing Stories/Highlights</h3><ul><li>Check authentication and whether your account can actually view the content.</li></ul><h3>Wrong Folder/Filenames</h3><ul><li>Review <code>--dirname-pattern</code> and <code>--filename-pattern</code>.</li></ul></div>
+
+<div class="section"><div class="section-title">Instaloader vs Manual Download</div><div class="table-wrap"><table><thead><tr><th>Task</th><th>Manual</th><th>Instaloader</th></tr></thead><tbody><tr><td>Many posts</td><td>Repetitive</td><td>Automated target download</td></tr><tr><td>Repeat updates</td><td>Manual checking</td><td>Fast-update / latest-stamps</td></tr><tr><td>Metadata</td><td>Scattered</td><td>Structured JSON/text</td></tr><tr><td>Filtering</td><td>Manual selection</td><td>Post/story filters</td></tr><tr><td>File naming</td><td>Browser dependent</td><td>Custom patterns</td></tr></tbody></table></div></div>
+
+<div class="warning"><div class="warning-icon">⚠</div><div class="warning-text"><strong>AUTHORIZED & RESPONSIBLE USE.</strong> Use Instaloader for your own content, public content you are permitted to archive, legitimate OSINT/research, and authorized labs.<br><br><strong>Safe:</strong><br>✅ Your own Instagram content<br>✅ Authorized public-content archiving<br>✅ CTF/OSINT training labs<br>✅ Legitimate research<br><br><strong>Avoid:</strong><br>❌ Bypassing private-account access controls<br>❌ Collecting private content without authorization<br>❌ Using stolen credentials or session cookies<br>❌ Circumventing platform security/rate limits</div></div>
+<div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div></div>
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

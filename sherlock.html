@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Sherlock — Username OSINT Search Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="container"><div class="hero">
+  <div class="hero-top">
+    <div class="hero-icon">🕵️</div>
+    <div class="hero-info">
+      <div class="hero-name">SHERLOCK</div>
+      <div class="hero-cat">USERNAME OSINT / PUBLIC ACCOUNT DISCOVERY</div>
+      <div class="hero-badges">
+        <span class="badge badge-advanced">INTERMEDIATE</span>
+        <span class="badge badge-count">71 COMMANDS</span>
+        <span class="badge badge-tag">OSINT</span>
+      </div>
+    </div>
+  </div>
+  <p><strong style="color:var(--secondary)">Sherlock</strong> is a command-line OSINT utility for checking whether a username appears across supported public social networks and websites. It is best used as a <strong>lead-generation and verification tool</strong>: a matching username is not, by itself, proof that every account belongs to the same person.</p>
+</div>
+
+<div class="section">
+ <div class="section-title">What is Sherlock? (Deep Theory)</div>
+ <p>Sherlock automates a repetitive OSINT task: take a candidate username and test it against a large collection of public site definitions. A result can indicate that a page exists, does not exist, or could not be checked reliably. The project documentation currently describes the command as checking usernames across social networks and supports multiple usernames in one run.</p>
+ <div class="grid-2">
+  <div class="info-box"><div class="info-icon">🎯</div><div class="info-text"><strong>Use case:</strong> username reconnaissance, digital-footprint research, CTF/OSINT labs, brand monitoring, and authorized investigations.</div></div>
+  <div class="info-box"><div class="info-icon">⚠️</div><div class="info-text"><strong>Important:</strong> username matches can be false positives. Verify the URL, profile context, activity, and independent evidence before linking an account to an identity.</div></div>
+ </div>
+ <h3>How the workflow works</h3>
+ <ol>
+  <li><strong>Input:</strong> provide one or more candidate usernames.</li>
+  <li><strong>Site checks:</strong> Sherlock tests the configured public site definitions.</li>
+  <li><strong>Classification:</strong> results are reported as found/not found or may indicate errors/timeouts.</li>
+  <li><strong>Export:</strong> save results as TXT, CSV, or XLSX where supported.</li>
+  <li><strong>Verification:</strong> manually inspect the public page and collect independent evidence.</li>
+ </ol>
+ <div class="info-box"><div class="info-icon">🧠</div><div class="info-text"><strong>OSINT mental model:</strong> Sherlock discovers <em>candidate locations</em>. It does not prove ownership, identity, intent, or relationship between accounts.</div></div>
+</div>
+
+<div class="section">
+ <div class="section-title">Installation & First Checks</div>
+ <p>The upstream project documents <code>pipx</code>, <code>pip</code>, Docker and other package methods. On Kali, prefer a supported package/environment method rather than copying an old GitHub clone workflow.</p>
+ <div class="code-block"><code>python3 -m pip install -U sherlock-project
+sherlock --version
+sherlock --help</code><button class="copy-btn" onclick="copyText('python3 -m pip install -U sherlock-project\nsherlock --version\nsherlock --help',this)">COPY</button></div>
+ <p>For an isolated pipx installation:</p>
+ <div class="code-block"><code>pipx install sherlock-project
+sherlock --version</code><button class="copy-btn" onclick="copyText('pipx install sherlock-project\nsherlock --version',this)">COPY</button></div>
+ <p>Docker is another documented route:</p>
+ <div class="code-block"><code>docker run -it --rm sherlock/sherlock user123</code><button class="copy-btn" onclick="copyText('docker run -it --rm sherlock/sherlock user123',this)">COPY</button></div>
+</div>
+
+<div class="section">
+ <div class="section-title">Sherlock Command Library — 71 Commands</div>
+ <p class="muted">Use these against usernames and public sites that you are authorized to research. Replace example names such as <code>labuser</code> with your own CTF/lab data or other permitted research targets.</p>
+ <div class="command-card">
+  <div class="command-num">01</div>
+  <div class="command-body">
+    <div class="command-title">Show help</div>
+    <div class="command-purpose">Display all current Sherlock command-line options.</div>
+    <div class="code-block"><code>sherlock --help</code><button class="copy-btn" onclick="copyText('sherlock --help',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">02</div>
+  <div class="command-body">
+    <div class="command-title">Show version</div>
+    <div class="command-purpose">Display the installed Sherlock version and dependency information.</div>
+    <div class="code-block"><code>sherlock --version</code><button class="copy-btn" onclick="copyText('sherlock --version',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">03</div>
+  <div class="command-body">
+    <div class="command-title">Single username</div>
+    <div class="command-purpose">Search public sites for one username.</div>
+    <div class="code-block"><code>sherlock user123</code><button class="copy-btn" onclick="copyText('sherlock user123',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">04</div>
+  <div class="command-body">
+    <div class="command-title">Multiple usernames</div>
+    <div class="command-purpose">Search several usernames in one run.</div>
+    <div class="code-block"><code>sherlock user1 user2 user3</code><button class="copy-btn" onclick="copyText('sherlock user1 user2 user3',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">05</div>
+  <div class="command-body">
+    <div class="command-title">Save single result</div>
+    <div class="command-purpose">Write a single username result to a chosen file.</div>
+    <div class="code-block"><code>sherlock user123 -o user123.txt</code><button class="copy-btn" onclick="copyText('sherlock user123 -o user123.txt',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">06</div>
+  <div class="command-body">
+    <div class="command-title">Save multiple results</div>
+    <div class="command-purpose">Store multiple-username output in a folder.</div>
+    <div class="code-block"><code>sherlock user1 user2 -fo results/</code><button class="copy-btn" onclick="copyText('sherlock user1 user2 -fo results/',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">07</div>
+  <div class="command-body">
+    <div class="command-title">CSV export</div>
+    <div class="command-purpose">Create a CSV report of results.</div>
+    <div class="code-block"><code>sherlock user123 --csv</code><button class="copy-btn" onclick="copyText('sherlock user123 --csv',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">08</div>
+  <div class="command-body">
+    <div class="command-title">XLSX export</div>
+    <div class="command-purpose">Create an Excel-compatible XLSX report.</div>
+    <div class="code-block"><code>sherlock user123 --xlsx</code><button class="copy-btn" onclick="copyText('sherlock user123 --xlsx',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">09</div>
+  <div class="command-body">
+    <div class="command-title">TXT export</div>
+    <div class="command-purpose">Explicitly enable creation of a text report.</div>
+    <div class="code-block"><code>sherlock user123 --txt</code><button class="copy-btn" onclick="copyText('sherlock user123 --txt',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">10</div>
+  <div class="command-body">
+    <div class="command-title">Verbose mode</div>
+    <div class="command-purpose">Show extra debugging information and metrics.</div>
+    <div class="code-block"><code>sherlock user123 --verbose</code><button class="copy-btn" onclick="copyText('sherlock user123 --verbose',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">11</div>
+  <div class="command-body">
+    <div class="command-title">Debug shorthand</div>
+    <div class="command-purpose">Use the short debug form for verbose diagnostics.</div>
+    <div class="code-block"><code>sherlock user123 -d</code><button class="copy-btn" onclick="copyText('sherlock user123 -d',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">12</div>
+  <div class="command-body">
+    <div class="command-title">Print found</div>
+    <div class="command-purpose">Print usernames found on matching sites.</div>
+    <div class="code-block"><code>sherlock user123 --print-found</code><button class="copy-btn" onclick="copyText('sherlock user123 --print-found',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">13</div>
+  <div class="command-body">
+    <div class="command-title">Print all</div>
+    <div class="command-purpose">Also print sites where the username was not found.</div>
+    <div class="code-block"><code>sherlock user123 --print-all</code><button class="copy-btn" onclick="copyText('sherlock user123 --print-all',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">14</div>
+  <div class="command-body">
+    <div class="command-title">No color</div>
+    <div class="command-purpose">Disable terminal colors for logs or redirected output.</div>
+    <div class="code-block"><code>sherlock user123 --no-color</code><button class="copy-btn" onclick="copyText('sherlock user123 --no-color',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">15</div>
+  <div class="command-body">
+    <div class="command-title">Browse results</div>
+    <div class="command-purpose">Open found results in the default browser.</div>
+    <div class="code-block"><code>sherlock user123 --browse</code><button class="copy-btn" onclick="copyText('sherlock user123 --browse',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">16</div>
+  <div class="command-body">
+    <div class="command-title">Limit to one site</div>
+    <div class="command-purpose">Restrict checking to a named site supported by the data file.</div>
+    <div class="code-block"><code>sherlock user123 --site github</code><button class="copy-btn" onclick="copyText('sherlock user123 --site github',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">17</div>
+  <div class="command-body">
+    <div class="command-title">Limit to several sites</div>
+    <div class="command-purpose">Repeat --site to restrict the search to selected sites.</div>
+    <div class="code-block"><code>sherlock user123 --site github --site reddit</code><button class="copy-btn" onclick="copyText('sherlock user123 --site github --site reddit',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">18</div>
+  <div class="command-body">
+    <div class="command-title">Proxy request</div>
+    <div class="command-purpose">Send requests through a configured proxy.</div>
+    <div class="code-block"><code>sherlock user123 --proxy socks5://127.0.0.1:1080</code><button class="copy-btn" onclick="copyText('sherlock user123 --proxy socks5://127.0.0.1:1080',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">19</div>
+  <div class="command-body">
+    <div class="command-title">Custom timeout</div>
+    <div class="command-purpose">Set the request timeout in seconds.</div>
+    <div class="code-block"><code>sherlock user123 --timeout 30</code><button class="copy-btn" onclick="copyText('sherlock user123 --timeout 30',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">20</div>
+  <div class="command-body">
+    <div class="command-title">JSON data source</div>
+    <div class="command-purpose">Load site definitions from a JSON file or supported online JSON source.</div>
+    <div class="code-block"><code>sherlock user123 --json sites.json</code><button class="copy-btn" onclick="copyText('sherlock user123 --json sites.json',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">21</div>
+  <div class="command-body">
+    <div class="command-title">Force local data</div>
+    <div class="command-purpose">Force Sherlock to use its local data.json file.</div>
+    <div class="code-block"><code>sherlock user123 --local</code><button class="copy-btn" onclick="copyText('sherlock user123 --local',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">22</div>
+  <div class="command-body">
+    <div class="command-title">Ignore exclusions</div>
+    <div class="command-purpose">Ignore upstream site exclusions; may increase false positives.</div>
+    <div class="code-block"><code>sherlock user123 --ignore-exclusions</code><button class="copy-btn" onclick="copyText('sherlock user123 --ignore-exclusions',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">23</div>
+  <div class="command-body">
+    <div class="command-title">Include NSFW sites</div>
+    <div class="command-purpose">Include NSFW sites from the default list where supported.</div>
+    <div class="code-block"><code>sherlock user123 --nsfw</code><button class="copy-btn" onclick="copyText('sherlock user123 --nsfw',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">24</div>
+  <div class="command-body">
+    <div class="command-title">Similar username pattern</div>
+    <div class="command-purpose">Use {?} in a username to test separator variants such as _, -, and ..</div>
+    <div class="code-block"><code>sherlock john{?}doe</code><button class="copy-btn" onclick="copyText('sherlock john{?}doe',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">25</div>
+  <div class="command-body">
+    <div class="command-title">Exact-style research set</div>
+    <div class="command-purpose">Search a small controlled set of known candidate names.</div>
+    <div class="code-block"><code>sherlock alice alice_dev alice01</code><button class="copy-btn" onclick="copyText('sherlock alice alice_dev alice01',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">26</div>
+  <div class="command-body">
+    <div class="command-title">Save and print</div>
+    <div class="command-purpose">Save results while keeping found results visible.</div>
+    <div class="code-block"><code>sherlock user123 -o report.txt --print-found</code><button class="copy-btn" onclick="copyText('sherlock user123 -o report.txt --print-found',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">27</div>
+  <div class="command-body">
+    <div class="command-title">CSV plus verbose</div>
+    <div class="command-purpose">Export CSV and keep diagnostics visible during a lab run.</div>
+    <div class="code-block"><code>sherlock user123 --csv --verbose</code><button class="copy-btn" onclick="copyText('sherlock user123 --csv --verbose',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">28</div>
+  <div class="command-body">
+    <div class="command-title">XLSX plus found</div>
+    <div class="command-purpose">Create an XLSX report while printing positive matches.</div>
+    <div class="code-block"><code>sherlock user123 --xlsx --print-found</code><button class="copy-btn" onclick="copyText('sherlock user123 --xlsx --print-found',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">29</div>
+  <div class="command-body">
+    <div class="command-title">No-color CSV run</div>
+    <div class="command-purpose">Useful when terminal output is redirected or logged.</div>
+    <div class="code-block"><code>sherlock user123 --csv --no-color</code><button class="copy-btn" onclick="copyText('sherlock user123 --csv --no-color',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">30</div>
+  <div class="command-body">
+    <div class="command-title">Site-focused output</div>
+    <div class="command-purpose">Combine a site restriction with an explicit output file.</div>
+    <div class="code-block"><code>sherlock user123 --site github -o github-check.txt</code><button class="copy-btn" onclick="copyText('sherlock user123 --site github -o github-check.txt',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">31</div>
+  <div class="command-body">
+    <div class="command-title">Multiple sites output</div>
+    <div class="command-purpose">Check a few public platforms and save the result.</div>
+    <div class="code-block"><code>sherlock user123 --site github --site reddit -o selected.txt</code><button class="copy-btn" onclick="copyText('sherlock user123 --site github --site reddit -o selected.txt',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">32</div>
+  <div class="command-body">
+    <div class="command-title">Longer timeout</div>
+    <div class="command-purpose">Allow slower public services more response time.</div>
+    <div class="code-block"><code>sherlock user123 --timeout 120</code><button class="copy-btn" onclick="copyText('sherlock user123 --timeout 120',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">33</div>
+  <div class="command-body">
+    <div class="command-title">Short timeout</div>
+    <div class="command-purpose">Fail faster when a site is slow or unavailable.</div>
+    <div class="code-block"><code>sherlock user123 --timeout 10</code><button class="copy-btn" onclick="copyText('sherlock user123 --timeout 10',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">34</div>
+  <div class="command-body">
+    <div class="command-title">Debug + local data</div>
+    <div class="command-purpose">Diagnose site-definition issues without fetching remote data.</div>
+    <div class="code-block"><code>sherlock user123 --debug --local</code><button class="copy-btn" onclick="copyText('sherlock user123 --debug --local',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">35</div>
+  <div class="command-body">
+    <div class="command-title">Dump response</div>
+    <div class="command-purpose">Dump an HTTP response for targeted troubleshooting.</div>
+    <div class="code-block"><code>sherlock user123 --dump-response</code><button class="copy-btn" onclick="copyText('sherlock user123 --dump-response',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">36</div>
+  <div class="command-body">
+    <div class="command-title">JSON + local</div>
+    <div class="command-purpose">Use a local JSON site-definition file explicitly.</div>
+    <div class="code-block"><code>sherlock user123 --json ./data.json --local</code><button class="copy-btn" onclick="copyText('sherlock user123 --json ./data.json --local',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">37</div>
+  <div class="command-body">
+    <div class="command-title">Proxy + timeout</div>
+    <div class="command-purpose">Combine proxy routing with a bounded timeout.</div>
+    <div class="code-block"><code>sherlock user123 -p socks5://127.0.0.1:1080 --timeout 45</code><button class="copy-btn" onclick="copyText('sherlock user123 -p socks5://127.0.0.1:1080 --timeout 45',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">38</div>
+  <div class="command-body">
+    <div class="command-title">Proxy + verbose</div>
+    <div class="command-purpose">Inspect proxy-related behavior with verbose logging.</div>
+    <div class="code-block"><code>sherlock user123 -p socks5://127.0.0.1:1080 -v</code><button class="copy-btn" onclick="copyText('sherlock user123 -p socks5://127.0.0.1:1080 -v',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">39</div>
+  <div class="command-body">
+    <div class="command-title">Browse found sites</div>
+    <div class="command-purpose">Open matching public pages after the search.</div>
+    <div class="code-block"><code>sherlock user123 --browse --print-found</code><button class="copy-btn" onclick="copyText('sherlock user123 --browse --print-found',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">40</div>
+  <div class="command-body">
+    <div class="command-title">Only selected site</div>
+    <div class="command-purpose">Use one site for a focused verification task.</div>
+    <div class="code-block"><code>sherlock user123 --site instagram</code><button class="copy-btn" onclick="copyText('sherlock user123 --site instagram',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">41</div>
+  <div class="command-body">
+    <div class="command-title">Three usernames CSV</div>
+    <div class="command-purpose">Export a small research set to CSV.</div>
+    <div class="code-block"><code>sherlock user1 user2 user3 --csv</code><button class="copy-btn" onclick="copyText('sherlock user1 user2 user3 --csv',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">42</div>
+  <div class="command-body">
+    <div class="command-title">Three usernames XLSX</div>
+    <div class="command-purpose">Export a small research set to Excel format.</div>
+    <div class="code-block"><code>sherlock user1 user2 user3 --xlsx</code><button class="copy-btn" onclick="copyText('sherlock user1 user2 user3 --xlsx',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">43</div>
+  <div class="command-body">
+    <div class="command-title">Folder report</div>
+    <div class="command-purpose">Keep multiple-user reports together in a dedicated folder.</div>
+    <div class="code-block"><code>mkdir -p reports &amp;&amp; sherlock user1 user2 -fo reports/</code><button class="copy-btn" onclick="copyText('mkdir -p reports && sherlock user1 user2 -fo reports/',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">44</div>
+  <div class="command-body">
+    <div class="command-title">Check executable</div>
+    <div class="command-purpose">Confirm which Sherlock executable your shell is using.</div>
+    <div class="code-block"><code>command -v sherlock</code><button class="copy-btn" onclick="copyText('command -v sherlock',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">45</div>
+  <div class="command-body">
+    <div class="command-title">Python package check</div>
+    <div class="command-purpose">Inspect whether the package is installed in the current environment.</div>
+    <div class="code-block"><code>python3 -m pip show sherlock-project</code><button class="copy-btn" onclick="copyText('python3 -m pip show sherlock-project',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">46</div>
+  <div class="command-body">
+    <div class="command-title">Pipx package check</div>
+    <div class="command-purpose">Inspect a pipx installation.</div>
+    <div class="code-block"><code>pipx list | grep -i sherlock</code><button class="copy-btn" onclick="copyText('pipx list | grep -i sherlock',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">47</div>
+  <div class="command-body">
+    <div class="command-title">Docker image run</div>
+    <div class="command-purpose">Run Sherlock from the official container image.</div>
+    <div class="code-block"><code>docker run -it --rm sherlock/sherlock user123</code><button class="copy-btn" onclick="copyText('docker run -it --rm sherlock/sherlock user123',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">48</div>
+  <div class="command-body">
+    <div class="command-title">Docker help</div>
+    <div class="command-purpose">View help from the containerized installation.</div>
+    <div class="code-block"><code>docker run -it --rm sherlock/sherlock --help</code><button class="copy-btn" onclick="copyText('docker run -it --rm sherlock/sherlock --help',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">49</div>
+  <div class="command-body">
+    <div class="command-title">Update via pipx</div>
+    <div class="command-purpose">Update the pipx-managed package.</div>
+    <div class="code-block"><code>pipx upgrade sherlock-project</code><button class="copy-btn" onclick="copyText('pipx upgrade sherlock-project',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">50</div>
+  <div class="command-body">
+    <div class="command-title">Update via pip</div>
+    <div class="command-purpose">Update the package in the active Python environment.</div>
+    <div class="code-block"><code>python3 -m pip install -U sherlock-project</code><button class="copy-btn" onclick="copyText('python3 -m pip install -U sherlock-project',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">51</div>
+  <div class="command-body">
+    <div class="command-title">Version after update</div>
+    <div class="command-purpose">Verify the version after an update.</div>
+    <div class="code-block"><code>sherlock --version</code><button class="copy-btn" onclick="copyText('sherlock --version',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">52</div>
+  <div class="command-body">
+    <div class="command-title">Permissions check</div>
+    <div class="command-purpose">Confirm that the output directory is writable.</div>
+    <div class="code-block"><code>test -w ./results &amp;&amp; echo writable || echo not-writable</code><button class="copy-btn" onclick="copyText('test -w ./results && echo writable || echo not-writable',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">53</div>
+  <div class="command-body">
+    <div class="command-title">Create output folder</div>
+    <div class="command-purpose">Create a clean destination for multiple-user results.</div>
+    <div class="code-block"><code>mkdir -p ~/sherlock-results</code><button class="copy-btn" onclick="copyText('mkdir -p ~/sherlock-results',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">54</div>
+  <div class="command-body">
+    <div class="command-title">Save to home folder</div>
+    <div class="command-purpose">Write a single-user report to a known path.</div>
+    <div class="code-block"><code>sherlock user123 -o ~/sherlock-results/user123.txt</code><button class="copy-btn" onclick="copyText('sherlock user123 -o ~/sherlock-results/user123.txt',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">55</div>
+  <div class="command-body">
+    <div class="command-title">Research with a proxy</div>
+    <div class="command-purpose">Use a SOCKS5 proxy in an authorized OSINT lab.</div>
+    <div class="code-block"><code>sherlock labuser --proxy socks5://127.0.0.1:1080</code><button class="copy-btn" onclick="copyText('sherlock labuser --proxy socks5://127.0.0.1:1080',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">56</div>
+  <div class="command-body">
+    <div class="command-title">Local definitions</div>
+    <div class="command-purpose">Use only the local site database during offline testing.</div>
+    <div class="code-block"><code>sherlock labuser --local</code><button class="copy-btn" onclick="copyText('sherlock labuser --local',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">57</div>
+  <div class="command-body">
+    <div class="command-title">Print negatives too</div>
+    <div class="command-purpose">Show both positive and negative checks for learning/debugging.</div>
+    <div class="code-block"><code>sherlock labuser --print-all</code><button class="copy-btn" onclick="copyText('sherlock labuser --print-all',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">58</div>
+  <div class="command-body">
+    <div class="command-title">Quiet-style file workflow</div>
+    <div class="command-purpose">Save results to a file and disable terminal color.</div>
+    <div class="code-block"><code>sherlock labuser -o result.txt --no-color</code><button class="copy-btn" onclick="copyText('sherlock labuser -o result.txt --no-color',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">59</div>
+  <div class="command-body">
+    <div class="command-title">Selected sites + CSV</div>
+    <div class="command-purpose">Restrict the scope and export structured data.</div>
+    <div class="code-block"><code>sherlock labuser --site github --site reddit --csv</code><button class="copy-btn" onclick="copyText('sherlock labuser --site github --site reddit --csv',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">60</div>
+  <div class="command-body">
+    <div class="command-title">Selected sites + XLSX</div>
+    <div class="command-purpose">Restrict the scope and export an Excel report.</div>
+    <div class="code-block"><code>sherlock labuser --site github --site reddit --xlsx</code><button class="copy-btn" onclick="copyText('sherlock labuser --site github --site reddit --xlsx',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">61</div>
+  <div class="command-body">
+    <div class="command-title">Pattern with underscore</div>
+    <div class="command-purpose">Test a separator variation using the supported placeholder.</div>
+    <div class="code-block"><code>sherlock john{?}smith</code><button class="copy-btn" onclick="copyText('sherlock john{?}smith',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">62</div>
+  <div class="command-body">
+    <div class="command-title">Pattern with multiple names</div>
+    <div class="command-purpose">Apply a controlled variant search to multiple candidates.</div>
+    <div class="code-block"><code>sherlock john{?}smith jane{?}doe</code><button class="copy-btn" onclick="copyText('sherlock john{?}smith jane{?}doe',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">63</div>
+  <div class="command-body">
+    <div class="command-title">Verbose export</div>
+    <div class="command-purpose">Keep diagnostics while generating a report for a lab.</div>
+    <div class="code-block"><code>sherlock labuser --verbose --csv -o report.csv</code><button class="copy-btn" onclick="copyText('sherlock labuser --verbose --csv -o report.csv',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">64</div>
+  <div class="command-body">
+    <div class="command-title">JSON site source</div>
+    <div class="command-purpose">Use a custom/updated JSON definition source for research.</div>
+    <div class="code-block"><code>sherlock labuser --json ./custom-sites.json</code><button class="copy-btn" onclick="copyText('sherlock labuser --json ./custom-sites.json',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">65</div>
+  <div class="command-body">
+    <div class="command-title">Timeout diagnostics</div>
+    <div class="command-purpose">Use a short timeout to identify slow services quickly.</div>
+    <div class="code-block"><code>sherlock labuser --timeout 15 --verbose</code><button class="copy-btn" onclick="copyText('sherlock labuser --timeout 15 --verbose',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">66</div>
+  <div class="command-body">
+    <div class="command-title">Response diagnostics</div>
+    <div class="command-purpose">Inspect a target HTTP response when troubleshooting a detection.</div>
+    <div class="code-block"><code>sherlock labuser --site example --dump-response</code><button class="copy-btn" onclick="copyText('sherlock labuser --site example --dump-response',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">67</div>
+  <div class="command-body">
+    <div class="command-title">Compare two identities</div>
+    <div class="command-purpose">Run two candidate usernames separately for cleaner evidence.</div>
+    <div class="code-block"><code>sherlock candidate_one candidate_two --print-found</code><button class="copy-btn" onclick="copyText('sherlock candidate_one candidate_two --print-found',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">68</div>
+  <div class="command-body">
+    <div class="command-title">Evidence folder workflow</div>
+    <div class="command-purpose">Create a timestamped-style folder and save multi-user results.</div>
+    <div class="code-block"><code>mkdir -p evidence &amp;&amp; sherlock user1 user2 user3 -fo evidence/</code><button class="copy-btn" onclick="copyText('mkdir -p evidence && sherlock user1 user2 user3 -fo evidence/',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">69</div>
+  <div class="command-body">
+    <div class="command-title">Version + help combo</div>
+    <div class="command-purpose">Quickly inspect both version and available syntax.</div>
+    <div class="code-block"><code>sherlock --version &amp;&amp; sherlock --help</code><button class="copy-btn" onclick="copyText('sherlock --version && sherlock --help',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">70</div>
+  <div class="command-body">
+    <div class="command-title">Site list research</div>
+    <div class="command-purpose">Use --site repeatedly rather than scanning every configured site.</div>
+    <div class="code-block"><code>sherlock labuser --site github --site gitlab --site reddit</code><button class="copy-btn" onclick="copyText('sherlock labuser --site github --site gitlab --site reddit',this)">COPY</button></div>
+  </div>
+</div>
+<div class="command-card">
+  <div class="command-num">71</div>
+  <div class="command-body">
+    <div class="command-title">Controlled OSINT run</div>
+    <div class="command-purpose">Keep the scope explicit, save the report, and avoid unnecessary sites.</div>
+    <div class="code-block"><code>sherlock labuser --site github --site gitlab -o scoped.txt --print-found</code><button class="copy-btn" onclick="copyText('sherlock labuser --site github --site gitlab -o scoped.txt --print-found',this)">COPY</button></div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+ <div class="section-title">Important Options Reference</div>
+ <div class="table-wrap"><table><thead><tr><th>Option</th><th>Purpose</th></tr></thead><tbody>
+ <tr><td><code>--verbose / -v / -d</code></td><td>Extra debugging information and metrics.</td></tr>
+ <tr><td><code>--folderoutput / -fo</code></td><td>Folder for results when checking multiple usernames.</td></tr>
+ <tr><td><code>--output / -o</code></td><td>Output file for a single username.</td></tr>
+ <tr><td><code>--csv</code></td><td>Create a CSV report.</td></tr>
+ <tr><td><code>--xlsx</code></td><td>Create an XLSX report.</td></tr>
+ <tr><td><code>--site</code></td><td>Restrict analysis to selected sites; can be repeated.</td></tr>
+ <tr><td><code>--proxy / -p</code></td><td>Route requests through a proxy.</td></tr>
+ <tr><td><code>--timeout</code></td><td>Maximum wait time per request.</td></tr>
+ <tr><td><code>--print-found</code></td><td>Print found sites.</td></tr>
+ <tr><td><code>--print-all</code></td><td>Also print sites where the username was not found.</td></tr>
+ <tr><td><code>--browse / -b</code></td><td>Open results in the default browser.</td></tr>
+ <tr><td><code>--local / -l</code></td><td>Force use of local site data.</td></tr>
+ <tr><td><code>--json / -j</code></td><td>Load site definitions from a JSON source.</td></tr>
+ <tr><td><code>--dump-response</code></td><td>Dump HTTP response for targeted debugging.</td></tr>
+ <tr><td><code>--ignore-exclusions</code></td><td>Ignore upstream exclusions; can increase false positives.</td></tr>
+ </tbody></table></div>
+</div>
+
+<div class="section">
+ <div class="section-title">False Positives & Verification</div>
+ <p>A username appearing on a site does not automatically establish identity. Common causes of false positives include common usernames, abandoned accounts, reused handles, site-specific placeholders, redirects, deleted pages, and changes to a site's response behavior.</p>
+ <div class="grid-2">
+  <div class="info-box"><div class="info-icon">1️⃣</div><div class="info-text"><strong>Verify the URL:</strong> confirm the actual profile/page and not only a positive CLI status.</div></div>
+  <div class="info-box"><div class="info-icon">2️⃣</div><div class="info-text"><strong>Check context:</strong> compare public bio, links, dates, profile metadata, and other non-sensitive public signals.</div></div>
+  <div class="info-box"><div class="info-icon">3️⃣</div><div class="info-text"><strong>Corroborate:</strong> use at least one independent public source before treating two handles as connected.</div></div>
+  <div class="info-box"><div class="info-icon">4️⃣</div><div class="info-text"><strong>Record uncertainty:</strong> distinguish confirmed observations from assumptions and failed/time-out checks.</div></div>
+ </div>
+</div>
+
+<div class="section">
+ <div class="section-title">Practical OSINT Workflow</div>
+ <div class="code-block"><code># 1. Start with a controlled username
+sherlock labuser --print-found
+
+# 2. Narrow the scope if needed
+sherlock labuser --site github --site reddit --print-found
+
+# 3. Save evidence for your lab report
+sherlock labuser --csv -o report.csv
+
+# 4. Review the public pages manually</code><button class="copy-btn" onclick="copyText('# 1. Start with a controlled username\nsherlock labuser --print-found\n\n# 2. Narrow the scope if needed\nsherlock labuser --site github --site reddit --print-found\n\n# 3. Save evidence for your lab report\nsherlock labuser --csv -o report.csv\n\n# 4. Review the public pages manually',this)">COPY</button></div>
+ <p><strong>Recommended evidence format:</strong> username → site → exact public URL → date/time checked → status → notes → confidence. This keeps an OSINT report reproducible without overstating what the tool actually established.</p>
+</div>
+
+<div class="section">
+ <div class="section-title">Troubleshooting</div>
+ <ul>
+  <li><strong>Command not found:</strong> check <code>command -v sherlock</code> and your Python/pipx PATH.</li>
+  <li><strong>Many timeouts:</strong> increase <code>--timeout</code>, restrict sites with <code>--site</code>, or inspect connectivity.</li>
+  <li><strong>Unexpected positives:</strong> verify the page manually; consider site-specific false-positive behavior.</li>
+  <li><strong>Outdated results:</strong> update the package/site definitions and re-run a focused check.</li>
+  <li><strong>Proxy problems:</strong> validate the proxy separately and then use <code>--proxy</code>.</li>
+  <li><strong>Debugging a site:</strong> use <code>--verbose</code> and, where appropriate, <code>--dump-response</code>.</li>
+  <li><strong>Offline lab:</strong> use <code>--local</code> with a locally available data source; live site checks still require connectivity.</li>
+ </ul>
+</div>
+
+<div class="section">
+ <div class="section-title">Sherlock + Other OSINT Tools</div>
+ <div class="table-wrap"><table><thead><tr><th>Tool / Method</th><th>Role</th></tr></thead><tbody>
+ <tr><td>Sherlock</td><td>Username presence discovery across configured public sites.</td></tr>
+ <tr><td>Search engines</td><td>Find indexed pages, mentions and context that automated site checks may miss.</td></tr>
+ <tr><td>Manual browser review</td><td>Verify the actual public page and contextual evidence.</td></tr>
+ <tr><td>Wayback-style archives</td><td>Historical public-page research where legally and technically available.</td></tr>
+ <tr><td>Report tooling</td><td>Preserve URLs, timestamps, observations and confidence levels.</td></tr>
+ </tbody></table></div>
+</div>
+
+<div class="warning-box">
+ <div class="warning-title">⚠️ AUTHORIZED & RESPONSIBLE USE</div>
+ <p>Use Sherlock for your own accounts, CTF/OSINT labs, authorized investigations, security research, brand monitoring, or other lawful public-information research. Do not use username discovery to harass, stalk, impersonate, expose private information, or target people without a legitimate basis. Public availability of a page does not make every downstream use appropriate.</p>
+</div>
+
+</div>
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

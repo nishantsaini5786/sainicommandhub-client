@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Nessus — Vulnerability Assessment Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🛡️</div>
+      <div class="hero-info">
+        <div class="hero-name">NESSUS</div>
+        <div class="hero-cat">VULNERABILITY ASSESSMENT / SECURITY SCANNING / EXPOSURE MANAGEMENT</div>
+        <div class="hero-badges">
+          <span class="badge badge-advanced">PROFESSIONAL</span>
+          <span class="badge badge-count">60+ COMMANDS</span>
+          <span class="badge badge-tag">TENABLE NESSUS</span>
+        </div>
+      </div>
+    </div>
+    <p><strong style="color:var(--secondary)">Tenable Nessus</strong> is a vulnerability assessment platform used to identify security weaknesses, missing patches, insecure configurations, exposed services and other findings on authorized systems. Nessus combines a scanner engine with a large plugin library, scan policies, credentials, schedules and reporting workflows.</p>
+  </div>
+
+  <div class="section">
+<div class="section-title">What is Nessus? — Deep Theory</div>
+
+    <p>Nessus is primarily a <strong>vulnerability scanner</strong>, not an exploitation framework. A Nessus scan evaluates a target against checks implemented through plugins and reports findings with evidence, severity information and remediation context.</p>
+    <h3>Scanner → Plugin → Finding</h3>
+    <p>The core mental model is:</p>
+    <p><code>TARGET → DISCOVERY → SERVICE DETECTION → PLUGIN CHECKS → EVIDENCE → VULNERABILITY FINDING → REMEDIATION → RESCAN</code></p>
+    <ul>
+      <li><strong>Target:</strong> the authorized IP address, hostname, range or asset set.</li>
+      <li><strong>Discovery:</strong> Nessus determines what hosts/services are reachable within the scan configuration.</li>
+      <li><strong>Plugins:</strong> individual checks implement detection logic for vulnerabilities, configuration problems and other security conditions.</li>
+      <li><strong>Evidence:</strong> the scanner records information supporting a finding, such as service/version details or configuration observations.</li>
+      <li><strong>Remediation:</strong> the security team fixes the underlying issue and validates the result with a follow-up scan.</li>
+    </ul>
+    <div class="info-box"><div class="info-icon">💡</div><div class="info-text"><strong>Important:</strong> A Nessus finding is not automatically proof that a system can be exploited. Detection quality depends on the plugin, available evidence, scan configuration, credentials and target state. Validate important findings before treating them as confirmed exploitable vulnerabilities.</div></div>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Nessus Architecture & Components</div>
+
+    <h3>Scanner Engine</h3>
+    <p>The scanner performs network communication and executes the checks selected by the scan configuration. In a lab, think of it as the component that actually communicates with the target.</p>
+    <h3>Plugins</h3>
+    <p>Nessus plugins contain detection logic. Plugins can cover vulnerabilities, service identification, configuration issues, compliance-related checks and other security assessments.</p>
+    <h3>Policies</h3>
+    <p>A policy is a reusable set of scan configuration options. Tenable documents policies as controlling technical scan parameters, credentials and granular plugin/family specifications.</p>
+    <h3>Credentials</h3>
+    <p>Authenticated scans can provide deeper visibility because Nessus can inspect local system information when valid credentials and the correct policy configuration are supplied.</p>
+    <h3>Results & Reports</h3>
+    <p>Results are organized around hosts, findings, severity, plugin information and supporting evidence. The goal is not simply to produce a huge list of alerts, but to turn findings into actionable remediation work.</p>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Installation & First Launch — Kali Linux</div>
+
+    <p>On Kali, Nessus is normally installed from a Tenable-provided package rather than from the default Kali repositories. Download the appropriate package from Tenable, install it using the package manager, start the service, then open the local web interface.</p>
+    <div class="code-block"><code>sudo dpkg -i ./Nessus-*.deb
+sudo systemctl enable --now nessusd
+sudo systemctl status nessusd
+xdg-open https://127.0.0.1:8834</code><button class="copy-btn" onclick="copyText('sudo dpkg -i ./Nessus-*.deb\nsudo systemctl enable --now nessusd\nsudo systemctl status nessusd\nxdg-open https://127.0.0.1:8834',this)">COPY</button></div>
+    <p>Exact package names and installation steps can vary by release. After installation, complete the initial browser setup, choose the appropriate Nessus edition/license, and allow plugins to initialize/update before expecting scan results to be complete.</p>
+    <div class="info-box"><div class="info-icon">🔐</div><div class="info-text"><strong>CLI note:</strong> Tenable's current documentation states that Nessus CLI administration commands require administrative privileges and uses <code>/opt/nessus/sbin/nessuscli</code> on Linux.</div></div>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Basic Vulnerability-Scanning Workflow</div>
+
+    <ol>
+      <li><strong>Define scope:</strong> identify only assets you own or have written permission to assess.</li>
+      <li><strong>Confirm reachability:</strong> verify the scanner can route to the authorized target network.</li>
+      <li><strong>Choose a scan template:</strong> select the template appropriate for the lab or assessment objective.</li>
+      <li><strong>Set targets:</strong> enter the approved IPs, hostnames or ranges.</li>
+      <li><strong>Configure discovery:</strong> decide how ports and services should be identified.</li>
+      <li><strong>Configure credentials:</strong> when authorized, provide SSH/Windows or other supported credentials for authenticated checks.</li>
+      <li><strong>Review plugins/policies:</strong> avoid blindly changing plugin families; understand what your scan is intended to measure.</li>
+      <li><strong>Run the scan:</strong> monitor progress and scanner health.</li>
+      <li><strong>Validate findings:</strong> inspect plugin output, affected service/version and evidence.</li>
+      <li><strong>Remediate and rescan:</strong> confirm that fixes actually removed the issue.</li>
+    </ol>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Nessus Command Library — 60+ Commands</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">01</span><span class="command-title">Check Nessus service status</span></div>
+<div class="code-block"><code>sudo systemctl status nessusd</code><button class="copy-btn" onclick="copyText('sudo systemctl status nessusd',this)">COPY</button></div>
+<div class="command-purpose">Confirm whether the Nessus daemon is running.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">02</span><span class="command-title">Start Nessus</span></div>
+<div class="code-block"><code>sudo systemctl start nessusd</code><button class="copy-btn" onclick="copyText('sudo systemctl start nessusd',this)">COPY</button></div>
+<div class="command-purpose">Start the Nessus service.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">03</span><span class="command-title">Stop Nessus</span></div>
+<div class="code-block"><code>sudo systemctl stop nessusd</code><button class="copy-btn" onclick="copyText('sudo systemctl stop nessusd',this)">COPY</button></div>
+<div class="command-purpose">Stop the Nessus service when maintenance requires it.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">04</span><span class="command-title">Restart Nessus</span></div>
+<div class="code-block"><code>sudo systemctl restart nessusd</code><button class="copy-btn" onclick="copyText('sudo systemctl restart nessusd',this)">COPY</button></div>
+<div class="command-purpose">Restart the Nessus service after configuration changes.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">05</span><span class="command-title">Enable Nessus at boot</span></div>
+<div class="code-block"><code>sudo systemctl enable nessusd</code><button class="copy-btn" onclick="copyText('sudo systemctl enable nessusd',this)">COPY</button></div>
+<div class="command-purpose">Configure Nessus to start automatically during boot.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">06</span><span class="command-title">Disable Nessus at boot</span></div>
+<div class="code-block"><code>sudo systemctl disable nessusd</code><button class="copy-btn" onclick="copyText('sudo systemctl disable nessusd',this)">COPY</button></div>
+<div class="command-purpose">Prevent automatic startup.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">07</span><span class="command-title">Open Nessus web UI</span></div>
+<div class="code-block"><code>https://localhost:8834</code><button class="copy-btn" onclick="copyText('https://localhost:8834',this)">COPY</button></div>
+<div class="command-purpose">Open the local Nessus web interface in a browser.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">08</span><span class="command-title">Locate Nessus CLI</span></div>
+<div class="code-block"><code>sudo find /opt/nessus -name nessuscli -type f 2&gt;/dev/null</code><button class="copy-btn" onclick="copyText('sudo find /opt/nessus -name nessuscli -type f 2&gt;/dev/null',this)">COPY</button></div>
+<div class="command-purpose">Find the CLI if the installation path is not obvious.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">09</span><span class="command-title">Show Nessus CLI help</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli help</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli help',this)">COPY</button></div>
+<div class="command-purpose">Display available Nessus CLI command groups.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">10</span><span class="command-title">Help for a command</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli &lt;command&gt; help</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli &lt;command&gt; help',this)">COPY</button></div>
+<div class="command-purpose">Display detailed help for a particular CLI command.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">11</span><span class="command-title">Show Nessus version</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli -v</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli -v',this)">COPY</button></div>
+<div class="command-purpose">Display the installed Nessus version.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">12</span><span class="command-title">Show current license information</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fetch --code-in-use</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fetch --code-in-use',this)">COPY</button></div>
+<div class="command-purpose">Check the license code currently in use.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">13</span><span class="command-title">Check registration status</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fetch --check</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fetch --check',this)">COPY</button></div>
+<div class="command-purpose">Check registration/update state.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">14</span><span class="command-title">Register with activation code</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fetch --register &lt;ACTIVATION-CODE&gt;</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fetch --register &lt;ACTIVATION-CODE&gt;',this)">COPY</button></div>
+<div class="command-purpose">Register a Nessus installation with the supplied activation code.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">15</span><span class="command-title">Update Nessus software</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli update</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli update',this)">COPY</button></div>
+<div class="command-purpose">Update Nessus software when supported by the installation.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">16</span><span class="command-title">Update all available components</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli update --all</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli update --all',this)">COPY</button></div>
+<div class="command-purpose">Update software and applicable plugin content.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">17</span><span class="command-title">Update plugins only</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli update --plugins-only</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli update --plugins-only',this)">COPY</button></div>
+<div class="command-purpose">Update plugin content without performing a full software update.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">18</span><span class="command-title">List Nessus users</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli lsuser</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli lsuser',this)">COPY</button></div>
+<div class="command-purpose">List local Nessus users.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">19</span><span class="command-title">Add a Nessus user</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli adduser &lt;USERNAME&gt;</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli adduser &lt;USERNAME&gt;',this)">COPY</button></div>
+<div class="command-purpose">Create a local Nessus user; follow the prompts carefully.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">20</span><span class="command-title">Change user password</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli chpasswd &lt;USERNAME&gt;</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli chpasswd &lt;USERNAME&gt;',this)">COPY</button></div>
+<div class="command-purpose">Change a local Nessus user&#x27;s password.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">21</span><span class="command-title">Remove a Nessus user</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli rmuser &lt;USERNAME&gt;</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli rmuser &lt;USERNAME&gt;',this)">COPY</button></div>
+<div class="command-purpose">Remove a local Nessus user.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">22</span><span class="command-title">List fix settings</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fix --list</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fix --list',this)">COPY</button></div>
+<div class="command-purpose">List available advanced/fix settings.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">23</span><span class="command-title">Get a setting</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fix --get &lt;SETTING&gt;</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fix --get &lt;SETTING&gt;',this)">COPY</button></div>
+<div class="command-purpose">Read the current value of a supported setting.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">24</span><span class="command-title">Set a setting</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fix --set &lt;NAME=VALUE&gt;</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fix --set &lt;NAME=VALUE&gt;',this)">COPY</button></div>
+<div class="command-purpose">Set a supported Nessus configuration value.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">25</span><span class="command-title">Delete a setting</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fix --delete &lt;NAME&gt;</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fix --delete &lt;NAME&gt;',this)">COPY</button></div>
+<div class="command-purpose">Delete a supported custom setting.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">26</span><span class="command-title">List interfaces</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fix --list-interfaces</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fix --list-interfaces',this)">COPY</button></div>
+<div class="command-purpose">List network interfaces visible to Nessus.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">27</span><span class="command-title">Reset fix settings</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli fix --reset</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli fix --reset',this)">COPY</button></div>
+<div class="command-purpose">Reset supported fix settings; use only when you understand the effect.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">28</span><span class="command-title">Create Nessus backup</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli backup --create nessus-backup</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli backup --create nessus-backup',this)">COPY</button></div>
+<div class="command-purpose">Create a backup archive containing license/settings information; scan results are not included.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">29</span><span class="command-title">Restore a backup</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli backup --restore /path/to/backup.zip</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli backup --restore /path/to/backup.zip',this)">COPY</button></div>
+<div class="command-purpose">Restore a previously created Nessus backup.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">30</span><span class="command-title">Generate bug report</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli bug-report-generator</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli bug-report-generator',this)">COPY</button></div>
+<div class="command-purpose">Generate a diagnostic archive for troubleshooting.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">31</span><span class="command-title">Generate quiet bug report</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli bug-report-generator --quiet</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli bug-report-generator --quiet',this)">COPY</button></div>
+<div class="command-purpose">Generate diagnostics without interactive prompts.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">32</span><span class="command-title">Generate scrubbed bug report</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli bug-report-generator --quiet --scrub</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli bug-report-generator --quiet --scrub',this)">COPY</button></div>
+<div class="command-purpose">Generate a quiet report with IPv4 address sanitization described by Tenable.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">33</span><span class="command-title">Generate full bug report</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli bug-report-generator --quiet --full</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli bug-report-generator --quiet --full',this)">COPY</button></div>
+<div class="command-purpose">Collect additional diagnostic information.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">34</span><span class="command-title">Create client certificate</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli mkcert-client</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli mkcert-client',this)">COPY</button></div>
+<div class="command-purpose">Create a client certificate using Nessus&#x27; certificate command.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">35</span><span class="command-title">Create certificate</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli mkcert</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli mkcert',this)">COPY</button></div>
+<div class="command-purpose">Create/renew Nessus certificate material as supported by the installation.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">36</span><span class="command-title">Dump plugin list</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli dump --plugins</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli dump --plugins',this)">COPY</button></div>
+<div class="command-purpose">Generate a plugins.xml dump in the Nessus plugins directory.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">37</span><span class="command-title">Check listening port</span></div>
+<div class="code-block"><code>sudo ss -lntp | grep 8834</code><button class="copy-btn" onclick="copyText('sudo ss -lntp | grep 8834',this)">COPY</button></div>
+<div class="command-purpose">Verify that a process is listening on the Nessus web port.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">38</span><span class="command-title">Check Nessus process</span></div>
+<div class="code-block"><code>ps aux | grep &#x27;[n]essusd&#x27;</code><button class="copy-btn" onclick="copyText('ps aux | grep &#x27;[n]essusd&#x27;',this)">COPY</button></div>
+<div class="command-purpose">Check whether the Nessus daemon process is present.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">39</span><span class="command-title">Inspect recent service logs</span></div>
+<div class="code-block"><code>sudo journalctl -u nessusd -n 100 --no-pager</code><button class="copy-btn" onclick="copyText('sudo journalctl -u nessusd -n 100 --no-pager',this)">COPY</button></div>
+<div class="command-purpose">Review recent systemd logs for Nessus.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">40</span><span class="command-title">Follow Nessus service logs</span></div>
+<div class="code-block"><code>sudo journalctl -u nessusd -f</code><button class="copy-btn" onclick="copyText('sudo journalctl -u nessusd -f',this)">COPY</button></div>
+<div class="command-purpose">Watch Nessus service logs live while troubleshooting.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">41</span><span class="command-title">Check service failures</span></div>
+<div class="code-block"><code>sudo systemctl --failed | grep nessus</code><button class="copy-btn" onclick="copyText('sudo systemctl --failed | grep nessus',this)">COPY</button></div>
+<div class="command-purpose">Look for a failed Nessus service unit.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">42</span><span class="command-title">Reload systemd units</span></div>
+<div class="code-block"><code>sudo systemctl daemon-reload</code><button class="copy-btn" onclick="copyText('sudo systemctl daemon-reload',this)">COPY</button></div>
+<div class="command-purpose">Reload systemd unit definitions after installation/package changes.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">43</span><span class="command-title">Test local HTTPS endpoint</span></div>
+<div class="code-block"><code>curl -kI https://127.0.0.1:8834/</code><button class="copy-btn" onclick="copyText('curl -kI https://127.0.0.1:8834/',this)">COPY</button></div>
+<div class="command-purpose">Check whether the local Nessus HTTPS endpoint responds.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">44</span><span class="command-title">Check hostname resolution</span></div>
+<div class="code-block"><code>getent hosts localhost</code><button class="copy-btn" onclick="copyText('getent hosts localhost',this)">COPY</button></div>
+<div class="command-purpose">Verify basic local hostname resolution.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">45</span><span class="command-title">Check disk space</span></div>
+<div class="code-block"><code>df -h /opt/nessus</code><button class="copy-btn" onclick="copyText('df -h /opt/nessus',this)">COPY</button></div>
+<div class="command-purpose">Check storage available to the Nessus installation.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">46</span><span class="command-title">Check Nessus directory</span></div>
+<div class="code-block"><code>sudo du -sh /opt/nessus</code><button class="copy-btn" onclick="copyText('sudo du -sh /opt/nessus',this)">COPY</button></div>
+<div class="command-purpose">View approximate disk usage of the Nessus installation.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">47</span><span class="command-title">Open scan UI locally</span></div>
+<div class="code-block"><code>xdg-open https://127.0.0.1:8834</code><button class="copy-btn" onclick="copyText('xdg-open https://127.0.0.1:8834',this)">COPY</button></div>
+<div class="command-purpose">Open Nessus locally using the desktop default browser.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">48</span><span class="command-title">Show network routes</span></div>
+<div class="code-block"><code>ip route</code><button class="copy-btn" onclick="copyText('ip route',this)">COPY</button></div>
+<div class="command-purpose">Understand which interfaces/routes Nessus traffic will use.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">49</span><span class="command-title">Show interface addresses</span></div>
+<div class="code-block"><code>ip -br addr</code><button class="copy-btn" onclick="copyText('ip -br addr',this)">COPY</button></div>
+<div class="command-purpose">Quickly view local interface names and addresses before a lab scan.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">50</span><span class="command-title">Verify target reachability</span></div>
+<div class="code-block"><code>ping -c 3 &lt;LAB-IP&gt;</code><button class="copy-btn" onclick="copyText('ping -c 3 &lt;LAB-IP&gt;',this)">COPY</button></div>
+<div class="command-purpose">Basic reachability test before launching an authorized scan.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">51</span><span class="command-title">Check target ports with Nmap</span></div>
+<div class="code-block"><code>nmap -Pn -sV &lt;LAB-IP&gt;</code><button class="copy-btn" onclick="copyText('nmap -Pn -sV &lt;LAB-IP&gt;',this)">COPY</button></div>
+<div class="command-purpose">Use Nmap as a separate validation tool to understand exposed services before Nessus.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">52</span><span class="command-title">Check HTTPS certificate</span></div>
+<div class="code-block"><code>openssl s_client -connect 127.0.0.1:8834 -servername localhost &lt;/dev/null</code><button class="copy-btn" onclick="copyText('openssl s_client -connect 127.0.0.1:8834 -servername localhost &lt;/dev/null',this)">COPY</button></div>
+<div class="command-purpose">Inspect the local Nessus TLS handshake/certificate details.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">53</span><span class="command-title">View Nessus file permissions</span></div>
+<div class="code-block"><code>sudo ls -ld /opt/nessus /opt/nessus/sbin</code><button class="copy-btn" onclick="copyText('sudo ls -ld /opt/nessus /opt/nessus/sbin',this)">COPY</button></div>
+<div class="command-purpose">Inspect installation directory permissions.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">54</span><span class="command-title">View Nessus binary permissions</span></div>
+<div class="code-block"><code>sudo ls -l /opt/nessus/sbin/nessuscli</code><button class="copy-btn" onclick="copyText('sudo ls -l /opt/nessus/sbin/nessuscli',this)">COPY</button></div>
+<div class="command-purpose">Confirm the CLI binary exists and is executable.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">55</span><span class="command-title">Run CLI as root</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli help</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli help',this)">COPY</button></div>
+<div class="command-purpose">Most Nessus CLI administration commands require administrative privileges.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">56</span><span class="command-title">Managed scanner status</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli managed status</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli managed status',this)">COPY</button></div>
+<div class="command-purpose">Show managed scanner status where applicable.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">57</span><span class="command-title">Unlink managed scanner</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli managed unlink</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli managed unlink',this)">COPY</button></div>
+<div class="command-purpose">Unlink a managed scanner; only use when intentionally changing management.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">58</span><span class="command-title">Show managed help</span></div>
+<div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli managed help</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli managed help',this)">COPY</button></div>
+<div class="command-purpose">Show available managed-scanner CLI commands.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">59</span><span class="command-title">Agent status</span></div>
+<div class="code-block"><code>sudo /opt/nessus_agent/sbin/nessuscli agent status</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus_agent/sbin/nessuscli agent status',this)">COPY</button></div>
+<div class="command-purpose">Show local Tenable Agent status when the Agent package is installed.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">60</span><span class="command-title">Agent help</span></div>
+<div class="code-block"><code>sudo /opt/nessus_agent/sbin/nessuscli help</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus_agent/sbin/nessuscli help',this)">COPY</button></div>
+<div class="command-purpose">Display available Tenable Agent CLI commands.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">61</span><span class="command-title">Agent version</span></div>
+<div class="code-block"><code>sudo /opt/nessus_agent/sbin/nessuscli -v</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus_agent/sbin/nessuscli -v',this)">COPY</button></div>
+<div class="command-purpose">Display the installed Tenable Agent version.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">62</span><span class="command-title">Agent unlink</span></div>
+<div class="code-block"><code>sudo /opt/nessus_agent/sbin/nessuscli agent unlink</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus_agent/sbin/nessuscli agent unlink',this)">COPY</button></div>
+<div class="command-purpose">Unlink an agent from its manager when intentionally decommissioning it.</div>
+</div>
+<div class="command-card">
+<div class="command-head"><span class="command-num">63</span><span class="command-title">Agent link</span></div>
+<div class="code-block"><code>sudo /opt/nessus_agent/sbin/nessuscli agent link --key=&lt;KEY&gt; --host=&lt;HOST&gt; --port=&lt;PORT&gt;</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus_agent/sbin/nessuscli agent link --key=&lt;KEY&gt; --host=&lt;HOST&gt; --port=&lt;PORT&gt;',this)">COPY</button></div>
+<div class="command-purpose">Link an agent to an authorized Tenable manager using the provided linking key.</div>
+</div>
+</div>
+
+  <div class="section">
+<div class="section-title">Important Scan Concepts</div>
+
+    <h3>Unauthenticated vs Authenticated Scans</h3>
+    <p>An unauthenticated scan evaluates what can be observed remotely. An authenticated scan can inspect additional local information using authorized credentials. Authenticated visibility can reduce uncertainty around installed software, patches and configuration.</p>
+    <h3>Plugin Families</h3>
+    <p>Plugins are grouped into families. A scan policy can use granular family/plugin selections. This is useful when building targeted assessments rather than running every possible check.</p>
+    <h3>Severity</h3>
+    <p>Nessus findings commonly use severity levels to help prioritize review. Severity is a triage signal, not a substitute for understanding business context, exploitability, exposure and compensating controls.</p>
+    <h3>False Positives & False Negatives</h3>
+    <p>Detection tools can make mistakes or lack sufficient evidence. Always read the plugin output and independently validate critical findings where appropriate.</p>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Policy & Scan Configuration Checklist</div>
+
+    <div class="table-wrap"><table>
+      <tr><th>Area</th><th>What to review</th></tr>
+      <tr><td>Targets</td><td>Only approved IPs, hostnames and ranges.</td></tr>
+      <tr><td>Discovery</td><td>Host discovery, port scanning and service detection settings.</td></tr>
+      <tr><td>Credentials</td><td>Correct account, protocol, permissions and authentication method.</td></tr>
+      <tr><td>Plugins</td><td>Families/plugins match the assessment objective.</td></tr>
+      <tr><td>Performance</td><td>Concurrent checks, network capacity and scan timing.</td></tr>
+      <tr><td>Safety</td><td>Avoid disruptive checks against fragile or production systems without approval.</td></tr>
+      <tr><td>Reporting</td><td>Capture evidence, affected assets, remediation and verification status.</td></tr>
+    </table></div>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Useful Nessus + Nmap Lab Workflow</div>
+
+    <p>Nessus and Nmap answer related but different questions. Nmap is excellent for discovering hosts, ports and services; Nessus adds a large vulnerability-checking/plugin layer.</p>
+    <div class="code-block"><code># 1. Discover/validate services
+nmap -Pn -sV &lt;LAB-IP&gt;
+
+# 2. Open Nessus
+xdg-open https://127.0.0.1:8834
+
+# 3. Create an appropriate scan in the Nessus UI
+# 4. Set only authorized LAB-IP targets
+# 5. Review findings and plugin evidence
+# 6. Fix the vulnerable configuration
+# 7. Run the scan again to verify remediation</code><button class="copy-btn" onclick="copyText('# 1. Discover/validate services\nnmap -Pn -sV <LAB-IP>\n\n# 2. Open Nessus\nxdg-open https://127.0.0.1:8834\n\n# 3. Create an appropriate scan in the Nessus UI\n# 4. Set only authorized LAB-IP targets\n# 5. Review findings and plugin evidence\n# 6. Fix the vulnerable configuration\n# 7. Run the scan again to verify remediation',this)">COPY</button></div>
+    <p><strong>Tip:</strong> Do not assume that every service discovered by Nmap represents a vulnerability. Use the Nessus results to investigate specific security conditions and then validate important findings.</p>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Troubleshooting — Common Problems</div>
+
+    <h3>1. Browser cannot open port 8834</h3>
+    <p>Check the service, listener and logs:</p>
+    <div class="code-block"><code>sudo systemctl status nessusd
+sudo ss -lntp | grep 8834
+sudo journalctl -u nessusd -n 100 --no-pager</code><button class="copy-btn" onclick="copyText('sudo systemctl status nessusd\nsudo ss -lntp | grep 8834\nsudo journalctl -u nessusd -n 100 --no-pager',this)">COPY</button></div>
+    <h3>2. Scan reports fewer services than expected</h3>
+    <p>Check routing, firewall rules, target reachability, discovery settings and whether the selected scan policy is appropriate.</p>
+    <h3>3. Plugin updates are incomplete</h3>
+    <p>Check registration, connectivity, service logs and plugin update state. Avoid interpreting a partially initialized scanner as a complete vulnerability assessment.</p>
+    <h3>4. Authenticated checks are missing</h3>
+    <p>Review credential configuration, permissions, network access and the authentication requirements for the operating system being assessed.</p>
+    <h3>5. Scanner is slow</h3>
+    <p>Large target ranges, high plugin coverage, network latency, rate controls and target resource limits can all affect scan duration.</p>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Nessus CLI Quick Reference</div>
+
+    <p>The current Tenable CLI reference documents commands for help, users, fetching/registration, fixes/settings, certificates, updates, backups, diagnostics and managed scanner operations. The CLI is therefore best treated as an <strong>administration companion</strong> to the Nessus web UI rather than a replacement for scan configuration.</p>
+    <div class="table-wrap"><table>
+      <tr><th>Task</th><th>CLI</th></tr>
+      <tr><td>Help</td><td><code>nessuscli help</code></td></tr>
+      <tr><td>Version</td><td><code>nessuscli -v</code></td></tr>
+      <tr><td>Users</td><td><code>nessuscli lsuser</code></td></tr>
+      <tr><td>Update plugins</td><td><code>nessuscli update --plugins-only</code></td></tr>
+      <tr><td>Backup</td><td><code>nessuscli backup --create &lt;name&gt;</code></td></tr>
+      <tr><td>Diagnostics</td><td><code>nessuscli bug-report-generator</code></td></tr>
+      <tr><td>Settings</td><td><code>nessuscli fix --get &lt;name&gt;</code></td></tr>
+      <tr><td>Interfaces</td><td><code>nessuscli fix --list-interfaces</code></td></tr>
+    </table></div>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Learning Path — Nessus for Cybersecurity</div>
+
+    <ol>
+      <li>Learn TCP/IP, ports and service identification.</li>
+      <li>Practice Nmap on your own vulnerable VM.</li>
+      <li>Install Nessus and understand the scanner architecture.</li>
+      <li>Run a basic scan against an intentionally vulnerable lab.</li>
+      <li>Study plugin output instead of only looking at severity.</li>
+      <li>Configure an authenticated Linux/Windows lab scan.</li>
+      <li>Compare unauthenticated and authenticated results.</li>
+      <li>Practice remediation and verification scans.</li>
+      <li>Learn how vulnerability findings map to CVE/CVSS, affected versions and remediation guidance.</li>
+      <li>Document findings like a professional vulnerability-assessment report.</li>
+    </ol>
+  
+</div>
+
+  <div class="section">
+<div class="section-title">Official Documentation Basis</div>
+
+    <p>This page follows Tenable's current Nessus documentation for the CLI, command-line operations, scan policies and agent commands. Tenable's documentation lists Nessus 10.12.x as the current guide family and the command-line reference was updated in September 2026.</p>
+    <div class="code-block"><code>sudo /opt/nessus/sbin/nessuscli help
+sudo /opt/nessus/sbin/nessuscli -v
+sudo /opt/nessus/sbin/nessuscli update --plugins-only</code><button class="copy-btn" onclick="copyText('sudo /opt/nessus/sbin/nessuscli help\nsudo /opt/nessus/sbin/nessuscli -v\nsudo /opt/nessus/sbin/nessuscli update --plugins-only',this)">COPY</button></div>
+  
+</div>
+
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Nessus is a real vulnerability-assessment platform. Scan only systems, networks and applications you own or are explicitly authorized to assess.
+      <br><br><strong>Safe Learning:</strong>
+      <br>✅ Your own VMware/VirtualBox vulnerable VMs
+      <br>✅ Metasploitable and intentionally vulnerable machines
+      <br>✅ TryHackMe / Hack The Box / VulnHub authorized targets
+      <br>✅ CTFs and controlled security labs
+      <br><br><strong>Avoid:</strong>
+      <br>❌ Scanning random public IP addresses
+      <br>❌ Scanning production systems without written scope
+      <br>❌ Using credentials you are not authorized to use
+      <br>❌ Treating scanner output as permission to exploit a finding
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · NESSUS // DISCOVER. ASSESS. REMEDIATE.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

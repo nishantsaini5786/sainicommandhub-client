@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Arjun — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-beginner{background:rgba(0,255,65,.12);color:var(--neon-green);border:1px solid rgba(0,255,65,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden;animation:cmdIn .5s ease backwards}
+@keyframes cmdIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🎯</div>
+      <div class="hero-info">
+        <div class="hero-name">ARJUN</div>
+        <div class="hero-cat">Web Security · HTTP Parameter Discovery</div>
+        <div class="hero-badges">
+          <span class="badge badge-beginner">Beginner</span>
+          <span class="badge badge-count">20+ Commands</span>
+          <span class="badge badge-tag">Parameter Discovery</span>
+          <span class="badge badge-tag">Hidden Params</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Arjun</strong> is an HTTP parameter discovery suite. It finds <strong>hidden, undocumented query parameters</strong> on a web endpoint — parameters that aren't shown in the URL but that the server still accepts. Finding hidden params often reveals hidden functionality, debug modes, or vulnerabilities like IDOR, SSRF, and SQL injection. Made by <strong>s0md3v</strong> (same creator as XSStrike and Photon).
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Arjun? (Deep Theory)</div>
+    <p>When you visit a URL like <code>example.com/api/user?id=5</code>, the server responds to two parameters: <code>id=5</code>. But what if the server also accepts other parameters — like <code>admin=true</code>, <code>debug=1</code>, <code>test=1</code>, <code>internal=1</code> — that aren't in the docs?</p>
+    <p>This is called <strong>hidden parameter discovery</strong>. Arjun systematically tests thousands of common parameter names against an endpoint and identifies which ones the server actually responds to.</p>
+
+    <h3>Why Hidden Parameters Matter</h3>
+    <ul>
+      <li><strong>Hidden Functionality</strong> — Admin panels, debug modes, internal APIs</li>
+      <li><strong>Authorization Bypass</strong> — Params like <code>is_admin=true</code>, <code>role=admin</code></li>
+      <li><strong>IDOR</strong> — Params like <code>user_id=</code>, <code>account_id=</code> that may not be checked</li>
+      <li><strong>SSRF</strong> — Params like <code>url=</code>, <code>callback=</code>, <code>webhook=</code></li>
+      <li><strong>SQL Injection</strong> — Sometimes hidden params are injectable</li>
+      <li><strong>XSS</strong> — Reflected params not visible in normal requests</li>
+    </ul>
+
+    <h3>How Arjun Works — The Smart Approach</h3>
+    <ol>
+      <li><strong>Baseline</strong> — Sends a request with no params to get baseline response</li>
+      <li><strong>Batch Testing</strong> — Sends 100-256 params at once, checks how many are reflected</li>
+      <li><strong>Binary Search</strong> — If batch found something, divides into halves to narrow down</li>
+      <li><strong>Confirmation</strong> — Tests each discovered param individually to eliminate false positives</li>
+      <li><strong>Reflection Analysis</strong> — Compares response with/without param to determine if it's processed</li>
+    </ol>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Why it's fast:</strong> Arjun doesn't test params one by one. It batches them in groups of 100+, then uses binary search to isolate the real ones. This reduces 10,000 requests to just 50-100.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. Bug Bounty Hunting</h3>
+    <p>Most impactful finding in bug bounty is a <strong>hidden admin parameter</strong>. Arjun finds those.</p>
+
+    <h3>2. API Security Testing</h3>
+    <p>REST APIs often have undocumented params. Arjun reveals them, exposing IDOR and mass assignment flaws.</p>
+
+    <h3>3. Penetration Testing</h3>
+    <p>Before exploiting, you need to know what params exist. Arjun discovers the attack surface.</p>
+
+    <h3>4. Mass Assignment Discovery</h3>
+    <p>Params like <code>role=admin</code>, <code>isPremium=true</code> — often accepted silently. Arjun finds them.</p>
+
+    <h3>5. Debug Mode Detection</h3>
+    <p>Params like <code>debug=1</code>, <code>test=1</code>, <code>internal=1</code> — often left in production code.</p>
+
+    <h3>6. Recon Automation</h3>
+    <p>Combine Arjun with subdomain enumeration and crawling for complete coverage.</p>
+
+    <h3>7. CTF Challenges</h3>
+    <p>Web CTF tasks frequently hide flags behind hidden params — Arjun is the go-to tool.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Method 1: pip (Recommended)</h3>
+    <div class="code-block"><code>pip3 install arjun</code><button class="copy-btn" onclick="copyText('pip3 install arjun',this)">COPY</button></div>
+
+    <h3>Method 2: Kali Linux</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y arjun</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y arjun',this)">COPY</button></div>
+
+    <h3>Method 3: GitHub Clone</h3>
+    <div class="code-block"><code>git clone https://github.com/s0md3v/Arjun.git<br>cd Arjun<br>pip3 install -r requirements.txt<br>python3 arjun.py --help</code><button class="copy-btn" onclick="copyText('git clone https://github.com/s0md3v/Arjun.git && cd Arjun && pip3 install -r requirements.txt',this)">COPY</button></div>
+
+    <h3>Verify</h3>
+    <div class="code-block"><code>arjun --help</code><button class="copy-btn" onclick="copyText('arjun --help',this)">COPY</button></div>
+
+    <div class="info-box">
+      <div class="info-icon">🐍</div>
+      <div class="info-text">
+        <strong>Requirement:</strong> Python 3.6+ installed. Check with <code>python3 --version</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Scan a Single URL (GET)</div>
+      <div class="command-purpose">Send GET requests with hidden params — the most common usage.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api/user</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api/user',this)">COPY</button></div>
+      <div class="command-output">[*] Scanning: https://example.com/api/user
+[*] Probing the target for stability
+[*] Analysing HTTP response
+[*] Testing 25,980 parameter names
+[*] Found 3 parameters: id, admin, debug
+
+[+] Parameters found:
+    id
+    admin
+    debug</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. POST Request Scan</div>
+      <div class="command-purpose">For forms and APIs that use POST — params sent in body.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api/login -m POST</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api/login -m POST',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. JSON Body Scan</div>
+      <div class="command-purpose">For REST APIs that accept JSON — sends <code>{"key": "value"}</code> format.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api/user -m JSON</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api/user -m JSON',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. XML Body Scan</div>
+      <div class="command-block"><code>arjun -u https://example.com/api/user -m XML</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api/user -m XML',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Save Output to File</div>
+      <div class="code-block"><code>arjun -u https://example.com/api/user -oT results.txt</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api/user -oT results.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. JSON Output</div>
+      <div class="command-purpose">Machine-readable output for automation.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api/user -oJ results.json</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api/user -oJ results.json',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. Scan from File (Bulk URLs)</div>
+      <div class="command-purpose">Scan multiple URLs from a text file.</div>
+      <div class="code-block"><code>arjun -i urls.txt -oT results.txt</code><button class="copy-btn" onclick="copyText('arjun -i urls.txt -oT results.txt',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Advanced Scanning</div>
+
+    <div class="command">
+      <div class="command-title">8. Custom Wordlist</div>
+      <div class="command-purpose">Use your own parameter names list for targeted discovery.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api -w params.txt</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api -w params.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. Custom Headers</div>
+      <div class="command-purpose">Send custom headers — useful for authenticated endpoints.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api -H "Authorization: Bearer eyJhbGciOi..."</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api -H \"Authorization: Bearer eyJhbGciOi...\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Multiple Custom Headers</div>
+      <div class="code-block"><code>arjun -u https://example.com/api -H "Authorization: Bearer TOKEN" -H "X-API-Key: KEY123"</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api -H \"Authorization: Bearer TOKEN\" -H \"X-API-Key: KEY123\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">11. Cookie Authentication</div>
+      <div class="command-block"><code>arjun -u https://example.com/api --cookie "session=abc123; user=admin"</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api --cookie \"session=abc123; user=admin\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Include Existing Params</div>
+      <div class="command-purpose">Scan while keeping already-known params.</div>
+      <div class="code-block"><code>arjun -u "https://example.com/api?id=1" </code><button class="copy-btn" onclick="copyText('arjun -u \"https://example.com/api?id=1\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. Delay Between Requests</div>
+      <div class="command-purpose">Throttle requests — avoid rate limiting / WAF blocks.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api -d 2</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api -d 2',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Thread Control</div>
+      <div class="command-purpose">Control concurrency — more threads = faster but noisier.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api -t 20</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api -t 20',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. Timeout Control</div>
+      <div class="code-block"><code>arjun -u https://example.com/api --timeout 15</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api --timeout 15',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Redirect Handling</div>
+      <div class="command-block"><code>arjun -u https://example.com/api --disable-redirects</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api --disable-redirects',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Stealth & Evasion</div>
+
+    <div class="command">
+      <div class="command-title">17. Use Proxy (Burp)</div>
+      <div class="command-purpose">Route Arjun through Burp Suite for inspection.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api --proxy http://127.0.0.1:8080</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api --proxy http://127.0.0.1:8080',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Random User-Agent</div>
+      <div class="command-block"><code>arjun -u https://example.com/api --random-agent</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api --random-agent',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">19. Custom User-Agent</div>
+      <div class="command-block"><code>arjun -u https://example.com/api -H "User-Agent: Mozilla/5.0 (Windows NT 10.0)"</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api -H \"User-Agent: Mozilla/5.0\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Bypass 403 Forbidden</div>
+      <div class="command-purpose">Some endpoints return 403 to Arjun's default UA — try browser UA.</div>
+      <div class="code-block"><code>arjun -u https://example.com/api -H "User-Agent: Mozilla/5.0" --stable</code><button class="copy-btn" onclick="copyText('arjun -u https://example.com/api -H \"User-Agent: Mozilla/5.0\" --stable',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Complete Workflow — Bug Bounty</div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Enumerate Subdomains</div>
+        <div class="wf-desc">Use Amass/Subfinder to find subdomains.<br><div class="code-block" style="margin-top:10px"><code>subfinder -d target.com -o subs.txt</code><button class="copy-btn" onclick="copyText('subfinder -d target.com -o subs.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Filter Live Hosts</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>cat subs.txt | httpx -silent -o live.txt</code><button class="copy-btn" onclick="copyText('cat subs.txt | httpx -silent -o live.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Crawl for URLs</div>
+        <div class="wf-desc">Extract all URLs including query params.<br><div class="code-block" style="margin-top:10px"><code>cat live.txt | katana -silent | grep "?" | tee urls.txt</code><button class="copy-btn" onclick="copyText('cat live.txt | katana -silent | grep \"?\" | tee urls.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Run Arjun</div>
+        <div class="wf-desc">Feed URLs to Arjun for hidden param discovery.<br><div class="code-block" style="margin-top:10px"><code>arjun -i urls.txt -oT params.txt</code><button class="copy-btn" onclick="copyText('arjun -i urls.txt -oT params.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Analyze Findings</div>
+        <div class="wf-desc">Look for interesting params: <code>admin</code>, <code>debug</code>, <code>internal</code>, <code>url</code>, <code>callback</code>.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Test Params Manually</div>
+        <div class="wf-desc">Test each param for IDOR, SSRF, SQLi, XSS using Burp.<br><div class="code-block" style="margin-top:10px"><code>curl "https://target.com/api?admin=true&id=1"</code><button class="copy-btn" onclick="copyText('curl \"https://target.com/api?admin=true&id=1\"',this)">COPY</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>-u</code></td><td>Target URL</td></tr>
+          <tr><td><code>-i</code></td><td>Input file with URLs</td></tr>
+          <tr><td><code>-o</code></td><td>Base output filename</td></tr>
+          <tr><td><code>-oT</code></td><td>Text output</td></tr>
+          <tr><td><code>-oJ</code></td><td>JSON output</td></tr>
+          <tr><td><code>-m</code></td><td>Method: GET, POST, JSON, XML</td></tr>
+          <tr><td><code>-w</code></td><td>Custom wordlist</td></tr>
+          <tr><td><code>-H</code></td><td>Custom header</td></tr>
+          <tr><td><code>--cookie</code></td><td>Custom cookie</td></tr>
+          <tr><td><code>--proxy</code></td><td>HTTP/SOCKS proxy</td></tr>
+          <tr><td><code>-d</code></td><td>Delay between requests (seconds)</td></tr>
+          <tr><td><code>-t</code></td><td>Threads (default: 2)</td></tr>
+          <tr><td><code>--timeout</code></td><td>HTTP timeout (default: 15)</td></tr>
+          <tr><td><code>--random-agent</code></td><td>Random User-Agent</td></tr>
+          <tr><td><code>--stable</code></td><td>Stabilize target before scanning</td></tr>
+          <tr><td><code>--disable-redirects</code></td><td>Don't follow redirects</td></tr>
+          <tr><td><code>--include</code></td><td>Include params in path mode</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Arjun vs Other Tools</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Arjun</strong></td><td>Hidden parameter discovery</td><td>Fast + accurate param scanning</td></tr>
+          <tr><td><strong>x8</strong></td><td>Hidden param discovery</td><td>Faster, Rust-based</td></tr>
+          <tr><td><strong>ParamSpider</strong></td><td>Param extraction from URLs</td><td>Getting known params from crawlers</td></tr>
+          <tr><td><strong>Burp Intruder</strong></td><td>Manual param fuzzing</td><td>Custom attacks, low volume</td></tr>
+          <tr><td><strong>ffuf</strong></td><td>General fuzzer</td><td>Custom param wordlists</td></tr>
+          <tr><td><strong>Parmap</strong></td><td>Param mapping</td><td>Alternate to Arjun</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"No parameters found"</h3>
+    <ul>
+      <li>Endpoint might genuinely have no hidden params</li>
+      <li>Try <code>--stable</code> if responses are inconsistent</li>
+      <li>Add authentication headers if endpoint requires login</li>
+      <li>Try JSON mode if endpoint expects JSON: <code>-m JSON</code></li>
+    </ul>
+
+    <h3>"Request failed / connection error"</h3>
+    <ul>
+      <li>Check if endpoint is alive: <code>curl -v https://example.com/api</code></li>
+      <li>Try with <code>--timeout 30</code></li>
+      <li>Use proxy if behind corporate firewall</li>
+    </ul>
+
+    <h3>"403 Forbidden on every request"</h3>
+    <ul>
+      <li>WAF is blocking Arjun</li>
+      <li>Try <code>--random-agent</code></li>
+      <li>Route through Burp proxy to see what's blocked</li>
+      <li>Use custom User-Agent matching browser</li>
+    </ul>
+
+    <h3>"Too many false positives"</h3>
+    <ul>
+      <li>Increase <code>--stable</code> mode</li>
+      <li>Reduce threads: <code>-t 1</code></li>
+      <li>Add delay: <code>-d 1</code></li>
+      <li>Test each finding manually with curl</li>
+    </ul>
+
+    <h3>"Scan is very slow"</h3>
+    <ul>
+      <li>Increase threads: <code>-t 20</code></li>
+      <li>Reduce wordlist size</li>
+      <li>Use HTTP/2 if supported</li>
+      <li>Run from VPS closer to target</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Arjun sends thousands of requests to a target — this can be logged, rate-limited, or trigger security alerts. Only scan systems you own or have <strong>explicit written permission</strong> to test. Unauthorized scanning is illegal under the CFAA and similar laws worldwide. Bug bounty programs require you to stay within scope — check the program rules before scanning.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+// PROTECTED
+(function(){
+  var t = localStorage.getItem("sch_token");
+  var u = localStorage.getItem("sch_user");
+  if (!t || !u) { window.location.replace("login.html"); return; }
+  try {
+    JSON.parse(u);
+    if (!t.includes(".") || t.split(".").length !== 3) throw 0;
+  } catch(e) {
+    localStorage.removeItem("sch_token");
+    localStorage.removeItem("sch_user");
+    window.location.replace("login.html");
+  }
+})();
+
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(()=>{});
+}
+function initMatrix(){
+  const c=document.getElementById('matrix');if(!c)return;
+  const ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const fs=14;let cols=Math.floor(c.width/fs);let drops=Array(cols).fill(1);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(8,5,13,.03)';ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';ctx.font=fs+'px JetBrains Mono,monospace';
+    for(let i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  addEventListener('resize',()=>{resize();cols=Math.floor(c.width/fs);drops=Array(cols).fill(1)});
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

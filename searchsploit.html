@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>SearchSploit — Exploit-DB Search Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-icon">🔎</div>
+    <div class="hero-info">
+      <div class="hero-name">SEARCHSPLOIT</div>
+      <div class="hero-cat">EXPLOIT-DB OFFLINE SEARCH / VULNERABILITY RESEARCH</div>
+      <div class="hero-badges">
+        <span class="badge badge-advanced">INTERMEDIATE</span>
+        <span class="badge badge-count">66 COMMANDS</span>
+        <span class="badge badge-tag">EXPLOIT RESEARCH</span>
+      </div>
+    </div>
+  </div>
+  <p><strong style="color:var(--secondary)">SearchSploit</strong> is the command-line search utility bundled with Exploit-DB. It searches a local copy of Exploit-DB, making it useful when researching software names, versions, CVEs and vulnerability classes from a Kali terminal—even on segregated or offline assessment networks.</p>
+</div>
+
+<div class="section">
+ <div class="section-title">What is SearchSploit? (Deep Theory)</div>
+ <p>SearchSploit is best understood as a <strong>local exploit-reference search engine</strong>, not as an exploitation framework. It helps you discover public exploit and proof-of-concept references that may relate to software you have identified during an authorized assessment.</p>
+ <h3>Where it fits in a pentest</h3>
+ <ol>
+  <li><strong>Recon:</strong> identify the host, service, product and version.</li>
+  <li><strong>Fingerprinting:</strong> confirm the product/version with reliable evidence rather than trusting one banner.</li>
+  <li><strong>Research:</strong> search SearchSploit using product, version, vulnerability class or CVE.</li>
+  <li><strong>Validation:</strong> compare the candidate entry with vendor advisories, affected-version ranges and your actual target.</li>
+  <li><strong>Controlled testing:</strong> only test an exploit in an explicitly authorized environment and within scope.</li>
+ </ol>
+ <div class="info-box"><div class="info-icon">💡</div><div class="info-text"><strong>Important:</strong> A SearchSploit result is not proof that a target is vulnerable. Public exploit entries can be incomplete, version-specific, unreliable, or unrelated to your exact build. Treat them as research leads that require verification.</div></div>
+ <h3>SearchSploit vs Exploit-DB website</h3>
+ <p>SearchSploit works primarily against a local repository/index. The online Exploit-DB site can provide additional metadata and context that is not represented in the local search output. The <code>-w</code> option can help you locate the online entry.</p>
+</div>
+
+<div class="section">
+ <div class="section-title">Installation & First Checks</div>
+ <h3>Kali Linux</h3>
+ <div class="code-block"><code>sudo apt update && sudo apt install -y exploitdb</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y exploitdb',this)">COPY</button></div>
+ <h3>Verify Installation</h3>
+ <div class="code-block"><code>command -v searchsploit
+searchsploit -h</code><button class="copy-btn" onclick="copyText('command -v searchsploit\nsearchsploit -h',this)">COPY</button></div>
+ <h3>Update the Local Database</h3>
+ <div class="code-block"><code>searchsploit -u</code><button class="copy-btn" onclick="copyText('searchsploit -u',this)">COPY</button></div>
+ <p>On standard Kali installations, SearchSploit is provided by the <code>exploitdb</code> package. Optional Exploit-DB packages can add papers or binary exploits where available.</p>
+</div>
+
+<div class="section">
+ <div class="section-title">SearchSploit Command Library — 66 Commands</div>
+ <p>These are research-oriented command templates. Replace example product/version values with information from an authorized lab target. Commands that copy or examine exploit source should be treated as <strong>source-review steps</strong>, not automatic permission to execute the code.</p>
+ <div class="command">
+      <div class="command-title">1. Show Help</div>
+      <div class="command-purpose">Display all available SearchSploit options.</div>
+      <div class="code-block"><code>searchsploit -h</code><button class="copy-btn" onclick="copyText('searchsploit -h',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">2. Basic Keyword Search</div>
+      <div class="command-purpose">Search the local Exploit-DB index for a software/product name.</div>
+      <div class="code-block"><code>searchsploit apache</code><button class="copy-btn" onclick="copyText('searchsploit apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">3. Search Multiple Terms</div>
+      <div class="command-purpose">Search using multiple terms; SearchSploit combines terms to narrow results.</div>
+      <div class="code-block"><code>searchsploit apache 2.4</code><button class="copy-btn" onclick="copyText('searchsploit apache 2.4',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">4. Search a Specific Version</div>
+      <div class="command-purpose">Look for entries associated with a product and version.</div>
+      <div class="code-block"><code>searchsploit openssl 1.0.2</code><button class="copy-btn" onclick="copyText('searchsploit openssl 1.0.2',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">5. Case-Sensitive Search</div>
+      <div class="command-purpose">Make search matching case-sensitive.</div>
+      <div class="code-block"><code>searchsploit -c Apache</code><button class="copy-btn" onclick="copyText('searchsploit -c Apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">6. Exact Title Match</div>
+      <div class="command-purpose">Require an exact ordered title match; this also implies title-only searching.</div>
+      <div class="code-block"><code>searchsploit -e &quot;Apache HTTP Server 2.4&quot;</code><button class="copy-btn" onclick="copyText('searchsploit -e &quot;Apache HTTP Server 2.4&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">7. Strict Version Search</div>
+      <div class="command-purpose">Reduce fuzzy version matching when you need an exact version value.</div>
+      <div class="code-block"><code>searchsploit -s &quot;Apache 2.4.49&quot;</code><button class="copy-btn" onclick="copyText('searchsploit -s &quot;Apache 2.4.49&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">8. Title-Only Search</div>
+      <div class="command-purpose">Search exploit titles rather than both titles and paths.</div>
+      <div class="code-block"><code>searchsploit -t apache</code><button class="copy-btn" onclick="copyText('searchsploit -t apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">9. Verbose Output</div>
+      <div class="command-purpose">Show more information and allow longer title lines.</div>
+      <div class="code-block"><code>searchsploit -v apache</code><button class="copy-btn" onclick="copyText('searchsploit -v apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">10. Overflow Titles</div>
+      <div class="command-purpose">Allow exploit titles to extend beyond the normal table width.</div>
+      <div class="code-block"><code>searchsploit -o apache</code><button class="copy-btn" onclick="copyText('searchsploit -o apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">11. Show Full Path</div>
+      <div class="command-purpose">Display the local filesystem path associated with an EDB entry.</div>
+      <div class="code-block"><code>searchsploit -p 39446</code><button class="copy-btn" onclick="copyText('searchsploit -p 39446',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">12. Show Exploit-DB URLs</div>
+      <div class="command-purpose">Display online Exploit-DB URLs instead of local paths.</div>
+      <div class="code-block"><code>searchsploit -w apache</code><button class="copy-btn" onclick="copyText('searchsploit -w apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">13. Display EDB IDs</div>
+      <div class="command-purpose">Show the Exploit-DB identifier in search output.</div>
+      <div class="code-block"><code>searchsploit --id apache</code><button class="copy-btn" onclick="copyText('searchsploit --id apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">14. Disable Colors</div>
+      <div class="command-purpose">Remove terminal color highlighting from results.</div>
+      <div class="code-block"><code>searchsploit --disable-colour apache</code><button class="copy-btn" onclick="copyText('searchsploit --disable-colour apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">15. JSON Output</div>
+      <div class="command-purpose">Return search results as JSON for scripting and parsing.</div>
+      <div class="code-block"><code>searchsploit -j apache</code><button class="copy-btn" onclick="copyText('searchsploit -j apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">16. JSON + Pretty Printer</div>
+      <div class="command-purpose">Pipe JSON results into jq for easier terminal inspection.</div>
+      <div class="code-block"><code>searchsploit -j apache | jq</code><button class="copy-btn" onclick="copyText('searchsploit -j apache | jq',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">17. Search by CVE</div>
+      <div class="command-purpose">Search directly using a CVE identifier.</div>
+      <div class="code-block"><code>searchsploit --cve 2021-44228</code><button class="copy-btn" onclick="copyText('searchsploit --cve 2021-44228',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">18. Search a Product CVE</div>
+      <div class="command-purpose">Use a CVE as the primary lookup key during vulnerability research.</div>
+      <div class="code-block"><code>searchsploit --cve CVE-2024-6387</code><button class="copy-btn" onclick="copyText('searchsploit --cve CVE-2024-6387',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">19. Exclude a Term</div>
+      <div class="command-purpose">Remove results matching a term from the result set.</div>
+      <div class="code-block"><code>searchsploit apache --exclude=&quot;dos&quot;</code><button class="copy-btn" onclick="copyText('searchsploit apache --exclude=&quot;dos&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">20. Exclude Multiple Patterns</div>
+      <div class="command-purpose">Use the pipe character to exclude multiple patterns.</div>
+      <div class="code-block"><code>searchsploit apache --exclude=&quot;dos|windows&quot;</code><button class="copy-btn" onclick="copyText('searchsploit apache --exclude=&quot;dos|windows&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">21. Search by Platform</div>
+      <div class="command-purpose">Combine product and platform terms to narrow results.</div>
+      <div class="code-block"><code>searchsploit wordpress linux</code><button class="copy-btn" onclick="copyText('searchsploit wordpress linux',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">22. Search by Service</div>
+      <div class="command-purpose">Search for exploits related to a network service/product.</div>
+      <div class="code-block"><code>searchsploit vsftpd</code><button class="copy-btn" onclick="copyText('searchsploit vsftpd',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">23. Search by Version Range</div>
+      <div class="command-purpose">Use a broader version family when the exact patch version is unknown.</div>
+      <div class="code-block"><code>searchsploit &quot;linux kernel 5&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;linux kernel 5&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">24. Avoid Abbreviations</div>
+      <div class="command-purpose">Use full security terminology to improve search quality.</div>
+      <div class="code-block"><code>searchsploit &quot;SQL Injection&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;SQL Injection&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">25. Search Local Exploit Titles</div>
+      <div class="command-purpose">Search a common server product and inspect the returned categories.</div>
+      <div class="code-block"><code>searchsploit nginx</code><button class="copy-btn" onclick="copyText('searchsploit nginx',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">26. Search Windows Local Entries</div>
+      <div class="command-purpose">Filter by a Windows/local context using multiple terms.</div>
+      <div class="code-block"><code>searchsploit windows local privilege escalation</code><button class="copy-btn" onclick="copyText('searchsploit windows local privilege escalation',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">27. Search Linux Local Entries</div>
+      <div class="command-purpose">Look for Linux local privilege-escalation research entries.</div>
+      <div class="code-block"><code>searchsploit linux local privilege escalation</code><button class="copy-btn" onclick="copyText('searchsploit linux local privilege escalation',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">28. Search Remote Entries</div>
+      <div class="command-purpose">Look for remotely reachable vulnerability research entries.</div>
+      <div class="code-block"><code>searchsploit apache remote</code><button class="copy-btn" onclick="copyText('searchsploit apache remote',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">29. Search Web Applications</div>
+      <div class="command-purpose">Search for a web application/framework by name.</div>
+      <div class="code-block"><code>searchsploit &quot;web application&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;web application&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">30. Search CMS Entries</div>
+      <div class="command-purpose">Search for CMS-specific public exploit references.</div>
+      <div class="code-block"><code>searchsploit wordpress</code><button class="copy-btn" onclick="copyText('searchsploit wordpress',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">31. Search by Database Product</div>
+      <div class="command-purpose">Search for a database product and version family.</div>
+      <div class="code-block"><code>searchsploit mysql 5.7</code><button class="copy-btn" onclick="copyText('searchsploit mysql 5.7',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">32. Search by Network Device</div>
+      <div class="command-purpose">Search for public exploit references for a device/vendor.</div>
+      <div class="code-block"><code>searchsploit cisco ios</code><button class="copy-btn" onclick="copyText('searchsploit cisco ios',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">33. Search by Operating System</div>
+      <div class="command-purpose">Combine OS and product terms for context.</div>
+      <div class="code-block"><code>searchsploit linux apache</code><button class="copy-btn" onclick="copyText('searchsploit linux apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">34. Search for Authentication Issues</div>
+      <div class="command-purpose">Use a vulnerability class as part of the query.</div>
+      <div class="code-block"><code>searchsploit &quot;authentication bypass&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;authentication bypass&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">35. Search for RCE References</div>
+      <div class="command-purpose">Find entries whose titles mention remote code execution.</div>
+      <div class="code-block"><code>searchsploit &quot;remote code execution&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;remote code execution&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">36. Search for LFI References</div>
+      <div class="command-purpose">Search public entries mentioning local file inclusion.</div>
+      <div class="code-block"><code>searchsploit &quot;local file inclusion&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;local file inclusion&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">37. Search for XSS References</div>
+      <div class="command-purpose">Search public entries mentioning cross-site scripting.</div>
+      <div class="code-block"><code>searchsploit &quot;cross site scripting&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;cross site scripting&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">38. Search for SQLi References</div>
+      <div class="command-purpose">Search public entries mentioning SQL injection.</div>
+      <div class="code-block"><code>searchsploit &quot;SQL injection&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;SQL injection&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">39. Search for Buffer Overflow</div>
+      <div class="command-purpose">Search for buffer-overflow related entries.</div>
+      <div class="code-block"><code>searchsploit &quot;buffer overflow&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;buffer overflow&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">40. Search for Privilege Escalation</div>
+      <div class="command-purpose">Search for local privilege-escalation references.</div>
+      <div class="code-block"><code>searchsploit &quot;privilege escalation&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;privilege escalation&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">41. Mirror by EDB-ID</div>
+      <div class="command-purpose">Copy an exploit entry into the current working directory for controlled review.</div>
+      <div class="code-block"><code>searchsploit -m 39446</code><button class="copy-btn" onclick="copyText('searchsploit -m 39446',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">42. Examine by EDB-ID</div>
+      <div class="command-purpose">Open an exploit entry using the configured pager for source review.</div>
+      <div class="code-block"><code>searchsploit -x 39446</code><button class="copy-btn" onclick="copyText('searchsploit -x 39446',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">43. Find the Path First</div>
+      <div class="command-purpose">Resolve an EDB-ID to its local path before opening or copying it.</div>
+      <div class="code-block"><code>searchsploit -p 39446</code><button class="copy-btn" onclick="copyText('searchsploit -p 39446',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">44. Open the Online Entry</div>
+      <div class="command-purpose">Generate the corresponding Exploit-DB web URL for metadata/context.</div>
+      <div class="code-block"><code>searchsploit -w 39446</code><button class="copy-btn" onclick="copyText('searchsploit -w 39446',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">45. Update the Local Database</div>
+      <div class="command-purpose">Update SearchSploit&#x27;s local Exploit-DB data.</div>
+      <div class="code-block"><code>searchsploit -u</code><button class="copy-btn" onclick="copyText('searchsploit -u',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">46. Search Nmap XML</div>
+      <div class="command-purpose">Check Nmap XML service/version results against SearchSploit.</div>
+      <div class="code-block"><code>searchsploit --nmap scan.xml</code><button class="copy-btn" onclick="copyText('searchsploit --nmap scan.xml',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">47. Nmap XML + Verbose</div>
+      <div class="command-purpose">Use verbose mode with Nmap XML correlation for broader matching.</div>
+      <div class="code-block"><code>searchsploit --nmap scan.xml -v</code><button class="copy-btn" onclick="copyText('searchsploit --nmap scan.xml -v',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">48. Create Nmap XML for SearchSploit</div>
+      <div class="command-purpose">Generate XML service/version output that SearchSploit can consume.</div>
+      <div class="code-block"><code>nmap -sV -oX scan.xml TARGET</code><button class="copy-btn" onclick="copyText('nmap -sV -oX scan.xml TARGET',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">49. Nmap → SearchSploit Workflow</div>
+      <div class="command-purpose">Correlate discovered service versions with public exploit references.</div>
+      <div class="code-block"><code>nmap -sV -oX scan.xml TARGET &amp;&amp; searchsploit --nmap scan.xml</code><button class="copy-btn" onclick="copyText('nmap -sV -oX scan.xml TARGET &amp;&amp; searchsploit --nmap scan.xml',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">50. Save JSON Results</div>
+      <div class="command-purpose">Redirect machine-readable results to a file.</div>
+      <div class="code-block"><code>searchsploit -j apache &gt; results.json</code><button class="copy-btn" onclick="copyText('searchsploit -j apache &gt; results.json',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">51. Search and Filter with jq</div>
+      <div class="command-purpose">Filter JSON fields after a SearchSploit query.</div>
+      <div class="code-block"><code>searchsploit -j apache | jq</code><button class="copy-btn" onclick="copyText('searchsploit -j apache | jq',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">52. Count JSON Results</div>
+      <div class="command-purpose">Count returned JSON records during local analysis.</div>
+      <div class="code-block"><code>searchsploit -j apache | jq &#x27;length&#x27;</code><button class="copy-btn" onclick="copyText('searchsploit -j apache | jq \'length\'',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">53. Search Then Inspect</div>
+      <div class="command-purpose">Search first, then inspect a specific EDB-ID from the results.</div>
+      <div class="code-block"><code>searchsploit apache
+searchsploit -x EDB-ID</code><button class="copy-btn" onclick="copyText('searchsploit apache
+searchsploit -x EDB-ID',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">54. Search Then Mirror</div>
+      <div class="command-purpose">Search first, then copy a selected entry into the lab workspace.</div>
+      <div class="code-block"><code>searchsploit apache
+searchsploit -m EDB-ID</code><button class="copy-btn" onclick="copyText('searchsploit apache
+searchsploit -m EDB-ID',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">55. Compare Broad vs Exact</div>
+      <div class="command-purpose">Use broad search first, then exact matching to reduce false positives.</div>
+      <div class="code-block"><code>searchsploit apache 2.4
+searchsploit -e &quot;Apache HTTP Server 2.4&quot;</code><button class="copy-btn" onclick="copyText('searchsploit apache 2.4
+searchsploit -e &quot;Apache HTTP Server 2.4&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">56. Search Without Path Noise</div>
+      <div class="command-purpose">Title-only mode can reduce false positives from directory/path terms.</div>
+      <div class="code-block"><code>searchsploit -t &quot;2.4.49&quot;</code><button class="copy-btn" onclick="copyText('searchsploit -t &quot;2.4.49&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">57. Case + Title Search</div>
+      <div class="command-purpose">Combine case-sensitive and title-only matching.</div>
+      <div class="code-block"><code>searchsploit -c -t Apache</code><button class="copy-btn" onclick="copyText('searchsploit -c -t Apache',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">58. Exact + URL Output</div>
+      <div class="command-purpose">Show exact title matches and corresponding online references.</div>
+      <div class="code-block"><code>searchsploit -e -w &quot;Apache HTTP Server 2.4&quot;</code><button class="copy-btn" onclick="copyText('searchsploit -e -w &quot;Apache HTTP Server 2.4&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">59. Verbose CVE Search</div>
+      <div class="command-purpose">Show expanded output for a CVE lookup.</div>
+      <div class="code-block"><code>searchsploit --cve CVE-2021-44228 -v</code><button class="copy-btn" onclick="copyText('searchsploit --cve CVE-2021-44228 -v',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">60. Exclude PoC/DoS Results</div>
+      <div class="command-purpose">Exclude common unwanted result categories while researching.</div>
+      <div class="code-block"><code>searchsploit linux kernel 3.2 --exclude=&quot;(PoC)|/dos/&quot;</code><button class="copy-btn" onclick="copyText('searchsploit linux kernel 3.2 --exclude=&quot;(PoC)|/dos/&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">61. Search a Version Family</div>
+      <div class="command-purpose">Use a family-level search when vendor/version naming varies.</div>
+      <div class="code-block"><code>searchsploit &quot;OpenSSH 8&quot;</code><button class="copy-btn" onclick="copyText('searchsploit &quot;OpenSSH 8&quot;',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">62. Search a Vendor + Product</div>
+      <div class="command-purpose">Combine vendor and product names to improve relevance.</div>
+      <div class="code-block"><code>searchsploit microsoft exchange</code><button class="copy-btn" onclick="copyText('searchsploit microsoft exchange',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">63. Search a Software Stack</div>
+      <div class="command-purpose">Use several terms to model a discovered stack before selecting a candidate.</div>
+      <div class="code-block"><code>searchsploit apache php wordpress</code><button class="copy-btn" onclick="copyText('searchsploit apache php wordpress',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">64. Export a Research Result</div>
+      <div class="command-purpose">Create a text artifact for later note-taking.</div>
+      <div class="code-block"><code>searchsploit nginx &gt; nginx-search.txt</code><button class="copy-btn" onclick="copyText('searchsploit nginx &gt; nginx-search.txt',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">65. Search from a Lab Directory</div>
+      <div class="command-purpose">Run searches from your project directory; SearchSploit uses its configured local index.</div>
+      <div class="code-block"><code>cd ~/lab &amp;&amp; searchsploit nginx</code><button class="copy-btn" onclick="copyText('cd ~/lab &amp;&amp; searchsploit nginx',this)">COPY</button></div>
+    </div>
+<div class="command">
+      <div class="command-title">66. Verify the Local Installation</div>
+      <div class="command-purpose">Confirm SearchSploit is available and show its help output.</div>
+      <div class="code-block"><code>command -v searchsploit &amp;&amp; searchsploit -h</code><button class="copy-btn" onclick="copyText('command -v searchsploit &amp;&amp; searchsploit -h',this)">COPY</button></div>
+    </div>
+</div>
+
+<div class="section">
+ <div class="section-title">Understanding Search Matching</div>
+ <h3>AND matching</h3>
+ <p>SearchSploit generally uses multiple supplied terms together to narrow results rather than treating them as an OR query. Adding more terms can therefore reduce the result set.</p>
+ <h3>Broad first, precise second</h3>
+ <p>If a highly specific query returns nothing, start with a broader product/version family and then narrow using <code>-t</code>, <code>-e</code>, <code>-s</code>, exclusions or a CVE.</p>
+ <h3>Why paths can create false positives</h3>
+ <p>Default searching can consider both exploit titles and file paths. A numeric version or platform name may therefore appear in a path even when it is not the actual affected product/version. Title-only searching can reduce that noise.</p>
+ <h3>Search terminology matters</h3>
+ <p>Use descriptive security terms instead of relying on abbreviations. For example, searching for <code>SQL Injection</code> can be more useful than only searching for <code>SQLi</code>.</p>
+</div>
+
+<div class="section">
+ <div class="section-title">Nmap → SearchSploit Workflow</div>
+ <p>A common authorized workflow is to first collect service/version information with Nmap and then correlate those versions against the local Exploit-DB index.</p>
+ <div class="code-block"><code>nmap -sV -oX scan.xml TARGET
+searchsploit --nmap scan.xml</code><button class="copy-btn" onclick="copyText('nmap -sV -oX scan.xml TARGET\nsearchsploit --nmap scan.xml',this)">COPY</button></div>
+ <ol>
+  <li>Scan only the authorized target.</li>
+  <li>Review the service/version output manually.</li>
+  <li>Feed the XML file to SearchSploit.</li>
+  <li>Investigate candidate EDB-IDs.</li>
+  <li>Verify the exact affected version/build.</li>
+  <li>Check the original advisory and exploit source before any controlled validation.</li>
+ </ol>
+</div>
+
+<div class="section">
+ <div class="section-title">EDB-ID → Source Review Workflow</div>
+ <div class="code-block"><code>searchsploit -p EDB-ID
+searchsploit -x EDB-ID
+searchsploit -w EDB-ID</code><button class="copy-btn" onclick="copyText('searchsploit -p EDB-ID\nsearchsploit -x EDB-ID\nsearchsploit -w EDB-ID',this)">COPY</button></div>
+ <p><strong>-p</strong> helps locate the local file, <strong>-x</strong> opens the entry for examination, and <strong>-w</strong> exposes the online Exploit-DB reference. The review step should focus on affected versions, prerequisites, platform, exploit type, reliability and whether the entry actually matches your target.</p>
+</div>
+
+<div class="section">
+ <div class="section-title">SearchSploit vs CVE Research</div>
+ <table><thead><tr><th>Research Need</th><th>Useful SearchSploit Approach</th></tr></thead><tbody>
+ <tr><td>Known CVE</td><td><code>--cve CVE-YYYY-NNNN</code></td></tr>
+ <tr><td>Known product</td><td><code>searchsploit PRODUCT</code></td></tr>
+ <tr><td>Known version</td><td><code>searchsploit PRODUCT VERSION</code></td></tr>
+ <tr><td>Too many results</td><td><code>-t</code>, <code>-e</code>, <code>-s</code> or <code>--exclude</code></td></tr>
+ <tr><td>Need online reference</td><td><code>-w</code></td></tr>
+ <tr><td>Need local source path</td><td><code>-p</code></td></tr>
+ <tr><td>Need machine-readable output</td><td><code>-j</code></td></tr>
+ <tr><td>Need Nmap correlation</td><td><code>--nmap scan.xml</code></td></tr>
+</tbody></table>
+</div>
+
+<div class="section">
+ <div class="section-title">Common Troubleshooting</div>
+ <h3>“searchsploit: command not found”</h3>
+ <p>Install the Kali package and verify that the executable is in PATH.</p>
+ <div class="code-block"><code>sudo apt update
+sudo apt install -y exploitdb
+command -v searchsploit</code><button class="copy-btn" onclick="copyText('sudo apt update\nsudo apt install -y exploitdb\ncommand -v searchsploit',this)">COPY</button></div>
+ <h3>Results look unrelated</h3>
+ <p>Try title-only searching, exact matching, a broader version family, or exclusions. Numeric terms can match file paths and produce noise.</p>
+ <h3>No results for a known product</h3>
+ <p>Try the vendor/product name separately, remove an over-specific version, and then narrow the results. Also verify whether the local Exploit-DB data is current.</p>
+ <h3>Nmap correlation does not work</h3>
+ <p>Make sure the XML file exists and was created with service/version information. SearchSploit's Nmap mode expects Nmap XML input.</p>
+ <h3>Database appears stale</h3>
+ <div class="code-block"><code>searchsploit -u</code><button class="copy-btn" onclick="copyText('searchsploit -u',this)">COPY</button></div>
+</div>
+
+<div class="section">
+ <div class="section-title">Practical Lab Exercise</div>
+ <p><strong>Goal:</strong> practice the full research workflow without attacking a real-world system.</p>
+ <ol>
+  <li>Start a vulnerable VM such as a deliberately vulnerable training machine.</li>
+  <li>Identify its services and versions with Nmap.</li>
+  <li>Export service/version results to XML.</li>
+  <li>Run <code>searchsploit --nmap</code> against that XML.</li>
+  <li>Pick one candidate EDB-ID and inspect it with <code>-p</code> and <code>-x</code>.</li>
+  <li>Use <code>-w</code> to compare the local result with its online Exploit-DB entry.</li>
+  <li>Document why the entry does or does not match the exact software build.</li>
+ </ol>
+ <div class="info-box"><div class="info-icon">🧠</div><div class="info-text"><strong>Learning objective:</strong> The important skill is not memorizing exploit IDs. It is connecting <strong>service → exact version → vulnerability → public reference → validation decision</strong>.</div></div>
+</div>
+
+<div class="section">
+ <div class="section-title">Important Concepts to Remember</div>
+ <ul>
+  <li><strong>EDB-ID:</strong> Exploit-DB's identifier for an entry.</li>
+  <li><strong>CVE:</strong> A standardized vulnerability identifier; an EDB entry and a CVE are not the same thing.</li>
+  <li><strong>PoC:</strong> Proof-of-concept code or demonstration; availability does not guarantee reliability or applicability.</li>
+  <li><strong>Local index:</strong> The data SearchSploit searches locally.</li>
+  <li><strong>Nmap XML:</strong> Structured service/version output that SearchSploit can correlate.</li>
+  <li><strong>Mirror:</strong> Copy an exploit entry to the current working directory for local review.</li>
+  <li><strong>Examine:</strong> Open an entry using the configured pager.</li>
+ </ul>
+</div>
+
+<div class="section">
+ <div class="section-title">Official Documentation Check</div>
+ <p>For exact option behavior, use the SearchSploit manual and the help output from the version installed on your Kali machine.</p>
+ <div class="code-block"><code>searchsploit -h
+searchsploit -u</code><button class="copy-btn" onclick="copyText('searchsploit -h\nsearchsploit -u',this)">COPY</button></div>
+</div>
+
+<div class="warning">
+ <div class="warning-icon">⚠</div>
+ <div class="warning-text">
+  <strong>AUTHORIZED USE ONLY.</strong> SearchSploit provides references to public exploit code. Finding an exploit does not authorize testing or exploitation of a system.
+  <br><br><strong>Safe Learning:</strong>
+  <br>✅ Your own Kali/VMware/VirtualBox lab
+  <br>✅ TryHackMe, Hack The Box, VulnHub and other authorized environments
+  <br>✅ CTFs and explicitly scoped penetration tests
+  <br><br><strong>Always verify:</strong>
+  <br>• exact product and version
+  <br>• affected-version range
+  <br>• exploit prerequisites
+  <br>• source/advisory credibility
+  <br>• written scope before testing
+ </div>
+</div>
+
+<div class="footer">SAINICOMMANDHUB · SEARCHSPLOIT // FIND REFERENCES. VERIFY BEFORE YOU TEST.</div>
+</div>
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

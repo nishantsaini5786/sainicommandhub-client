@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Masscan — High-Speed Port Scanning Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+<div class="hero"><div class="hero-top"><div class="hero-icon">🔌</div><div class="hero-info"><div class="hero-name">NETCAT / NCAT</div><div class="hero-cat">NETWORK CONNECTIONS / TCP • UDP • SOCKET DEBUGGING</div><div class="hero-badges"><span class="badge badge-advanced">INTERMEDIATE</span><span class="badge badge-count">60 COMMANDS</span><span class="badge badge-tag">NETWORKING</span></div></div></div><p><strong style="color:var(--secondary)">Netcat</strong> is a command-line networking utility for reading and writing data across network connections. On Kali, <strong>nc</strong> may refer to a Netcat implementation while <strong>Ncat</strong> is the modern Nmap Project implementation. Ncat supports TCP/UDP, IPv4/IPv6, TLS, proxying, connection brokering, access controls and other networking features. Exact flags can differ between Netcat variants, so always check <code>nc -h</code> or <code>ncat --help</code> on the installed system.</p></div>
+
+<div class="section"><div class="section-title">What is Netcat? (Deep Theory)</div>
+<p>Netcat works close to the socket layer: one side can <strong>connect</strong> to a listening service, while another side can <strong>listen</strong> for incoming connections. Because stdin/stdout can be connected to a socket, it becomes useful for protocol testing, service troubleshooting, simple data transfer, lab communication and security-training exercises.</p>
+<div class="info-grid"><div class="info-card"><h3>CONNECT MODE</h3><p>Acts as a client and initiates a connection to a host and port.</p></div><div class="info-card"><h3>LISTEN MODE</h3><p>Acts as a simple server and waits for an incoming connection.</p></div><div class="info-card"><h3>TCP / UDP</h3><p>TCP provides a connection-oriented stream; UDP sends datagrams without the same connection semantics.</p></div><div class="info-card"><h3>STDIN / STDOUT</h3><p>Input and output can be redirected, making Netcat useful in Unix pipelines.</p></div></div>
+<h3>Netcat vs Ncat</h3><p><strong>Netcat</strong> is a family of implementations, so options vary between traditional, OpenBSD and other versions. <strong>Ncat</strong>, maintained by the Nmap Project, is a separate modern implementation with documented support for SSL/TLS, IPv6, proxying, brokering, access control and more. The official Ncat guide describes connect and listen as its two primary modes. citeturn0search0turn0search1</p>
+<div class="code-block"><code># Identify what your Kali system provides
+command -v nc
+command -v ncat
+nc -h
+ncat --help</code><button class="copy-btn" onclick="copyText(`command -v nc
+command -v ncat
+nc -h
+ncat --help`,this)">COPY</button></div>
+</div>
+
+<div class="section"><div class="section-title">Core Workflow</div><div class="workflow"><div class="step"><b>01</b><span>IDENTIFY</span><small>Check nc/ncat variant</small></div><div class="step"><b>02</b><span>CONNECT</span><small>Choose host + port</small></div><div class="step"><b>03</b><span>TEST</span><small>Use verbose/timeout options</small></div><div class="step"><b>04</b><span>INTERACT</span><small>Speak the protocol manually</small></div><div class="step"><b>05</b><span>CAPTURE</span><small>Redirect output when needed</small></div></div><p class="muted">For a simple lab, start one terminal with a listener and another with a client. This lets you understand sockets without touching an external system.</p></div>
+
+<div class="section"><div class="section-title">Installation & First Checks</div><p>On Kali, Ncat is distributed with the Nmap ecosystem. Your system may also provide a separate <code>nc</code> implementation. Use the package manager to inspect or install the implementation available in your repositories.</p><div class="code-block"><code>sudo apt update
+sudo apt install netcat-openbsd ncat
+command -v nc
+command -v ncat
+nc -h
+ncat --version</code><button class="copy-btn" onclick="copyText(`sudo apt update
+sudo apt install netcat-openbsd ncat
+command -v nc
+command -v ncat
+nc -h
+ncat --version`,this)">COPY</button></div><p class="muted">If a package name is unavailable in your configured repository, search with <code>apt search netcat</code> and use the implementation your lab requires.</p></div>
+
+<div class="section"><div class="section-title">Netcat Command Library — 60 Commands</div><p class="muted">Examples use private lab addresses such as <code>192.168.56.10</code>. Replace them only with systems you own or are explicitly authorized to test.</p><div class="command"><div class="command-title">1. Check Netcat Help</div><div class="command-purpose">See which Netcat implementation and options are installed.</div><div class="code-block"><code>nc -h</code><button class="copy-btn" onclick="copyText(`nc -h`,this)">COPY</button></div></div><div class="command"><div class="command-title">2. Check Ncat Version</div><div class="command-purpose">Show the Ncat version when your Kali package provides Ncat.</div><div class="code-block"><code>ncat --version</code><button class="copy-btn" onclick="copyText(`ncat --version`,this)">COPY</button></div></div><div class="command"><div class="command-title">3. Check Netcat Binary</div><div class="command-purpose">Locate the executable selected by your shell.</div><div class="code-block"><code>command -v nc</code><button class="copy-btn" onclick="copyText(`command -v nc`,this)">COPY</button></div></div><div class="command"><div class="command-title">4. Identify the Package</div><div class="command-purpose">Check which Debian package owns the nc binary.</div><div class="code-block"><code>dpkg -S &quot;$(command -v nc)&quot;</code><button class="copy-btn" onclick="copyText(`dpkg -S &quot;$(command -v nc)&quot;`,this)">COPY</button></div></div><div class="command"><div class="command-title">5. TCP Client Connection</div><div class="command-purpose">Connect to an authorized TCP service on port 80.</div><div class="code-block"><code>nc -v 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`nc -v 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">6. Ncat TCP Client</div><div class="command-purpose">Use Ncat explicitly to connect to a lab service.</div><div class="code-block"><code>ncat -v 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat -v 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">7. TCP Listener</div><div class="command-purpose">Create a simple TCP listener on a lab port.</div><div class="code-block"><code>nc -lvnp 9001</code><button class="copy-btn" onclick="copyText(`nc -lvnp 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">8. Ncat Listener</div><div class="command-purpose">Start Ncat in listen mode on TCP port 9001.</div><div class="code-block"><code>ncat -lv 9001</code><button class="copy-btn" onclick="copyText(`ncat -lv 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">9. Verbose Connection</div><div class="command-purpose">Add connection details while testing a service.</div><div class="code-block"><code>nc -v 192.168.56.10 22</code><button class="copy-btn" onclick="copyText(`nc -v 192.168.56.10 22`,this)">COPY</button></div></div><div class="command"><div class="command-title">10. Numeric Mode</div><div class="command-purpose">Avoid DNS lookups when troubleshooting a connection.</div><div class="code-block"><code>nc -vn 192.168.56.10 22</code><button class="copy-btn" onclick="copyText(`nc -vn 192.168.56.10 22`,this)">COPY</button></div></div><div class="command"><div class="command-title">11. Short Timeout</div><div class="command-purpose">Fail quickly if an authorized host/port does not respond.</div><div class="code-block"><code>nc -vn -w 3 192.168.56.10 22</code><button class="copy-btn" onclick="copyText(`nc -vn -w 3 192.168.56.10 22`,this)">COPY</button></div></div><div class="command"><div class="command-title">12. Zero-I/O Port Check</div><div class="command-purpose">Check TCP connection status without sending application data.</div><div class="code-block"><code>nc -zv -w 2 192.168.56.10 22</code><button class="copy-btn" onclick="copyText(`nc -zv -w 2 192.168.56.10 22`,this)">COPY</button></div></div><div class="command"><div class="command-title">13. Check Several Ports</div><div class="command-purpose">Test a small explicit set of TCP ports on a lab host.</div><div class="code-block"><code>nc -zv 192.168.56.10 22 80 443</code><button class="copy-btn" onclick="copyText(`nc -zv 192.168.56.10 22 80 443`,this)">COPY</button></div></div><div class="command"><div class="command-title">14. Port Range Check</div><div class="command-purpose">Check a controlled TCP port range.</div><div class="code-block"><code>nc -zv 192.168.56.10 20-25</code><button class="copy-btn" onclick="copyText(`nc -zv 192.168.56.10 20-25`,this)">COPY</button></div></div><div class="command"><div class="command-title">15. Connect to HTTP</div><div class="command-purpose">Open a raw connection to an HTTP service for protocol study.</div><div class="code-block"><code>nc 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`nc 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">16. Send an HTTP Request</div><div class="command-purpose">Pipe a minimal HTTP request into a lab web service.</div><div class="code-block"><code>printf &quot;GET / HTTP/1.0\r\nHost: lab.local\r\n\r\n&quot; | nc 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`printf &quot;GET / HTTP/1.0\\r\\nHost: lab.local\\r\\n\\r\\n&quot; | nc 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">17. Save Received Data</div><div class="command-purpose">Redirect data received from a controlled service into a file.</div><div class="code-block"><code>nc 192.168.56.10 9001 &gt; received.txt</code><button class="copy-btn" onclick="copyText(`nc 192.168.56.10 9001 &gt; received.txt`,this)">COPY</button></div></div><div class="command"><div class="command-title">18. Send a Text File</div><div class="command-purpose">Send a local text file to an authorized listener.</div><div class="code-block"><code>nc 192.168.56.10 9001 &lt; message.txt</code><button class="copy-btn" onclick="copyText(`nc 192.168.56.10 9001 &lt; message.txt`,this)">COPY</button></div></div><div class="command"><div class="command-title">19. Receive a File</div><div class="command-purpose">Listen and write incoming bytes to a file in a lab.</div><div class="code-block"><code>nc -lvnp 9001 &gt; received.txt</code><button class="copy-btn" onclick="copyText(`nc -lvnp 9001 &gt; received.txt`,this)">COPY</button></div></div><div class="command"><div class="command-title">20. Send and Receive Interactively</div><div class="command-purpose">Use Netcat as a simple bidirectional text channel.</div><div class="code-block"><code>nc 192.168.56.10 9001</code><button class="copy-btn" onclick="copyText(`nc 192.168.56.10 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">21. UDP Client</div><div class="command-purpose">Send UDP traffic to an authorized lab service.</div><div class="code-block"><code>nc -u -v 192.168.56.10 9999</code><button class="copy-btn" onclick="copyText(`nc -u -v 192.168.56.10 9999`,this)">COPY</button></div></div><div class="command"><div class="command-title">22. UDP Listener</div><div class="command-purpose">Listen for UDP datagrams on a lab port.</div><div class="code-block"><code>nc -u -lvnp 9999</code><button class="copy-btn" onclick="copyText(`nc -u -lvnp 9999`,this)">COPY</button></div></div><div class="command"><div class="command-title">23. UDP Timeout</div><div class="command-purpose">Use a timeout for a UDP diagnostic test.</div><div class="code-block"><code>nc -u -v -w 3 192.168.56.10 9999</code><button class="copy-btn" onclick="copyText(`nc -u -v -w 3 192.168.56.10 9999`,this)">COPY</button></div></div><div class="command"><div class="command-title">24. UDP Message</div><div class="command-purpose">Send one UDP message for application testing.</div><div class="code-block"><code>printf &quot;hello\n&quot; | nc -u -w 2 192.168.56.10 9999</code><button class="copy-btn" onclick="copyText(`printf &quot;hello\\n&quot; | nc -u -w 2 192.168.56.10 9999`,this)">COPY</button></div></div><div class="command"><div class="command-title">25. IPv4 Only (Ncat)</div><div class="command-purpose">Force Ncat to use IPv4.</div><div class="code-block"><code>ncat -4 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat -4 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">26. IPv6 Only (Ncat)</div><div class="command-purpose">Connect to an authorized IPv6 service.</div><div class="code-block"><code>ncat -6 2001:db8::10 80</code><button class="copy-btn" onclick="copyText(`ncat -6 2001:db8::10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">27. SSL/TLS Client</div><div class="command-purpose">Connect to a TLS-enabled service with Ncat.</div><div class="code-block"><code>ncat --ssl 192.168.56.10 443</code><button class="copy-btn" onclick="copyText(`ncat --ssl 192.168.56.10 443`,this)">COPY</button></div></div><div class="command"><div class="command-title">28. Verify TLS Certificate</div><div class="command-purpose">Require certificate verification when using Ncat TLS.</div><div class="code-block"><code>ncat --ssl --ssl-verify example.lab 443</code><button class="copy-btn" onclick="copyText(`ncat --ssl --ssl-verify example.lab 443`,this)">COPY</button></div></div><div class="command"><div class="command-title">29. TLS with SNI</div><div class="command-purpose">Send a specific server name during a TLS connection.</div><div class="code-block"><code>ncat --ssl --ssl-servername example.lab example.lab 443</code><button class="copy-btn" onclick="copyText(`ncat --ssl --ssl-servername example.lab example.lab 443`,this)">COPY</button></div></div><div class="command"><div class="command-title">30. TLS Listener</div><div class="command-purpose">Create a TLS listener with a lab certificate and key.</div><div class="code-block"><code>ncat --ssl --ssl-cert server.pem --ssl-key server.key -l 9443</code><button class="copy-btn" onclick="copyText(`ncat --ssl --ssl-cert server.pem --ssl-key server.key -l 9443`,this)">COPY</button></div></div><div class="command"><div class="command-title">31. Ncat Output Log</div><div class="command-purpose">Save Ncat session output to a file.</div><div class="code-block"><code>ncat -o session.log 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat -o session.log 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">32. Ncat Hex Dump</div><div class="command-purpose">Write transmitted/received session bytes as a hex dump.</div><div class="code-block"><code>ncat -x session.hex 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat -x session.hex 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">33. Ncat Send Only</div><div class="command-purpose">Send stdin without processing received data.</div><div class="code-block"><code>printf &quot;test message\n&quot; | ncat --send-only 192.168.56.10 9001</code><button class="copy-btn" onclick="copyText(`printf &quot;test message\\n&quot; | ncat --send-only 192.168.56.10 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">34. Ncat Receive Only</div><div class="command-purpose">Receive data without sending application data.</div><div class="code-block"><code>ncat --recv-only 192.168.56.10 9001</code><button class="copy-btn" onclick="copyText(`ncat --recv-only 192.168.56.10 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">35. Ncat Keep Open</div><div class="command-purpose">Keep a Ncat listener available for multiple connections.</div><div class="code-block"><code>ncat -l -k 9001</code><button class="copy-btn" onclick="copyText(`ncat -l -k 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">36. Limit Connections</div><div class="command-purpose">Limit simultaneous Ncat listener connections.</div><div class="code-block"><code>ncat -l -k --max-conns 3 9001</code><button class="copy-btn" onclick="copyText(`ncat -l -k --max-conns 3 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">37. Allow One Lab Host</div><div class="command-purpose">Restrict Ncat connections to a specific authorized source.</div><div class="code-block"><code>ncat -l --allow 192.168.56.20 9001</code><button class="copy-btn" onclick="copyText(`ncat -l --allow 192.168.56.20 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">38. Allow a Lab Subnet</div><div class="command-purpose">Restrict Ncat access to a private lab CIDR.</div><div class="code-block"><code>ncat -l --allow 192.168.56.0/24 9001</code><button class="copy-btn" onclick="copyText(`ncat -l --allow 192.168.56.0/24 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">39. Deny a Host</div><div class="command-purpose">Block a specific source from an Ncat listener.</div><div class="code-block"><code>ncat -l --deny 192.168.56.30 9001</code><button class="copy-btn" onclick="copyText(`ncat -l --deny 192.168.56.30 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">40. Chat Server</div><div class="command-purpose">Create a simple multi-client Ncat chat service in a lab.</div><div class="code-block"><code>ncat --chat -l 9001</code><button class="copy-btn" onclick="copyText(`ncat --chat -l 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">41. Broker Connections</div><div class="command-purpose">Broker multiple Ncat clients through one listener.</div><div class="code-block"><code>ncat --broker -l 9001</code><button class="copy-btn" onclick="copyText(`ncat --broker -l 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">42. HTTP Proxy Listener</div><div class="command-purpose">Create a local HTTP proxy for controlled testing.</div><div class="code-block"><code>ncat -l --proxy-type http localhost 8888</code><button class="copy-btn" onclick="copyText(`ncat -l --proxy-type http localhost 8888`,this)">COPY</button></div></div><div class="command"><div class="command-title">43. SOCKS5 Proxy Client</div><div class="command-purpose">Connect through an authorized SOCKS5 proxy.</div><div class="code-block"><code>ncat --proxy proxy.lab --proxy-type socks5 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat --proxy proxy.lab --proxy-type socks5 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">44. HTTP Proxy Client</div><div class="command-purpose">Connect through an authorized HTTP proxy.</div><div class="code-block"><code>ncat --proxy proxy.lab --proxy-type http 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat --proxy proxy.lab --proxy-type http 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">45. Unix Socket Client</div><div class="command-purpose">Connect to a local Unix-domain socket with Ncat.</div><div class="code-block"><code>ncat -U /tmp/lab.sock</code><button class="copy-btn" onclick="copyText(`ncat -U /tmp/lab.sock`,this)">COPY</button></div></div><div class="command"><div class="command-title">46. Unix Socket Listener</div><div class="command-purpose">Listen on a local Unix-domain socket.</div><div class="code-block"><code>ncat -l -U /tmp/lab.sock</code><button class="copy-btn" onclick="copyText(`ncat -l -U /tmp/lab.sock`,this)">COPY</button></div></div><div class="command"><div class="command-title">47. Connect with Source Port</div><div class="command-purpose">Bind a chosen source port when the environment permits it.</div><div class="code-block"><code>ncat --source-port 40000 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat --source-port 40000 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">48. Bind a Source Address</div><div class="command-purpose">Choose a local source address on a multi-homed lab host.</div><div class="code-block"><code>ncat --source 192.168.56.20 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat --source 192.168.56.20 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">49. Delay Between I/O</div><div class="command-purpose">Add a small delay between Ncat reads/writes for testing.</div><div class="code-block"><code>ncat --delay 100ms 192.168.56.10 9001</code><button class="copy-btn" onclick="copyText(`ncat --delay 100ms 192.168.56.10 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">50. Idle Timeout</div><div class="command-purpose">Close an idle Ncat session after a defined period.</div><div class="code-block"><code>ncat --idle-timeout 30s 192.168.56.10 9001</code><button class="copy-btn" onclick="copyText(`ncat --idle-timeout 30s 192.168.56.10 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">51. Telnet Negotiation</div><div class="command-purpose">Enable Telnet negotiation handling in Ncat.</div><div class="code-block"><code>ncat --telnet 192.168.56.10 23</code><button class="copy-btn" onclick="copyText(`ncat --telnet 192.168.56.10 23`,this)">COPY</button></div></div><div class="command"><div class="command-title">52. Execute a Fixed Program</div><div class="command-purpose">In a controlled lab, attach a harmless program to an Ncat listener.</div><div class="code-block"><code>ncat -l --exec /bin/date 9001</code><button class="copy-btn" onclick="copyText(`ncat -l --exec /bin/date 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">53. Execute Through a Shell</div><div class="command-purpose">In a disposable lab, run a harmless shell command after connection.</div><div class="code-block"><code>ncat -l --sh-exec &quot;printf &#x27;SAINICOMMANDHUB\n&#x27;&quot; 9001</code><button class="copy-btn" onclick="copyText(`ncat -l --sh-exec &quot;printf &#x27;SAINICOMMANDHUB\\n&#x27;&quot; 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">54. Pipe Data Through Ncat</div><div class="command-purpose">Use Ncat as a network-connected stdin/stdout backend.</div><div class="code-block"><code>printf &quot;status\n&quot; | ncat 192.168.56.10 9001</code><button class="copy-btn" onclick="copyText(`printf &quot;status\\n&quot; | ncat 192.168.56.10 9001`,this)">COPY</button></div></div><div class="command"><div class="command-title">55. TCP Relay</div><div class="command-purpose">Relay a local listener to a predetermined lab destination.</div><div class="code-block"><code>ncat --sh-exec &quot;ncat 192.168.56.10 80&quot; -l 8080</code><button class="copy-btn" onclick="copyText(`ncat --sh-exec &quot;ncat 192.168.56.10 80&quot; -l 8080`,this)">COPY</button></div></div><div class="command"><div class="command-title">56. Save a Listener Session</div><div class="command-purpose">Capture incoming data from a lab client into a file.</div><div class="code-block"><code>ncat -l 9001 &gt; capture.txt</code><button class="copy-btn" onclick="copyText(`ncat -l 9001 &gt; capture.txt`,this)">COPY</button></div></div><div class="command"><div class="command-title">57. Append Ncat Output</div><div class="command-purpose">Append session data instead of replacing the output file.</div><div class="code-block"><code>ncat --append-output -o session.log 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`ncat --append-output -o session.log 192.168.56.10 80`,this)">COPY</button></div></div><div class="command"><div class="command-title">58. Explicit IPv4 + Numeric</div><div class="command-purpose">Combine IPv4-only operation and numeric addressing.</div><div class="code-block"><code>ncat -4 -n -v 192.168.56.10 443</code><button class="copy-btn" onclick="copyText(`ncat -4 -n -v 192.168.56.10 443`,this)">COPY</button></div></div><div class="command"><div class="command-title">59. Ncat Help by Topic</div><div class="command-purpose">Display the installed Ncat option reference.</div><div class="code-block"><code>ncat --help</code><button class="copy-btn" onclick="copyText(`ncat --help`,this)">COPY</button></div></div><div class="command"><div class="command-title">60. Ncat Version Check</div><div class="command-purpose">Confirm the installed Ncat release before using version-specific options.</div><div class="code-block"><code>ncat --version</code><button class="copy-btn" onclick="copyText(`ncat --version`,this)">COPY</button></div></div></div>
+
+<div class="section"><div class="section-title">Important Options Reference</div><div class="table-wrap"><table><thead><tr><th>Option</th><th>Meaning</th><th>Typical Use</th></tr></thead><tbody>
+<tr><td><code>-l</code></td><td>Listen</td><td>Wait for incoming connections</td></tr><tr><td><code>-v</code></td><td>Verbose</td><td>Show connection details</td></tr><tr><td><code>-n</code></td><td>No DNS</td><td>Use numeric addresses</td></tr><tr><td><code>-z</code></td><td>Zero-I/O</td><td>Connection-status checks in implementations that support it</td></tr><tr><td><code>-u</code></td><td>UDP</td><td>Use UDP instead of TCP</td></tr><tr><td><code>-w</code></td><td>Timeout</td><td>Prevent long waits</td></tr><tr><td><code>-k</code></td><td>Keep open</td><td>Ncat listener accepts additional connections</td></tr><tr><td><code>-4 / -6</code></td><td>IP version</td><td>Force IPv4 or IPv6 in Ncat</td></tr><tr><td><code>--ssl</code></td><td>TLS</td><td>Encrypted Ncat connections</td></tr><tr><td><code>--proxy</code></td><td>Proxy</td><td>Connect through an authorized proxy</td></tr><tr><td><code>--allow / --deny</code></td><td>Access control</td><td>Restrict Ncat listeners</td></tr><tr><td><code>-o / -x</code></td><td>Output / hex dump</td><td>Capture Ncat session data</td></tr></tbody></table></div><p>Ncat's official reference documents these options and notes that exact behavior can depend on mode; for example, <code>-k</code> has different semantics in listen and connect modes. citeturn0search0</p></div>
+
+<div class="section"><div class="section-title">Practical Lab Exercises</div>
+<h3>Lab 1 — TCP chat</h3><p>Terminal A listens; Terminal B connects. Type text on either side to observe the byte stream.</p><div class="code-block"><code># Terminal A
+ncat -l 9001
+
+# Terminal B
+ncat 127.0.0.1 9001</code><button class="copy-btn" onclick="copyText(`# Terminal A
+ncat -l 9001
+
+# Terminal B
+ncat 127.0.0.1 9001`,this)">COPY</button></div>
+<h3>Lab 2 — File transfer</h3><p>Use only inside your own lab. The receiver redirects socket bytes to a file; the sender redirects a local file into the connection.</p><div class="code-block"><code># Receiver
+ncat -l 9001 > received.txt
+
+# Sender
+ncat 127.0.0.1 9001 < sample.txt</code><button class="copy-btn" onclick="copyText(`# Receiver
+ncat -l 9001 > received.txt
+
+# Sender
+ncat 127.0.0.1 9001 < sample.txt`,this)">COPY</button></div>
+<h3>Lab 3 — Raw HTTP</h3><p>Connect to a web server and manually send an HTTP request. This is useful for understanding request/response boundaries and headers.</p><div class="code-block"><code>printf "GET / HTTP/1.0\r\nHost: lab.local\r\n\r\n" | ncat 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`printf "GET / HTTP/1.0\r\nHost: lab.local\r\n\r\n" | ncat 192.168.56.10 80`,this)">COPY</button></div>
+</div>
+
+<div class="section"><div class="section-title">Troubleshooting</div><div class="table-wrap"><table><thead><tr><th>Problem</th><th>Likely Cause</th><th>What to Check</th></tr></thead><tbody><tr><td>Connection refused</td><td>No listener/service</td><td>Verify service state and destination port.</td></tr><tr><td>Connection timed out</td><td>Firewall, routing or filtering</td><td>Check route, firewall rules and reachability.</td></tr><tr><td>Wrong flags</td><td>Different nc implementation</td><td>Run <code>nc -h</code> and identify the package.</td></tr><tr><td>UDP appears silent</td><td>UDP has no TCP-style handshake</td><td>Use a known UDP service and inspect both endpoints.</td></tr><tr><td>Permission denied</td><td>Privileged local port</td><td>Use an unprivileged lab port above 1024 or appropriate permissions.</td></tr><tr><td>Ncat option unavailable</td><td>Version/implementation mismatch</td><td>Check <code>ncat --version</code> and installed documentation.</td></tr></tbody></table></div></div>
+
+<div class="section"><div class="section-title">Netcat + Nmap Workflow</div><p><strong>Nmap</strong> is suited to discovering hosts, ports and services; <strong>Netcat/Ncat</strong> is useful afterward for manually interacting with a specific authorized service. A common lab workflow is:</p><div class="workflow"><div class="step"><b>01</b><span>DISCOVER</span><small>Nmap identifies a service</small></div><div class="step"><b>02</b><span>VERIFY</span><small>Confirm the port is reachable</small></div><div class="step"><b>03</b><span>CONNECT</span><small>Open a raw socket</small></div><div class="step"><b>04</b><span>PROBE</span><small>Send protocol-valid data</small></div><div class="step"><b>05</b><span>DOCUMENT</span><small>Capture observations</small></div></div><div class="code-block"><code>nmap -sV -p 22,80,443 192.168.56.10
+nc -nv 192.168.56.10 22
+nc -nv 192.168.56.10 80</code><button class="copy-btn" onclick="copyText(`nmap -sV -p 22,80,443 192.168.56.10
+nc -nv 192.168.56.10 22
+nc -nv 192.168.56.10 80`,this)">COPY</button></div></div>
+
+<div class="section"><div class="section-title">Key Concepts to Remember</div><ul class="check-list"><li><strong>Socket:</strong> an endpoint used by applications to communicate over a network.</li><li><strong>Port:</strong> identifies a transport-layer endpoint associated with a service.</li><li><strong>TCP:</strong> connection-oriented byte stream.</li><li><strong>UDP:</strong> datagram-based transport with no TCP-style connection handshake.</li><li><strong>Listener:</strong> a process waiting for incoming connections.</li><li><strong>Client:</strong> a process initiating the connection.</li><li><strong>Raw protocol testing:</strong> manually sending application-layer data to understand a service.</li><li><strong>Implementation matters:</strong> <code>nc</code> flags are not identical across all Netcat variants.</li></ul></div>
+
+<div class="section"><div class="section-title">Official Documentation</div><p>The command reference and feature descriptions on this page are based primarily on the Nmap Project's official Ncat documentation. It documents connect/listen modes, TCP/UDP, TLS, proxying, output, access controls, execution and other options. citeturn0search0turn0search1</p><div class="code-block"><code>ncat --help
+ncat --version
+man ncat
+man nc</code><button class="copy-btn" onclick="copyText(`ncat --help
+ncat --version
+man ncat
+man nc`,this)">COPY</button></div></div>
+
+<div class="warning"><div class="warning-icon">⚠</div><div class="warning-text"><strong>AUTHORIZED USE ONLY.</strong> Netcat/Ncat can create listeners, transfer data, proxy traffic and—depending on implementation—execute programs through a network connection. Use these features only on systems you own or have explicit permission to test.<br><br><strong>Safe Learning:</strong><br>✅ Your own Kali/VMware/VirtualBox lab<br>✅ TryHackMe, Hack The Box, VulnHub and authorized CTF environments<br>✅ Local protocol-testing exercises<br>✅ Systems covered by an explicit testing scope<br><br><strong>Avoid:</strong><br>❌ Connecting to or listening on systems without authorization<br>❌ Using command-execution features against third-party systems<br>❌ Exposing a listener to the public Internet unnecessarily<br>❌ Treating an open port as permission to interact with a service</div></div>
+
+<div class="footer">SAINICOMMANDHUB · NETCAT / NCAT // CONNECT. TEST. UNDERSTAND.</div>
+</div>
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

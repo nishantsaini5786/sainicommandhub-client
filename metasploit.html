@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Metasploit — Penetration Testing Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">☠</div>
+      <div class="hero-info">
+        <div class="hero-name">METASPLOIT</div>
+        <div class="hero-cat">PENETRATION TESTING / EXPLOIT DEVELOPMENT / POST-EXPLOITATION</div>
+        <div class="hero-badges">
+          <span class="badge badge-advanced">ADVANCED</span>
+          <span class="badge badge-count">50+ COMMANDS</span>
+          <span class="badge badge-tag">METASPLOIT FRAMEWORK</span>
+        </div>
+      </div>
+    </div>
+    <p><strong style="color:var(--secondary)">Metasploit Framework</strong> is a modular penetration-testing platform built around exploits, payloads, auxiliary modules, post modules, encoders and other components. It provides a consistent console workflow for discovering modules, inspecting their requirements, configuring options and running authorized security tests.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Metasploit? (Deep Theory)</div>
+    <p>Metasploit is best understood as a <strong>module-driven security framework</strong>. Instead of one giant command that performs every task, the framework contains many specialized modules. You select the module, inspect its documentation and options, configure the values required by the lab, and then run it.</p>
+    <h3>Major Module Types</h3>
+    <ul>
+      <li><strong>Auxiliary:</strong> supporting modules for scanning, enumeration, protocol interaction and other non-exploit tasks.</li>
+      <li><strong>Exploit:</strong> modules designed to trigger a specific vulnerability or weakness on a compatible target.</li>
+      <li><strong>Payload:</strong> code delivered or executed after an exploit or through another supported delivery mechanism.</li>
+      <li><strong>Post:</strong> modules intended for post-compromise activities against an existing session.</li>
+      <li><strong>Encoder / NOP:</strong> framework components used by certain payload and exploit workflows.</li>
+    </ul>
+    <h3>The Core Mental Model</h3>
+    <p><code>SEARCH → USE → INFO → OPTIONS → SET → CHECK → RUN/EXPLOIT → SESSION</code></p>
+    <p>This workflow is more important than memorizing individual exploit names. Always read the module information and verify the target/version and required options before executing a module.</p>
+    <div class="info-box"><div class="info-icon">💡</div><div class="info-text"><strong>Key Insight:</strong> A Metasploit module is not automatically appropriate just because its name looks relevant. Compatibility depends on the target version, service configuration, architecture, module requirements and the exact vulnerability conditions.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation & First Launch</div>
+    <h3>Kali Linux</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y metasploit-framework</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y metasploit-framework',this)">COPY</button></div>
+    <h3>Launch</h3>
+    <div class="code-block"><code>msfconsole</code><button class="copy-btn" onclick="copyText('msfconsole',this)">COPY</button></div>
+    <h3>Check Version From Shell</h3>
+    <div class="code-block"><code>msfconsole --version</code><button class="copy-btn" onclick="copyText('msfconsole --version',this)">COPY</button></div>
+    <p>For a learning environment, a local vulnerable VM such as Metasploitable or an intentionally vulnerable CTF machine is the safest place to practice exploit-module workflows.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Metasploit Command Library — 50+ Commands</div>
+    <p>The commands below focus on the framework workflow: discovery, module inspection, configuration, authorized scanning, lab exploitation, database management and session handling.</p>
+    <div class="command">
+<div class="command-title">1. Start msfconsole</div>
+<div class="command-purpose">Open the Metasploit Framework console.</div>
+<div class="code-block"><code>msfconsole</code><button class="copy-btn" onclick="copyText('msfconsole',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">2. Show Help</div>
+<div class="command-purpose">Display console commands and usage help.</div>
+<div class="code-block"><code>help</code><button class="copy-btn" onclick="copyText('help',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">3. Search Modules</div>
+<div class="command-purpose">Search the module database by keyword.</div>
+<div class="code-block"><code>search type:auxiliary scanner http</code><button class="copy-btn" onclick="copyText('search type:auxiliary scanner http',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">4. Search by CVE</div>
+<div class="command-purpose">Find modules associated with a CVE in an authorized lab.</div>
+<div class="code-block"><code>search cve:2021-44228</code><button class="copy-btn" onclick="copyText('search cve:2021-44228',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">5. Search by Type</div>
+<div class="command-purpose">Restrict search results to exploit modules.</div>
+<div class="code-block"><code>search type:exploit smb</code><button class="copy-btn" onclick="copyText('search type:exploit smb',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">6. Use a Module</div>
+<div class="command-purpose">Load a module by its full path.</div>
+<div class="code-block"><code>use auxiliary/scanner/http/title</code><button class="copy-btn" onclick="copyText('use auxiliary/scanner/http/title',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">7. Use by Index</div>
+<div class="command-purpose">Load a module from the numbered search result.</div>
+<div class="code-block"><code>use 0</code><button class="copy-btn" onclick="copyText('use 0',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">8. Show Module Info</div>
+<div class="command-purpose">Display module description, references and metadata.</div>
+<div class="code-block"><code>info</code><button class="copy-btn" onclick="copyText('info',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">9. Show Options</div>
+<div class="command-purpose">Display required and optional datastore settings.</div>
+<div class="code-block"><code>show options</code><button class="copy-btn" onclick="copyText('show options',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">10. Show Missing</div>
+<div class="command-purpose">Display required options that still need values.</div>
+<div class="code-block"><code>show missing</code><button class="copy-btn" onclick="copyText('show missing',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">11. Show Targets</div>
+<div class="command-purpose">List targets supported by an exploit module.</div>
+<div class="code-block"><code>show targets</code><button class="copy-btn" onclick="copyText('show targets',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">12. Show Payloads</div>
+<div class="command-purpose">List payloads compatible with the current module.</div>
+<div class="code-block"><code>show payloads</code><button class="copy-btn" onclick="copyText('show payloads',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">13. Show Advanced</div>
+<div class="command-purpose">Display advanced module options.</div>
+<div class="code-block"><code>show advanced</code><button class="copy-btn" onclick="copyText('show advanced',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">14. Show Evasion</div>
+<div class="command-purpose">Display evasion-related options where supported.</div>
+<div class="code-block"><code>show evasion</code><button class="copy-btn" onclick="copyText('show evasion',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">15. Set an Option</div>
+<div class="command-purpose">Set a datastore option for the current module.</div>
+<div class="code-block"><code>set RHOSTS 192.168.56.101</code><button class="copy-btn" onclick="copyText('set RHOSTS 192.168.56.101',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">16. Set a Port</div>
+<div class="command-purpose">Set a target service port in a lab.</div>
+<div class="code-block"><code>set RPORT 80</code><button class="copy-btn" onclick="copyText('set RPORT 80',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">17. Set a Local Host</div>
+<div class="command-purpose">Set the listener address to an interface/IP you control.</div>
+<div class="code-block"><code>set LHOST 192.168.56.1</code><button class="copy-btn" onclick="copyText('set LHOST 192.168.56.1',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">18. Set a Local Port</div>
+<div class="command-purpose">Set the local listener port.</div>
+<div class="code-block"><code>set LPORT 4444</code><button class="copy-btn" onclick="copyText('set LPORT 4444',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">19. Set a Payload</div>
+<div class="command-purpose">Select a compatible payload from the payload list.</div>
+<div class="code-block"><code>set PAYLOAD cmd/unix/reverse_bash</code><button class="copy-btn" onclick="copyText('set PAYLOAD cmd/unix/reverse_bash',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">20. Set Multiple Targets</div>
+<div class="command-purpose">Set more than one authorized target.</div>
+<div class="code-block"><code>set RHOSTS 192.168.56.101 192.168.56.102</code><button class="copy-btn" onclick="copyText('set RHOSTS 192.168.56.101 192.168.56.102',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">21. Set CIDR Targets</div>
+<div class="command-purpose">Set an authorized subnet as the target range.</div>
+<div class="code-block"><code>set RHOSTS 192.168.56.0/24</code><button class="copy-btn" onclick="copyText('set RHOSTS 192.168.56.0/24',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">22. Unset an Option</div>
+<div class="command-purpose">Remove a previously configured option.</div>
+<div class="code-block"><code>unset RHOSTS</code><button class="copy-btn" onclick="copyText('unset RHOSTS',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">23. Unset All Options</div>
+<div class="command-purpose">Clear datastore options for the current module.</div>
+<div class="code-block"><code>unset all</code><button class="copy-btn" onclick="copyText('unset all',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">24. Set a Global Option</div>
+<div class="command-purpose">Set a global datastore value for future modules.</div>
+<div class="code-block"><code>setg LHOST 192.168.56.1</code><button class="copy-btn" onclick="copyText('setg LHOST 192.168.56.1',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">25. Unset a Global Option</div>
+<div class="command-purpose">Remove a global datastore value.</div>
+<div class="code-block"><code>unsetg LHOST</code><button class="copy-btn" onclick="copyText('unsetg LHOST',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">26. Check Module</div>
+<div class="command-purpose">Ask a compatible module whether the target appears vulnerable when check support exists.</div>
+<div class="code-block"><code>check</code><button class="copy-btn" onclick="copyText('check',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">27. Run Module</div>
+<div class="command-purpose">Execute the currently configured module.</div>
+<div class="code-block"><code>run</code><button class="copy-btn" onclick="copyText('run',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">28. Run in Background</div>
+<div class="command-purpose">Run a compatible module as a background job.</div>
+<div class="code-block"><code>run -j</code><button class="copy-btn" onclick="copyText('run -j',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">29. Exploit</div>
+<div class="command-purpose">Launch the currently configured exploit module in a lab.</div>
+<div class="code-block"><code>exploit</code><button class="copy-btn" onclick="copyText('exploit',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">30. Exploit in Background</div>
+<div class="command-purpose">Run the exploit without keeping the console blocked.</div>
+<div class="code-block"><code>exploit -j</code><button class="copy-btn" onclick="copyText('exploit -j',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">31. Show Jobs</div>
+<div class="command-purpose">List active background jobs.</div>
+<div class="code-block"><code>jobs</code><button class="copy-btn" onclick="copyText('jobs',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">32. Kill a Job</div>
+<div class="command-purpose">Stop a specific background job.</div>
+<div class="code-block"><code>jobs -k 1</code><button class="copy-btn" onclick="copyText('jobs -k 1',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">33. Kill All Jobs</div>
+<div class="command-purpose">Stop all currently running background jobs.</div>
+<div class="code-block"><code>jobs -K</code><button class="copy-btn" onclick="copyText('jobs -K',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">34. Show Sessions</div>
+<div class="command-purpose">List active sessions.</div>
+<div class="code-block"><code>sessions</code><button class="copy-btn" onclick="copyText('sessions',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">35. Verbose Sessions</div>
+<div class="command-purpose">Display more session information.</div>
+<div class="code-block"><code>sessions -v</code><button class="copy-btn" onclick="copyText('sessions -v',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">36. Interact With Session</div>
+<div class="command-purpose">Open an interactive session by ID.</div>
+<div class="code-block"><code>sessions -i 1</code><button class="copy-btn" onclick="copyText('sessions -i 1',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">37. Background a Session</div>
+<div class="command-purpose">Return from an interactive session to msfconsole.</div>
+<div class="code-block"><code>background</code><button class="copy-btn" onclick="copyText('background',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">38. Kill a Session</div>
+<div class="command-purpose">Terminate a selected session.</div>
+<div class="code-block"><code>sessions -k 1</code><button class="copy-btn" onclick="copyText('sessions -k 1',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">39. Kill All Sessions</div>
+<div class="command-purpose">Terminate all active sessions.</div>
+<div class="code-block"><code>sessions -K</code><button class="copy-btn" onclick="copyText('sessions -K',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">40. Session Details</div>
+<div class="command-purpose">Show detailed information for a session.</div>
+<div class="code-block"><code>sessions -v 1</code><button class="copy-btn" onclick="copyText('sessions -v 1',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">41. Route Information</div>
+<div class="command-purpose">Display routing information maintained by Metasploit.</div>
+<div class="code-block"><code>route</code><button class="copy-btn" onclick="copyText('route',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">42. Add a Route</div>
+<div class="command-purpose">Add a route through an existing session in an authorized lab.</div>
+<div class="code-block"><code>route add 10.10.10.0 255.255.255.0 1</code><button class="copy-btn" onclick="copyText('route add 10.10.10.0 255.255.255.0 1',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">43. Show Credentials</div>
+<div class="command-purpose">Display credentials stored in the Metasploit database.</div>
+<div class="code-block"><code>creds</code><button class="copy-btn" onclick="copyText('creds',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">44. Show Hosts</div>
+<div class="command-purpose">List hosts known to the Metasploit database.</div>
+<div class="code-block"><code>hosts</code><button class="copy-btn" onclick="copyText('hosts',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">45. Show Services</div>
+<div class="command-purpose">List services recorded in the database.</div>
+<div class="code-block"><code>services</code><button class="copy-btn" onclick="copyText('services',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">46. Show Vulnerabilities</div>
+<div class="command-purpose">List vulnerability records in the database.</div>
+<div class="code-block"><code>vulns</code><button class="copy-btn" onclick="copyText('vulns',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">47. Workspace List</div>
+<div class="command-purpose">Display available database workspaces.</div>
+<div class="code-block"><code>workspace</code><button class="copy-btn" onclick="copyText('workspace',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">48. Create Workspace</div>
+<div class="command-purpose">Create a separate database workspace for a lab.</div>
+<div class="code-block"><code>workspace -a lab01</code><button class="copy-btn" onclick="copyText('workspace -a lab01',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">49. Switch Workspace</div>
+<div class="command-purpose">Change the active workspace.</div>
+<div class="code-block"><code>workspace lab01</code><button class="copy-btn" onclick="copyText('workspace lab01',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">50. Database Status</div>
+<div class="command-purpose">Check the current Metasploit database connection.</div>
+<div class="code-block"><code>db_status</code><button class="copy-btn" onclick="copyText('db_status',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">51. Save Configuration</div>
+<div class="command-purpose">Save current console settings/history where supported.</div>
+<div class="code-block"><code>save</code><button class="copy-btn" onclick="copyText('save',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">52. Resource Script</div>
+<div class="command-purpose">Execute commands stored in a resource file.</div>
+<div class="code-block"><code>resource lab.rc</code><button class="copy-btn" onclick="copyText('resource lab.rc',this)">COPY</button></div>
+</div>
+<div class="command">
+<div class="command-title">53. Exit Metasploit</div>
+<div class="command-purpose">Leave msfconsole.</div>
+<div class="code-block"><code>exit</code><button class="copy-btn" onclick="copyText('exit',this)">COPY</button></div>
+</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Auxiliary Scanner Workflow</div>
+    <p>Auxiliary modules are useful when you want Metasploit to perform enumeration without exploiting the target. Rapid7's documentation uses HTTP scanner modules as examples of this workflow.</p>
+    <div class="workflow">
+      <div class="wf-step"><div class="wf-title">Search</div><div class="wf-desc">Find a scanner appropriate for the service or protocol you are testing.</div></div>
+      <div class="wf-step"><div class="wf-title">Use</div><div class="wf-desc">Load the module using its full module path.</div></div>
+      <div class="wf-step"><div class="wf-title">Inspect</div><div class="wf-desc">Run <code>info</code>, <code>show options</code> and <code>show missing</code> before execution.</div></div>
+      <div class="wf-step"><div class="wf-title">Configure</div><div class="wf-desc">Set RHOSTS, RPORT, THREADS or other module-specific options.</div></div>
+      <div class="wf-step"><div class="wf-title">Run</div><div class="wf-desc">Use <code>run</code> and review the module's output.</div></div>
+      <div class="wf-step"><div class="wf-title">Record</div><div class="wf-desc">Review hosts/services/notes in the Metasploit database when database integration is enabled.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Exploit Module Workflow</div>
+    <p>Exploit modules should be used only against a target inside your authorized scope. Rapid7 recommends using your own local test environment, such as a VM or Docker-based lab, for exploitation practice.</p>
+    <div class="workflow">
+      <div class="wf-step"><div class="wf-title">Identify the Service</div><div class="wf-desc">Use your lab enumeration results to determine the service, version and relevant vulnerability.</div></div>
+      <div class="wf-step"><div class="wf-title">Search the Framework</div><div class="wf-desc">Search by product, vulnerability name, module type or CVE.</div></div>
+      <div class="wf-step"><div class="wf-title">Read Info</div><div class="wf-desc">Check module description, references, targets and prerequisites.</div></div>
+      <div class="wf-step"><div class="wf-title">Inspect Options</div><div class="wf-desc">Use <code>show options</code>, <code>show missing</code>, <code>show targets</code> and <code>show payloads</code>.</div></div>
+      <div class="wf-step"><div class="wf-title">Check When Supported</div><div class="wf-desc">If the module implements a check method, use <code>check</code> before attempting exploitation.</div></div>
+      <div class="wf-step"><div class="wf-title">Run in the Lab</div><div class="wf-desc">Set only the values required by the authorized lab and execute the module.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Payloads & Meterpreter</div>
+    <p>A payload is the component intended to perform an action after successful delivery. Payload names can encode platform, architecture, stage and transport. For example, Rapid7 documents the structure of staged payload names such as <code>windows/x64/meterpreter/reverse_tcp</code>.</p>
+    <h3>Understand the Name</h3>
+    <div class="code-block"><code>windows/x64/meterpreter/reverse_tcp</code><button class="copy-btn" onclick="copyText('windows/x64/meterpreter/reverse_tcp',this)">COPY</button></div>
+    <p><strong>windows</strong> = platform · <strong>x64</strong> = architecture · <strong>meterpreter</strong> = payload stage · <strong>reverse_tcp</strong> = communication/stager style.</p>
+    <h3>Meterpreter Concept</h3>
+    <p>Meterpreter is an advanced Metasploit payload with a rich command interface and extension architecture. It is commonly used in authorized post-exploitation labs for session management, information gathering and controlled demonstrations.</p>
+    <h3>Basic Session Pattern</h3>
+    <div class="code-block"><code>sessions
+sessions -i 1
+background
+sessions -v</code><button class="copy-btn" onclick="copyText('sessions\nsessions -i 1\nbackground\nsessions -v',this)">COPY</button></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Useful Module Options</div>
+    <div class="table-wrap"><table><thead><tr><th>Option</th><th>Meaning</th><th>Typical Use</th></tr></thead><tbody>
+      <tr><td>RHOSTS</td><td>Remote target host(s)</td><td>Set authorized target IP/range</td></tr>
+      <tr><td>RPORT</td><td>Remote service port</td><td>Set service port</td></tr>
+      <tr><td>LHOST</td><td>Local/listener address</td><td>Use an IP/interface you control</td></tr>
+      <tr><td>LPORT</td><td>Local/listener port</td><td>Choose listener port</td></tr>
+      <tr><td>PAYLOAD</td><td>Payload selected for a module</td><td>Choose a compatible lab payload</td></tr>
+      <tr><td>THREADS</td><td>Concurrent scanner threads</td><td>Tune authorized scanner performance</td></tr>
+      <tr><td>TARGETURI</td><td>Web application base path</td><td>Point an HTTP module at the correct path</td></tr>
+      <tr><td>SSL</td><td>Enable SSL/TLS where supported</td><td>Test HTTPS services</td></tr>
+    </tbody></table></div>
+    <p>Exact options vary by module, so never assume that one module's option set applies to another. Use <code>show options</code> and <code>info</code> for the active module.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Database & Workspace Workflow</div>
+    <p>Metasploit can maintain structured information about hosts, services, credentials and vulnerabilities. Workspaces help keep different lab environments separated.</p>
+    <div class="code-block"><code>db_status
+workspace
+workspace -a lab01
+workspace lab01
+hosts
+services
+creds
+vulns</code><button class="copy-btn" onclick="copyText('db_status\nworkspace\nworkspace -a lab01\nworkspace lab01\nhosts\nservices\ncreds\nvulns',this)">COPY</button></div>
+    <div class="info-box"><div class="info-icon">🗂</div><div class="info-text"><strong>Good habit:</strong> Create a separate workspace for each CTF/lab. This keeps hosts, services and other collected records easier to interpret.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Resource Scripts & Repeatable Labs</div>
+    <p>Resource files let you place a repeatable sequence of console commands into a file and execute it with <code>resource</code>. This is useful for rebuilding a lab workflow without manually typing every command.</p>
+    <div class="code-block"><code>nano lab.rc
+resource lab.rc</code><button class="copy-btn" onclick="copyText('nano lab.rc\nresource lab.rc',this)">COPY</button></div>
+    <p>Keep resource files free of real credentials or sensitive production targets. For training, use placeholders or isolated lab addresses.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>Module Not Found</h3>
+    <ul><li>Run a broader <code>search</code> query.</li><li>Check the exact module path shown by the search results.</li><li>Update the Metasploit package if your installed module database is outdated.</li></ul>
+    <h3>Required Option Missing</h3>
+    <ul><li>Run <code>show missing</code>.</li><li>Read <code>show options</code> and <code>info</code>.</li><li>Set only the required values that belong to your authorized lab.</li></ul>
+    <h3>Exploit Does Not Work</h3>
+    <ul><li>Confirm the target version is actually vulnerable.</li><li>Read the module's target list with <code>show targets</code>.</li><li>Check whether the service is reachable and on the expected port.</li><li>Check whether a compatible payload is selected.</li><li>Do not assume a failed exploit means the target is vulnerable or not vulnerable; module prerequisites matter.</li></ul>
+    <h3>No Session Created</h3>
+    <ul><li>Review the module output and payload options.</li><li>Confirm LHOST is an address reachable from the lab target.</li><li>Confirm LPORT is available and permitted by the lab network.</li><li>Check whether the payload architecture/platform matches the target.</li></ul>
+    <h3>Background Job Confusion</h3>
+    <ul><li>Run <code>jobs</code> to see active jobs.</li><li>Use <code>jobs -k ID</code> to stop a specific job.</li><li>Use <code>sessions</code> separately to distinguish sessions from jobs.</li></ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Metasploit Mental Model</div>
+    <div class="table-wrap"><table><thead><tr><th>Question</th><th>Metasploit Concept</th></tr></thead><tbody>
+      <tr><td>What can I use?</td><td><code>search</code></td></tr>
+      <tr><td>What does the module do?</td><td><code>info</code></td></tr>
+      <tr><td>What must I configure?</td><td><code>show options / show missing</code></td></tr>
+      <tr><td>What targets are supported?</td><td><code>show targets</code></td></tr>
+      <tr><td>What payloads fit?</td><td><code>show payloads</code></td></tr>
+      <tr><td>Can it detect vulnerability?</td><td><code>check</code> when supported</td></tr>
+      <tr><td>How do I execute?</td><td><code>run / exploit</code></td></tr>
+      <tr><td>What is running?</td><td><code>jobs / sessions</code></td></tr>
+      <tr><td>What did the lab discover?</td><td><code>hosts / services / creds / vulns</code></td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Official Documentation Basis</div>
+    <p>This page's Metasploit concepts and command workflow were checked against current Rapid7 Metasploit documentation and the project's official GitHub documentation, including module types, searching, options, payloads, sessions and Meterpreter. citeturn0search0turn0search1turn0search3turn0search4</p>
+    <div class="code-block"><code>msfconsole
+help
+search
+info
+show options
+show missing</code><button class="copy-btn" onclick="copyText('msfconsole\nhelp\nsearch\ninfo\nshow options\nshow missing',this)">COPY</button></div>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Metasploit contains real exploitation and post-exploitation capabilities. Use it only against systems you own or have explicit permission to test.
+      <br><br><strong>Safe Learning:</strong>
+      <br>✅ Your own VMware/VirtualBox vulnerable VMs
+      <br>✅ Metasploitable and other intentionally vulnerable labs
+      <br>✅ TryHackMe / Hack The Box / VulnHub authorized targets
+      <br>✅ CTFs and controlled penetration-testing exercises
+      <br><br><strong>Avoid:</strong>
+      <br>❌ Running exploits against random public IPs
+      <br>❌ Using obtained sessions to access third-party systems
+      <br>❌ Testing production systems outside written scope
+      <br>❌ Treating a discovered vulnerability as permission to exploit it
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · METASPLOIT // ENUMERATE. VALIDATE. LEARN.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

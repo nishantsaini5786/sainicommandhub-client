@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>CyberChef — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-beginner{background:rgba(0,255,65,.12);color:var(--neon-green);border:1px solid rgba(0,255,65,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+// PROTECTED
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">👨‍🍳</div>
+      <div class="hero-info">
+        <div class="hero-name">CYBERCHEF</div>
+        <div class="hero-cat">Utilities · The Cyber Swiss Army Knife</div>
+        <div class="hero-badges">
+          <span class="badge badge-beginner">Beginner</span>
+          <span class="badge badge-count">400+ Operations</span>
+          <span class="badge badge-tag">Encoding</span>
+          <span class="badge badge-tag">Crypto</span>
+          <span class="badge badge-tag">Forensics</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">CyberChef</strong> is a web-based, browser-only tool developed by GCHQ (UK's intelligence agency) that makes it easy to perform complex data manipulation without writing code. It has <strong>400+ operations</strong> — encode, decode, encrypt, decrypt, hash, parse, extract, and analyze data. It's called the "Cyber Swiss Army Knife" because it does everything. And it works offline — no data leaves your browser.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is CyberChef? (Deep Theory)</div>
+    <p>Imagine you have a blob of data. You need to: base64-decode it, then XOR it, then gunzip it, then extract IPs, then parse as JSON. In a terminal, this requires multiple tools and pipes. CyberChef does it all in one GUI with drag-and-drop operations.</p>
+
+    <h3>How CyberChef Works — The "Recipe" Concept</h3>
+    <ol>
+      <li>You paste your input data (text or file) into the "Input" panel</li>
+      <li>You drag operations from the left panel into the "Recipe" (middle)</li>
+      <li>Operations run in order — output of one becomes input of next</li>
+      <li>Result appears in the "Output" panel — instantly</li>
+      <li>You can save/load recipes as JSON for reuse</li>
+    </ol>
+
+    <h3>What CyberChef Can Do (400+ Operations)</h3>
+    <ul>
+      <li><strong>Encoding</strong> — Base64, Base32, Hex, URL, HTML, JWT, ROT13</li>
+      <li><strong>Hashing</strong> — MD5, SHA1, SHA256, SHA512, bcrypt, Argon2</li>
+      <li><strong>Encryption</strong> — AES, DES, Blowfish, RSA, XOR, Vigenère</li>
+      <li><strong>Compression</strong> — Gzip, Zip, Bzip2, LZMA, Bz2</li>
+      <li><strong>Parsing</strong> — JSON, XML, CSV, INI, YAML, URL, HTTP</li>
+      <li><strong>Forensics</strong> — Extract IPs, emails, URLs, hashes from text</li>
+      <li><strong>Networking</strong> — Parse IPv4, IPv6, MAC addresses</li>
+      <li><strong>Cryptography</strong> — JWT decode, PGP, certificates</li>
+      <li><strong>Malware Analysis</strong> — Deobfuscate PowerShell, JS, VBA</li>
+      <li><strong>Data Format</strong> — Convert between JSON/CSV/XML/YAML</li>
+      <li><strong>Arithmetic</strong> — Number base conversion, bit operations</li>
+      <li><strong>Extractors</strong> — Regex, strings, files, IPs, URLs</li>
+    </ul>
+
+    <h3>Two Versions</h3>
+    <ul>
+      <li><strong>Online</strong> — <code>gchq.github.io/CyberChef</code> (runs in browser, no upload)</li>
+      <li><strong>Offline</strong> — Download HTML file, run locally, 100% private</li>
+    </ul>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Why it matters:</strong> CyberChef is used by SOC analysts, malware researchers, CTF players, and DFIR teams daily. It replaces dozens of command-line tools with one GUI.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. Malware Analysis</h3>
+    <p>Malware often uses base64, XOR, or custom encoding. CyberChef decodes payloads step-by-step. Deobfuscate PowerShell, JavaScript, VBA macros.</p>
+
+    <h3>2. CTF Challenges</h3>
+    <p>Every CTF has encoding/crypto challenges. CyberChef solves them instantly — base64, ROT, XOR, Vigenère, RSA, etc.</p>
+
+    <h3>3. Incident Response</h3>
+    <p>Analyze suspicious logs, decode JWT tokens, parse PCAP data, extract IOCs from text.</p>
+
+    <h3>4. Threat Intelligence</h3>
+    <p>Decode malware configs, extract C2 domains from obfuscated strings, parse YARA rules.</p>
+
+    <h3>5. Forensics</h3>
+    <p>Analyze network captures, decode encoded payloads, extract metadata from files.</p>
+
+    <h3>6. Web Dev / Debugging</h3>
+    <p>Decode JWTs, parse cookies, inspect URLs, convert JSON/YAML/XML.</p>
+
+    <h3>7. Password Cracking</h3>
+    <p>Generate hashes to compare, encode/decode wordlists, transform passwords.</p>
+
+    <h3>8. Data Analysis</h3>
+    <p>Convert data formats, extract patterns, clean logs, parse CSVs.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Access & Installation</div>
+
+    <h3>Online (Easiest)</h3>
+    <div class="code-block"><code>firefox https://gchq.github.io/CyberChef/</code><button class="copy-btn" onclick="copyText('firefox https://gchq.github.io/CyberChef/',this)">COPY</button></div>
+
+    <h3>Offline Download (Recommended)</h3>
+    <p>Download the standalone HTML file — runs offline, 100% private.</p>
+    <div class="code-block"><code>wget https://gchq.github.io/CyberChef/CyberChef_v10.5.2.zip -O cyberchef.zip
+unzip cyberchef.zip
+firefox CyberChef_v10.5.2.html</code><button class="copy-btn" onclick="copyText('wget https://gchq.github.io/CyberChef/CyberChef_v10.5.2.zip -O cyberchef.zip && unzip cyberchef.zip && firefox CyberChef_v10.5.2.html',this)">COPY</button></div>
+
+    <h3>Self-Host (Docker)</h3>
+    <div class="code-block"><code>docker run -d -p 8000:8000 mpepping/cyberchef:latest</code><button class="copy-btn" onclick="copyText('docker run -d -p 8000:8000 mpepping/cyberchef:latest',this)">COPY</button></div>
+
+    <h3>Install from GitHub (Dev)</h3>
+    <div class="code-block"><code>git clone https://github.com/gchq/CyberChef.git
+cd CyberChef
+npm install
+npm start</code><button class="copy-btn" onclick="copyText('git clone https://github.com/gchq/CyberChef.git && cd CyberChef && npm install && npm start',this)">COPY</button></div>
+
+    <div class="info-box">
+      <div class="info-icon">🔒</div>
+      <div class="info-text">
+        <strong>Privacy:</strong> CyberChef runs <strong>entirely in your browser</strong>. No data is sent to any server. GCHQ designed it this way — safe for confidential data.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Operations (Recipe Examples)</div>
+
+    <div class="command">
+      <div class="command-title">1. Base64 Decode</div>
+      <div class="command-purpose">The most common operation — decodes base64 strings.</div>
+      <div class="code-block"><code>From Base64</code><button class="copy-btn" onclick="copyText('From Base64',this)">COPY</button></div>
+      <div class="command-output">Input:  aGVsbG8gd29ybGQ=
+Output: hello world</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Base64 Encode</div>
+      <div class="command-block"><code>To Base64</code><button class="copy-btn" onclick="copyText('To Base64',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Hex Decode</div>
+      <div class="command-block"><code>From Hex</code><button class="copy-btn" onclick="copyText('From Hex',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. URL Decode</div>
+      <div class="command-purpose">Decode URL-encoded strings like %20, %3D.</div>
+      <div class="code-block"><code>URL Decode</code><button class="copy-btn" onclick="copyText('URL Decode',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. ROT13 Decode</div>
+      <div class="command-block"><code>ROT13</code><button class="copy-btn" onclick="copyText('ROT13',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. XOR Decode</div>
+      <div class="command-purpose">Common in malware and CTFs.</div>
+      <div class="code-block"><code>XOR with key</code><button class="copy-btn" onclick="copyText('XOR',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. MD5 Hash</div>
+      <div class="command-block"><code>MD5</code><button class="copy-btn" onclick="copyText('MD5',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. SHA256 Hash</div>
+      <div class="command-block"><code>SHA2 (256)</code><button class="copy-btn" onclick="copyText('SHA2',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. AES Decrypt</div>
+      <div class="command-block"><code>AES Decrypt (CBC/ECB/GCM)</code><button class="copy-btn" onclick="copyText('AES Decrypt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Gunzip</div>
+      <div class="command-block"><code>Gunzip</code><button class="copy-btn" onclick="copyText('Gunzip',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">11. Parse JSON</div>
+      <div class="command-purpose">Pretty-print JSON.</div>
+      <div class="code-block"><code>JSON Beautify</code><button class="copy-btn" onclick="copyText('JSON Beautify',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Decode JWT</div>
+      <div class="command-purpose">Extract header, payload, signature from JWT tokens.</div>
+      <div class="code-block"><code>JWT Decode</code><button class="copy-btn" onclick="copyText('JWT Decode',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. Extract IPs from Text</div>
+      <div class="command-block"><code>Extract IP addresses</code><button class="copy-btn" onclick="copyText('Extract IP addresses',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Extract Emails</div>
+      <div class="command-block"><code>Extract email addresses</code><button class="copy-btn" onclick="copyText('Extract email addresses',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. Extract URLs</div>
+      <div class="command-block"><code>Extract URLs</code><button class="copy-btn" onclick="copyText('Extract URLs',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Regex Match</div>
+      <div class="command-block"><code>Regular expression (match)</code><button class="copy-btn" onclick="copyText('Regular expression',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. Find / Replace</div>
+      <div class="command-block"><code>Find / Replace</code><button class="copy-btn" onclick="copyText('Find / Replace',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Convert Hex to ASCII</div>
+      <div class="command-block"><code>From Hex → To ASCII</code><button class="copy-btn" onclick="copyText('From Hex then To ASCII',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">19. Reverse String</div>
+      <div class="command-block"><code>Reverse</code><button class="copy-btn" onclick="copyText('Reverse',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Sort Lines</div>
+      <div class="command-block"><code>Sort</code><button class="copy-btn" onclick="copyText('Sort',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Advanced Recipes (Chained Operations)</div>
+
+    <div class="command">
+      <div class="command-title">21. Decode Double Base64</div>
+      <div class="command-purpose">Base64-encoded base64 — common in malware.</div>
+      <div class="code-block"><code>From Base64 → From Base64</code><button class="copy-btn" onclick="copyText('From Base64 then From Base64',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Deobfuscate Hex-Encoded URL</div>
+      <div class="command-block"><code>From Hex → URL Decode</code><button class="copy-btn" onclick="copyText('From Hex then URL Decode',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Decode PowerShell Obfuscation</div>
+      <div class="command-purpose">Common malware pattern — Base64 + UTF-16 LE.</div>
+      <div class="code-block"><code>From Base64 → Decode text (UTF-16LE)</code><button class="copy-btn" onclick="copyText('From Base64 then Decode text UTF-16LE',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Decrypt XOR + Base64</div>
+      <div class="command-block"><code>From Base64 → XOR → From UTF-8</code><button class="copy-btn" onclick="copyText('From Base64 then XOR then From UTF-8',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. Extract IOCs from Log</div>
+      <div class="command-purpose">Extract all IPs, domains, emails from a log file at once.</div>
+      <div class="code-block"><code>Extract IP addresses → Extract domains → Extract emails → Unique</code><button class="copy-btn" onclick="copyText('Extract IP addresses then Extract domains then Extract emails then Unique',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">26. JWT to JSON</div>
+      <div class="command-block"><code>JWT Decode → JSON Beautify</code><button class="copy-btn" onclick="copyText('JWT Decode then JSON Beautify',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. Parse HTTP Request</div>
+      <div class="command-block"><code>Parse HTTP request</code><button class="copy-btn" onclick="copyText('Parse HTTP request',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. Convert JSON to CSV</div>
+      <div class="command-block"><code>JSON to CSV</code><button class="copy-btn" onclick="copyText('JSON to CSV',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">29. Hash Multiple Lines</div>
+      <div class="command-block"><code>Fork → SHA256 → Merge</code><button class="copy-btn" onclick="copyText('Fork then SHA256 then Merge',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">30. Random Password Generator</div>
+      <div class="command-block"><code>Generate UUID or Random bytes</code><button class="copy-btn" onclick="copyText('Generate UUID',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Operations Categories</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Category</th><th>Operations</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Data Format</strong></td><td>Base64, Hex, Decimal, Binary, Octal, Charcode</td></tr>
+          <tr><td><strong>Encryption</strong></td><td>AES, DES, Triple DES, Blowfish, RC4, RSA</td></tr>
+          <tr><td><strong>Hashing</strong></td><td>MD5, SHA1, SHA256, SHA512, bcrypt, Argon2, RIPEMD</td></tr>
+          <tr><td><strong>Compression</strong></td><td>Gzip, Gunzip, Zip, Unzip, Bzip2, LZMA, LZ4</td></tr>
+          <tr><td><strong>URL</strong></td><td>Encode, Decode, Parse, Build</td></tr>
+          <tr><td><strong>Networking</strong></td><td>Parse IPv4/6, MAC addresses, CIDR</td></tr>
+          <tr><td><strong>Forensics</strong></td><td>File Type, Strings, Binwalk, Extract IOCs</td></tr>
+          <tr><td><strong>Parsing</strong></td><td>JSON, XML, CSV, INI, YAML, HTTP</td></tr>
+          <tr><td><strong>Date/Time</strong></td><td>From UNIX timestamp, To UNIX timestamp</td></tr>
+          <tr><td><strong>Extractors</strong></td><td>IP, email, URL, domain, MAC, hash, regex</td></tr>
+          <tr><td><strong>Arithmetic</strong></td><td>Sum, Subtract, Multiply, Divide, Mod</td></tr>
+          <tr><td><strong>Bitwise</strong></td><td>AND, OR, XOR, NOT, Shift</td></tr>
+          <tr><td><strong>Language</strong></td><td>JavaScript parser, XPath, VBA, PowerShell</td></tr>
+          <tr><td><strong>Cryptography</strong></td><td>JWT, PGP, X.509, bcrypt, scrypt</td></tr>
+          <tr><td><strong>Defang</strong></td><td>Defang URLs/IPs for safe sharing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Complete Workflow — Malware Analysis</div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Open CyberChef</div>
+        <div class="wf-desc">Visit <code>gchq.github.io/CyberChef</code> or use offline version.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Paste Obfuscated Payload</div>
+        <div class="wf-desc">Copy suspicious string from malware sample into input panel.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Add "Magic" Operation</div>
+        <div class="wf-desc">Drag "Magic" from Operations — CyberChef auto-detects encoding.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Review Detected Operations</div>
+        <div class="wf-desc">Magic will identify: Base64, XOR, gzip, etc. Click to apply.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Manually Chain Operations</div>
+        <div class="wf-desc">If Magic fails, add operations one at a time: From Base64 → XOR → Gunzip.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Extract IOCs</div>
+        <div class="wf-desc">Add Extract IPs, Extract URLs, Extract Emails to get indicators.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 7: Save Recipe</div>
+        <div class="wf-desc">Click "Save recipe" — get JSON. Load it later for similar samples.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 8: Export Result</div>
+        <div class="wf-desc">Copy decoded payload, download as file, or bake into new recipe.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Shortcuts</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><code>Ctrl+F</code></td><td>Search operations</td></tr>
+          <tr><td><code>Ctrl+Z</code></td><td>Undo</td></tr>
+          <tr><td><code>Ctrl+Shift+Z</code></td><td>Redo</td></tr>
+          <tr><td><code>Ctrl+S</code></td><td>Save recipe</td></tr>
+          <tr><td><code>Ctrl+O</code></td><td>Load recipe</td></tr>
+          <tr><td><code>Ctrl+B</code></td><td>Bake (execute recipe)</td></tr>
+          <tr><td><code>Ctrl+Shift+B</code></td><td>Auto-bake mode toggle</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">CyberChef vs Other Tools</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CyberChef</strong></td><td>Data manipulation GUI</td><td>Decoding, deobfuscation, forensics</td></tr>
+          <tr><td><strong>Burp Decoder</strong></td><td>Encode/decode</td><td>Web testing</td></tr>
+          <tr><td><strong>Command line</strong></td><td>Base64, xxd, openssl</td><td>Scripting</td></tr>
+          <tr><td><strong>Python</strong></td><td>pycryptodome, base64</td><td>Custom scripts</td></tr>
+          <tr><td><strong>Ciphey</strong></td><td>Auto decoder (CLI)</td><td>Automated decoding</td></tr>
+          <tr><td><strong>dCode</strong></td><td>Online decoder</td><td>Simple decoding</td></tr>
+          <tr><td><strong>Hashes.com</strong></td><td>Hash lookup</td><td>Hash cracking</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"Output doesn't make sense"</h3>
+    <ul>
+      <li>Try "Magic" operation — auto-detects encoding</li>
+      <li>Wrong encoding? Try UTF-8, UTF-16LE, Latin-1</li>
+      <li>Data might need multiple layers — chain operations</li>
+    </ul>
+
+    <h3>"XOR doesn't work"</h3>
+    <ul>
+      <li>XOR needs the correct key — try common keys: 0x01, 0x41, 0xFF</li>
+      <li>Try "XOR Brute Force" to find the key</li>
+      <li>Multi-byte key: use "XOR with key" and enter key in hex</li>
+    </ul>
+
+    <h3>"File won't load"</h3>
+    <ul>
+      <li>CyberChef handles files up to ~100MB (browser limitation)</li>
+      <li>Try loading in chunks</li>
+      <li>For huge files, use offline version with more memory</li>
+    </ul>
+
+    <h3>"Recipe too slow"</h3>
+    <ul>
+      <li>Disable auto-bake</li>
+      <li>Remove unnecessary operations</li>
+      <li>Use "Fork" to process data in parallel</li>
+    </ul>
+
+    <h3>"Can't find operation"</h3>
+    <ul>
+      <li>Search in top-left search box</li>
+      <li>Operations organized by category on left sidebar</li>
+      <li>Try similar operation names (e.g., "b64" → "From Base64")</li>
+    </ul>
+
+    <h3>"Offline version opens but operations missing"</h3>
+    <ul>
+      <li>Download latest version — older versions have fewer ops</li>
+      <li>Clear browser cache</li>
+      <li>Check console (F12) for errors</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>SAFE TOOL — runs entirely in your browser.</strong> CyberChef is not an attack tool — it's a data analysis/transformation tool. There's no legal risk in using it. However:
+      <br>• Don't paste confidential data into the <strong>online</strong> version if you don't trust the browser
+      <br>• Use the <strong>offline</strong> version for sensitive data
+      <br>• Malware samples processed in CyberChef should still be handled per your organization's policies
+      <br>
+      <br>CyberChef is open source (Apache 2.0) and developed by GCHQ. It's used by governments, enterprises, and researchers worldwide.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

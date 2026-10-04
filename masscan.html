@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Masscan — High-Speed Port Scanning Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+
+
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">⚡</div>
+      <div class="hero-info">
+        <div class="hero-name">MASSCAN</div>
+        <div class="hero-cat">HIGH-SPEED PORT SCANNING / NETWORK RECON</div>
+        <div class="hero-badges">
+          <span class="badge badge-advanced">ADVANCED</span>
+          <span class="badge badge-count">50+ COMMANDS</span>
+          <span class="badge badge-tag">NETWORK RECON</span>
+        </div>
+      </div>
+    </div>
+    <p><strong style="color:var(--secondary)">Masscan</strong> is a high-speed asynchronous TCP port scanner designed for large-scale port discovery. Its syntax is intentionally similar to Nmap, but its design focuses on quickly discovering open ports across many hosts rather than performing deep single-host enumeration. The official project describes it as an Internet-scale port scanner and notes that its own TCP/IP stack requires care with local networking and banner checks.</p>
+  </div>
+
+
+  <div class="section">
+    <div class="section-title">What is Masscan? (Deep Theory)</div>
+    <p><strong>Masscan</strong> is built around asynchronous packet transmission. Instead of waiting for each target to complete before moving to the next one, it can transmit probes at a configured rate and process replies as they arrive. This makes it particularly useful for the first phase of large authorized network surveys: quickly answering <em>“Which hosts appear to have this port open?”</em></p>
+    <h3>Masscan vs Nmap</h3>
+    <p>Nmap is generally stronger when you need deep enumeration of an individual host: service/version detection, NSE scripts, OS detection and detailed protocol interaction. Masscan focuses on breadth and speed. A common authorized workflow is therefore <strong>Masscan for discovery → Nmap for focused enumeration</strong>.</p>
+    <h3>How Masscan Works</h3>
+    <ol>
+      <li><strong>Target selection:</strong> provide an IP, range, CIDR block, IPv6 range, or target file.</li>
+      <li><strong>Port selection:</strong> specify TCP ports with <code>-p</code>/<code>--ports</code>; UDP ports can be prefixed with <code>U:</code>.</li>
+      <li><strong>Rate control:</strong> choose a packet transmission rate appropriate for your lab/network.</li>
+      <li><strong>Asynchronous probing:</strong> Masscan sends probes and handles responses without using the same workflow as a traditional sequential scanner.</li>
+      <li><strong>Result processing:</strong> findings can be printed or saved as list, JSON/NDJSON, XML, grepable, binary or other supported output formats.</li>
+    </ol>
+    <div class="info-box"><div class="info-icon">💡</div><div class="info-text"><strong>Key Insight:</strong> Masscan is not simply “a faster Nmap.” It makes different engineering trade-offs. Use it to discover open ports quickly, then use a deeper tool when you need service-specific enumeration.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation & First Checks</div>
+    <h3>Install on Kali Linux</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y masscan</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y masscan',this)">COPY</button></div>
+    <h3>Check Version</h3>
+    <div class="code-block"><code>masscan --version</code><button class="copy-btn" onclick="copyText('masscan --version',this)">COPY</button></div>
+    <h3>Show Help</h3>
+    <div class="code-block"><code>masscan --help</code><button class="copy-btn" onclick="copyText('masscan --help',this)">COPY</button></div>
+    <h3>List Interfaces and Routes</h3>
+    <div class="code-block"><code>sudo masscan --iflist</code><button class="copy-btn" onclick="copyText('sudo masscan --iflist',this)">COPY</button></div>
+    <p>For your Kali lab, replace <code>TARGET</code> with a machine or subnet that you own or are explicitly authorized to scan. Start with a low rate such as <code>100</code>–<code>1000</code> packets/second and increase only when the environment can safely handle it.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Masscan Command Library — 50+ Commands</div>
+    <p>Every command below is written as a learning template. <code>TARGET</code> means an authorized IP/host/range. The examples intentionally use conservative rates rather than Internet-wide scanning.</p>
+    
+    <div class="command">
+      <div class="command-title">1. Basic TCP Port Scan</div>
+      <div class="command-purpose">Scan an authorized lab target for one TCP port.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Multiple TCP Ports</div>
+      <div class="command-purpose">Scan a small, explicit TCP port set.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Port Range</div>
+      <div class="command-purpose">Scan a contiguous TCP port range.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p1-1000 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p1-1000 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Common Web Ports</div>
+      <div class="command-purpose">Quickly check common web service ports on a lab target.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80,443,8080,8443 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80,443,8080,8443 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Full TCP Port Range</div>
+      <div class="command-purpose">Check all TCP ports on a controlled target. Use a conservative rate in labs.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p0-65535 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p0-65535 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. CIDR Target</div>
+      <div class="command-purpose">Scan an authorized private lab subnet using CIDR notation.</div>
+      <div class="code-block"><code>sudo masscan 192.168.1.0/24 -p80,443 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan 192.168.1.0/24 -p80,443 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. IP Range Target</div>
+      <div class="command-purpose">Scan an explicit IP range in an authorized environment.</div>
+      <div class="code-block"><code>sudo masscan 192.168.1.10-192.168.1.50 -p22,80 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan 192.168.1.10-192.168.1.50 -p22,80 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. Multiple Targets</div>
+      <div class="command-purpose">Supply more than one authorized target range.</div>
+      <div class="code-block"><code>sudo masscan 192.168.1.10 192.168.1.20 192.168.1.30 -p80 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan 192.168.1.10 192.168.1.20 192.168.1.30 -p80 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. Named Ports Option</div>
+      <div class="command-purpose">Use the long form of the port option for readability.</div>
+      <div class="code-block"><code>sudo masscan TARGET --ports 22,80,443 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET --ports 22,80,443 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. UDP Port</div>
+      <div class="command-purpose">Scan a UDP port by prefixing the port with U:.</div>
+      <div class="code-block"><code>sudo masscan TARGET --ports U:53 --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET --ports U:53 --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">11. UDP Range</div>
+      <div class="command-purpose">Scan a controlled UDP port range.</div>
+      <div class="code-block"><code>sudo masscan TARGET --ports U:53,U:161,U:500-510 --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET --ports U:53,U:161,U:500-510 --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. TCP + UDP</div>
+      <div class="command-purpose">Combine TCP and UDP port specifications.</div>
+      <div class="code-block"><code>sudo masscan TARGET --ports 80,443,U:53 --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET --ports 80,443,U:53 --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. Banner Grabbing</div>
+      <div class="command-purpose">Request supported application banners from an authorized service.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --banners --rate 100</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --banners --rate 100',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Banner + Web Ports</div>
+      <div class="command-purpose">Attempt limited banner collection from common web ports.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80,443,8080 --banners --rate 100</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80,443,8080 --banners --rate 100',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. Set Packet Rate</div>
+      <div class="command-purpose">Control packets transmitted per second; start low in labs.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Set Maximum Rate</div>
+      <div class="command-purpose">Use the current option name for a transmission ceiling.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --max-rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --max-rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. Choose Interface</div>
+      <div class="command-purpose">Select the network interface Masscan should use.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --adapter eth0 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --adapter eth0 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Short Interface Option</div>
+      <div class="command-purpose">Use -e as the short form for the adapter/interface.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 -e eth0 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 -e eth0 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">19. List Interfaces</div>
+      <div class="command-purpose">Display interfaces and routes Masscan can use for troubleshooting.</div>
+      <div class="code-block"><code>sudo masscan --iflist</code><button class="copy-btn" onclick="copyText('sudo masscan --iflist',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Open Results Only</div>
+      <div class="command-purpose">Display only open or possibly-open ports.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --open --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --open --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">21. Verbose Output</div>
+      <div class="command-purpose">Increase console verbosity while troubleshooting a scan.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --rate 1000 -v</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --rate 1000 -v',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. More Verbose Output</div>
+      <div class="command-purpose">Increase verbosity further when investigating behavior.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --rate 1000 -vv</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --rate 1000 -vv',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Debug Output</div>
+      <div class="command-purpose">Enable additional debugging information.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --rate 1000 -d</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --rate 1000 -d',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Packet Trace</div>
+      <div class="command-purpose">Show packets sent and received for troubleshooting a lab scan.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --packet-trace --rate 100</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --packet-trace --rate 100',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. List Output</div>
+      <div class="command-purpose">Save results in Masscan list format.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --rate 1000 -oL masscan.txt</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --rate 1000 -oL masscan.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">26. JSON Output</div>
+      <div class="command-purpose">Save results as JSON for scripts and later parsing.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --rate 1000 -oJ masscan.json</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --rate 1000 -oJ masscan.json',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. NDJSON Output</div>
+      <div class="command-purpose">Write newline-delimited JSON output for streaming/parsing workflows.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --rate 1000 -oD masscan.ndjson</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --rate 1000 -oD masscan.ndjson',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. XML Output</div>
+      <div class="command-purpose">Save results in XML format for structured tooling.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --rate 1000 -oX masscan.xml</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --rate 1000 -oX masscan.xml',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">29. Grepable Output</div>
+      <div class="command-purpose">Save results in grepable output format.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --rate 1000 -oG masscan.gnmap</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --rate 1000 -oG masscan.gnmap',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">30. Binary Output</div>
+      <div class="command-purpose">Save binary results, useful for Masscan-specific workflows and resume operations.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --rate 1000 -oB masscan.bin</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --rate 1000 -oB masscan.bin',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">31. Append Output</div>
+      <div class="command-purpose">Append new results instead of replacing an existing output file.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --rate 1000 -oL masscan.txt --append-output</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --rate 1000 -oL masscan.txt --append-output',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">32. Flush Output</div>
+      <div class="command-purpose">Flush output as hosts are found so another process can read results in near real time.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --rate 1000 -oL masscan.txt --output-flush</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --rate 1000 -oL masscan.txt --output-flush',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">33. Exclude One IP</div>
+      <div class="command-purpose">Explicitly prevent a specific authorized-scope exception from being scanned.</div>
+      <div class="code-block"><code>sudo masscan 192.168.1.0/24 --exclude 192.168.1.10 -p80 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan 192.168.1.0/24 --exclude 192.168.1.10 -p80 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">34. Exclude a Range</div>
+      <div class="command-purpose">Exclude a subnet or range from the scan target set.</div>
+      <div class="code-block"><code>sudo masscan 192.168.1.0/24 --exclude 192.168.1.20-192.168.1.30 -p80 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan 192.168.1.0/24 --exclude 192.168.1.20-192.168.1.30 -p80 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">35. Exclude File</div>
+      <div class="command-purpose">Load multiple exclusions from a file.</div>
+      <div class="code-block"><code>sudo masscan 192.168.1.0/24 --excludefile exclude.txt -p80 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan 192.168.1.0/24 --excludefile exclude.txt -p80 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">36. Include File</div>
+      <div class="command-purpose">Read authorized target ranges from a file.</div>
+      <div class="code-block"><code>sudo masscan --includefile targets.txt -p80,443 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan --includefile targets.txt -p80,443 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">37. Retries</div>
+      <div class="command-purpose">Send a defined number of retries when packet loss is expected.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --retries 2 --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --retries 2 --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">38. Wait After Scan</div>
+      <div class="command-purpose">Wait briefly after transmitting so late responses can be collected.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --wait 5 --rate 1000</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --wait 5 --rate 1000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">39. Configuration Echo</div>
+      <div class="command-purpose">Generate a configuration representation instead of immediately running the scan.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --rate 1000 --echo &gt; scan.conf</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --rate 1000 --echo > scan.conf',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">40. Run Config File</div>
+      <div class="command-purpose">Run a previously prepared Masscan configuration file.</div>
+      <div class="code-block"><code>sudo masscan -c scan.conf</code><button class="copy-btn" onclick="copyText('sudo masscan -c scan.conf',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">41. Resume Scan</div>
+      <div class="command-purpose">Resume an interrupted scan using saved Masscan state/configuration.</div>
+      <div class="code-block"><code>sudo masscan --resume paused.conf</code><button class="copy-btn" onclick="copyText('sudo masscan --resume paused.conf',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">42. Configuration With Output</div>
+      <div class="command-purpose">Create a reusable configuration containing rate, ports, range, and output settings.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80,443 --rate 1000 -oX scan.xml --echo &gt; scan.conf</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80,443 --rate 1000 -oX scan.xml --echo > scan.conf',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">43. HTTP User-Agent</div>
+      <div class="command-purpose">Set a custom HTTP User-Agent for supported banner interactions in an authorized lab.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --banners --http-user-agent &#x27;SAINICOMMANDHUB-Lab&#x27; --rate 100</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --banners --http-user-agent \'SAINICOMMANDHUB-Lab\' --rate 100',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">44. Custom Hello String</div>
+      <div class="command-purpose">Provide a protocol hello string for supported banner workflows.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --banners --hello-string &#x27;GET / HTTP/1.0\r\n\r\n&#x27; --rate 100</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --banners --hello-string \'GET / HTTP/1.0\\r\\n\\r\\n\' --rate 100',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">45. Custom Hello File</div>
+      <div class="command-purpose">Read a banner hello payload from a file.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --banners --hello-file hello.txt --rate 100</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --banners --hello-file hello.txt --rate 100',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">46. IPv6 Target</div>
+      <div class="command-purpose">Scan an explicitly authorized IPv6 lab target/range.</div>
+      <div class="code-block"><code>sudo masscan 2001:db8::10 -p80 --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan 2001:db8::10 -p80 --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">47. Source Port</div>
+      <div class="command-purpose">Set the source port used by Masscan's packet generation in a controlled lab setup.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --source-port 61000 --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --source-port 61000 --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">48. Source IP</div>
+      <div class="command-purpose">Select a source IP address in a controlled network setup where you are authorized to configure it.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --source-ip 192.168.1.50 --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --source-ip 192.168.1.50 --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">49. Router MAC</div>
+      <div class="command-purpose">Explicitly specify the gateway/router MAC when automatic discovery is unsuitable.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --router-mac AA:BB:CC:DD:EE:FF --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --router-mac AA:BB:CC:DD:EE:FF --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">50. Custom Source MAC</div>
+      <div class="command-purpose">Specify the adapter/source MAC for an authorized low-level lab setup.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p80 --adapter-mac AA:BB:CC:DD:EE:FF --rate 500</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p80 --adapter-mac AA:BB:CC:DD:EE:FF --rate 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">51. Scan With Open Filter + JSON</div>
+      <div class="command-purpose">Keep only open findings and save them in JSON for automation.</div>
+      <div class="code-block"><code>sudo masscan TARGET -p22,80,443 --open --rate 1000 -oJ open.json</code><button class="copy-btn" onclick="copyText('sudo masscan TARGET -p22,80,443 --open --rate 1000 -oJ open.json',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Masscan Workflow — Discovery to Enumeration</div>
+    <div class="workflow">
+      <div class="wf-step"><div class="wf-title">Define Scope</div><div class="wf-desc">Write down the exact IPs/subnets that are authorized. Create an exclusion file for systems that must never be touched.</div></div>
+      <div class="wf-step"><div class="wf-title">Choose a Small Port Set</div><div class="wf-desc">Start with ports relevant to the exercise, such as 22, 80 and 443, instead of immediately scanning every port.</div></div>
+      <div class="wf-step"><div class="wf-title">Set a Conservative Rate</div><div class="wf-desc">Begin around 100–1000 packets/second in a normal lab and observe packet loss, router load and target behavior.</div></div>
+      <div class="wf-step"><div class="wf-title">Save Structured Output</div><div class="wf-desc">Use JSON or XML when the result will be processed later. Use list/grepable output for simple command-line workflows.</div></div>
+      <div class="wf-step"><div class="wf-title">Validate Findings</div><div class="wf-desc">A Masscan result is a discovery signal. Confirm important findings with a slower, service-aware scanner such as Nmap.</div></div>
+      <div class="wf-step"><div class="wf-title">Enumerate the Service</div><div class="wf-desc">Once open ports are known, perform focused service/version enumeration against only those authorized hosts and ports.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Important Options Reference</div>
+    <div class="table-wrap"><table><thead><tr><th>Option</th><th>Purpose</th><th>Example</th></tr></thead><tbody>
+      <tr><td>-p / --ports</td><td>Select TCP/UDP ports</td><td>-p22,80,443</td></tr>
+      <tr><td>--rate</td><td>Set desired packet transmission rate</td><td>--rate 1000</td></tr>
+      <tr><td>--max-rate</td><td>Set a maximum transmission rate</td><td>--max-rate 1000</td></tr>
+      <tr><td>--banners</td><td>Attempt limited banner collection</td><td>--banners</td></tr>
+      <tr><td>-e / --adapter</td><td>Select network interface</td><td>-e eth0</td></tr>
+      <tr><td>--iflist</td><td>Show interfaces/routes</td><td>--iflist</td></tr>
+      <tr><td>--exclude</td><td>Exclude an IP/range</td><td>--exclude 192.168.1.10</td></tr>
+      <tr><td>--excludefile</td><td>Load exclusions from a file</td><td>--excludefile exclude.txt</td></tr>
+      <tr><td>-iL / --includefile</td><td>Load target ranges from a file</td><td>--includefile targets.txt</td></tr>
+      <tr><td>--open</td><td>Show open/possibly-open ports</td><td>--open</td></tr>
+      <tr><td>--retries</td><td>Retry transmissions</td><td>--retries 2</td></tr>
+      <tr><td>--wait</td><td>Wait for late responses</td><td>--wait 5</td></tr>
+      <tr><td>-oL</td><td>List output</td><td>-oL scan.txt</td></tr>
+      <tr><td>-oJ</td><td>JSON output</td><td>-oJ scan.json</td></tr>
+      <tr><td>-oD</td><td>NDJSON output</td><td>-oD scan.ndjson</td></tr>
+      <tr><td>-oX</td><td>XML output</td><td>-oX scan.xml</td></tr>
+      <tr><td>-oG</td><td>Grepable output</td><td>-oG scan.gnmap</td></tr>
+      <tr><td>-oB</td><td>Binary output</td><td>-oB scan.bin</td></tr>
+      <tr><td>--append-output</td><td>Append instead of replacing output</td><td>--append-output</td></tr>
+      <tr><td>--resume</td><td>Resume an interrupted scan</td><td>--resume paused.conf</td></tr>
+      <tr><td>-c / --conf</td><td>Run a configuration file</td><td>-c scan.conf</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Output Formats & Automation</div>
+    <p>Masscan supports several output styles. JSON/NDJSON are convenient when another script will parse the results; XML can fit workflows that already consume Nmap-like structured data; list and grepable formats are easy to inspect from a shell.</p>
+    <h3>JSON → Quick Review</h3>
+    <div class="code-block"><code>cat masscan.json | less</code><button class="copy-btn" onclick="copyText('cat masscan.json | less',this)">COPY</button></div>
+    <h3>Extract Open Ports From List Output</h3>
+    <div class="code-block"><code>grep -i 'open' masscan.txt</code><button class="copy-btn" onclick="copyText("grep -i 'open' masscan.txt",this)">COPY</button></div>
+    <h3>Use Results for Focused Nmap Enumeration</h3>
+    <div class="code-block"><code>nmap -sC -sV -p PORTS TARGET</code><button class="copy-btn" onclick="copyText('nmap -sC -sV -p PORTS TARGET',this)">COPY</button></div>
+    <div class="info-box"><div class="info-icon">🔗</div><div class="info-text"><strong>Practical pattern:</strong> Masscan answers “where are the open ports?” while Nmap can answer “what service/version is running there and what further enumeration is useful?” Keep the second-stage scan limited to confirmed, authorized targets.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Rate, Reliability & Network Behavior</div>
+    <p>Masscan's most important operational parameter is its packet rate. The official project documentation emphasizes that the program can generate traffic extremely quickly. A rate that is reasonable for one lab can be disruptive on another network, especially when virtualization, Wi-Fi, routing equipment, IDS/IPS, or low-powered targets are involved.</p>
+    <h3>Why Start Low?</h3>
+    <ul>
+      <li><strong>Packet loss:</strong> sending faster than the path can handle can reduce the quality of results.</li>
+      <li><strong>Target load:</strong> a very fast scan can create a noticeable burst of traffic.</li>
+      <li><strong>Virtual labs:</strong> VMware/VirtualBox networking can behave differently from bare metal.</li>
+      <li><strong>Wi-Fi:</strong> wireless networks generally need more conservative rates than a controlled wired lab.</li>
+      <li><strong>Detection:</strong> high-rate scanning is noisy and can trigger IDS/IPS alerts.</li>
+    </ul>
+    <div class="warning"><div class="warning-icon">⚠</div><div class="warning-text"><strong>RATE WARNING:</strong> Never copy a high-speed Internet-scale rate into an environment you do not own or have explicit authorization to test. Masscan can generate traffic much faster than a normal manual scan. Use a low rate first and increase only when the scope and network capacity are known.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>“No Results”</h3>
+    <ul><li>Confirm the target is reachable and actually has the selected port listening.</li><li>Check that you selected the correct interface with <code>--iflist</code> / <code>-e</code>.</li><li>Try a lower rate to reduce packet loss.</li><li>Compare with a focused Nmap scan against the same authorized host.</li></ul>
+    <h3>Wrong Interface / Route</h3>
+    <ul><li>Run <code>sudo masscan --iflist</code>.</li><li>Select the intended interface explicitly with <code>-e eth0</code> or your lab interface.</li></ul>
+    <h3>Banner Scanning Causes Problems</h3>
+    <p>Masscan uses its own TCP/IP stack. The official project notes that banner checks can interact with the operating system's network stack, so source-port/IP and local firewall configuration may matter in advanced setups. For ordinary port discovery, keep the workflow simple and use Nmap or another service-aware tool for deeper protocol enumeration.</p>
+    <h3>Too Many False Negatives</h3>
+    <ul><li>Reduce <code>--rate</code>.</li><li>Increase <code>--retries</code> when appropriate.</li><li>Use <code>--wait</code> to allow late responses.</li><li>Verify the route, interface and target firewall behavior.</li></ul>
+    <h3>Need to Continue Later?</h3>
+    <p>Use Masscan configuration/state features such as <code>--echo</code>, <code>-c</code> and <code>--resume</code> so repeatable scans do not depend on manually reconstructing every option.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Masscan Mental Model</div>
+    <div class="table-wrap"><table><thead><tr><th>Question</th><th>Masscan Concept</th></tr></thead><tbody>
+      <tr><td>What should I scan?</td><td><code>TARGET / CIDR / RANGE / target file</code></td></tr>
+      <tr><td>Which services?</td><td><code>-p / --ports</code></td></tr>
+      <tr><td>How fast?</td><td><code>--rate / --max-rate</code></td></tr>
+      <tr><td>Which interface?</td><td><code>-e / --adapter</code></td></tr>
+      <tr><td>What should be excluded?</td><td><code>--exclude / --excludefile</code></td></tr>
+      <tr><td>Where should results go?</td><td><code>-oL / -oJ / -oD / -oX / -oG / -oB</code></td></tr>
+      <tr><td>Need application details?</td><td><code>--banners</code> or a deeper service scanner</td></tr>
+      <tr><td>Need repeatability?</td><td><code>--echo / -c / --resume</code></td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Official Documentation</div>
+    <p>The command reference on this page follows the Masscan project's published CLI/README documentation. For exact version-specific behavior, always check the help output of the Masscan build installed on your Kali system.</p>
+    <div class="code-block"><code>masscan --help
+masscan --version</code><button class="copy-btn" onclick="copyText('masscan --help\nmasscan --version',this)">COPY</button></div>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Masscan is a high-speed network reconnaissance tool. Use it only against systems and networks you own or have explicit permission to test.
+      <br><br><strong>Safe Learning:</strong>
+      <br>✅ Your own Kali/VMware/VirtualBox lab
+      <br>✅ TryHackMe, Hack The Box, VulnHub and other authorized environments
+      <br>✅ Internal networks with written scope
+      <br>✅ CTFs and cybersecurity training
+      <br><br><strong>Avoid:</strong>
+      <br>❌ Scanning random public IP ranges
+      <br>❌ Internet-wide scans without explicit authorization
+      <br>❌ Using high packet rates against networks you do not control
+      <br>❌ Treating scan results as permission to attack a discovered service
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASSCAN // DISCOVER FAST. ENUMERATE SMART.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

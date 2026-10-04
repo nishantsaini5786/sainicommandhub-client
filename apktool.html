@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Apktool — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-intermediate{background:rgba(255,189,46,.12);color:#ffbd2e;border:1px solid rgba(255,189,46,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden;animation:cmdIn .5s ease backwards}
+@keyframes cmdIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command.dangerous{border-color:rgba(255,0,64,.3);background:rgba(255,0,64,.04)}
+.command.dangerous::before{background:linear-gradient(180deg,var(--neon-red),var(--accent));opacity:1}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.danger-badge{font-family:var(--font-mono);font-size:.58rem;padding:3px 10px;border-radius:12px;background:rgba(255,0,64,.15);border:1px solid rgba(255,0,64,.4);color:var(--neon-red);letter-spacing:.5px;animation:dangerBlink 1.5s ease-in-out infinite}
+@keyframes dangerBlink{0%,100%{opacity:1}50%{opacity:.6}}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">📱</div>
+      <div class="hero-info">
+        <div class="hero-name">APKTOOL</div>
+        <div class="hero-cat">Reverse Engineering · Android APK Tool</div>
+        <div class="hero-badges">
+          <span class="badge badge-intermediate">Intermediate</span>
+          <span class="badge badge-count">25+ Commands</span>
+          <span class="badge badge-tag">Android</span>
+          <span class="badge badge-tag">APK</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Apktool</strong> is a reverse engineering tool for Android APK files. It decodes the binary resources and <strong>DEX bytecode</strong> into near-original form, allowing you to inspect, modify, and rebuild Android applications. It's a must-have for mobile security researchers, malware analysts, and CTF players.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Apktool? (Deep Theory)</div>
+    <p>Android apps ship as <strong>APK files</strong> (Android Package Kit). An APK is essentially a ZIP archive containing compiled code and resources. Here's what's inside:</p>
+
+    <ul>
+      <li><strong>classes.dex</strong> — Dalvik Executable — compiled Java/Kotlin bytecode</li>
+      <li><strong>AndroidManifest.xml</strong> — Binary XML declaring permissions, activities, services</li>
+      <li><strong>res/</strong> — Compiled resources (layouts, strings, images)</li>
+      <li><strong>resources.arsc</strong> — Binary resource index</li>
+      <li><strong>lib/</strong> — Native libraries (.so files)</li>
+      <li><strong>META-INF/</strong> — Signature files (CERT.RSA, MANIFEST.MF)</li>
+      <li><strong>assets/</strong> — Raw asset files</li>
+    </ul>
+
+    <h3>The Problem</h3>
+    <p>You can't just unzip an APK and read the code. The DEX is bytecode (like .class files), the XML is binary, and the resources are compiled. <strong>Apktool solves this</strong> — it reverses everything into human-readable form.</p>
+
+    <h3>What Apktool Does</h3>
+    <ul>
+      <li><strong>Decodes</strong> DEX → Smali (assembly-like, human-readable)</li>
+      <li><strong>Decodes</strong> binary XML → plain XML</li>
+      <li><strong>Decodes</strong> resources.arsc → readable strings and layouts</li>
+      <li><strong>Rebuilds</strong> modified files back into a working APK</li>
+      <li><strong>Signs</strong> the rebuilt APK for testing</li>
+    </ul>
+
+    <h3>Smali — The Intermediate Language</h3>
+    <p>When Apktool decodes an APK, Java/Kotlin code becomes <strong>Smali</strong> — a human-readable assembly for the Dalvik VM. It's not Java, but it's close enough to understand and modify. Example:</p>
+    <div class="code-block"><code>.method public isPremium()Z
+    .locals 1
+    const/4 v0, 0x0
+    return v0
+.end method</code><button class="copy-btn" onclick="copyText('.method public isPremium()Z\n    .locals 1\n    const/4 v0, 0x0\n    return v0\n.end method',this)">COPY</button></div>
+    <p>This returns <code>false</code> always. Change <code>0x0</code> to <code>0x1</code>, rebuild, sign — premium unlocked! That's the power of Apktool.</p>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Note:</strong> Apktool is a <strong>decoder + rebuilder</strong>, not a full decompiler. For Java source code, use <strong>jadx</strong>. Apktool + jadx is the ultimate combo — jadx for reading, Apktool for editing.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. Mobile App Security Auditing</h3>
+    <p>Pentesters decode APKs to inspect permissions, hardcoded secrets, insecure API keys, and improper data storage.</p>
+
+    <h3>2. Malware Analysis</h3>
+    <p>Android malware analysts decode malicious APKs to understand behavior — C2 servers, data exfiltration, permission abuse.</p>
+
+    <h3>3. CTF Challenges</h3>
+    <p>Android CTF challenges often hide flags in Smali code, resources, or native libraries. Apktool reveals them.</p>
+
+    <h3>4. App Modding & Patching</h3>
+    <p>Modders patch APKs — unlock premium features, remove ads, bypass root detection, disable SSL pinning for testing.</p>
+
+    <h3>5. Removing Certificate Pinning</h3>
+    <p>Security researchers patch apps to disable SSL pinning so they can intercept traffic with Burp Suite.</p>
+
+    <h3>6. Localization & Rebranding</h3>
+    <p>Companies modify APK strings, icons, and resources to create white-label versions.</p>
+
+    <h3>7. Privacy Analysis</h3>
+    <p>Decode apps to see what data they collect, which trackers they use, and how they handle user data.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux / Debian / Ubuntu</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y apktool</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y apktool',this)">COPY</button></div>
+
+    <h3>Manual Install (Latest Version)</h3>
+    <div class="code-block"><code>wget https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool -O apktool
+wget https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar
+chmod +x apktool
+sudo mv apktool /usr/local/bin/
+sudo mv apktool_2.9.3.jar /usr/local/bin/apktool.jar</code><button class="copy-btn" onclick="copyText('wget https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool -O apktool && wget https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar && chmod +x apktool && sudo mv apktool /usr/local/bin/ && sudo mv apktool_2.9.3.jar /usr/local/bin/apktool.jar',this)">COPY</button></div>
+
+    <h3>macOS (Homebrew)</h3>
+    <div class="code-block"><code>brew install apktool</code><button class="copy-btn" onclick="copyText('brew install apktool',this)">COPY</button></div>
+
+    <h3>Verify</h3>
+    <div class="code-block"><code>apktool --version</code><button class="copy-btn" onclick="copyText('apktool --version',this)">COPY</button></div>
+    <div class="command-output">2.9.3</div>
+
+    <div class="info-box">
+      <div class="info-icon">☕</div>
+      <div class="info-text">
+        <strong>Requirement:</strong> Apktool needs <strong>Java 8+</strong> installed. Check with <code>java -version</code>. If missing: <code>sudo apt install default-jdk</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Decoding Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Decode APK (Standard)</div>
+      <div class="command-purpose">Extracts and decodes APK to a folder with same name as file.</div>
+      <div class="code-block"><code>apktool d app.apk</code><button class="copy-btn" onclick="copyText('apktool d app.apk',this)">COPY</button></div>
+      <div class="command-output">I: Using Apktool 2.9.3 on app.apk
+I: Loading resource table...
+I: Decoding AndroidManifest.xml with resources...
+I: Loading resource table from file...
+I: Regular manifest package...
+I: Decoding file-resources...
+I: Decoding values */* XMLs...
+I: Baksmaling classes.dex...
+I: Copying assets and libs...
+I: Copying unknown files...
+I: Copying original files...</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Decode to Custom Directory</div>
+      <div class="command-block"><code>apktool d app.apk -o my_output_folder</code><button class="copy-btn" onclick="copyText('apktool d app.apk -o my_output_folder',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Force Decode (Overwrite Existing)</div>
+      <div class="command-purpose">If output folder exists, overwrite without prompting.</div>
+      <div class="code-block"><code>apktool d -f app.apk</code><button class="copy-btn" onclick="copyText('apktool d -f app.apk',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Decode Without Source (Resources Only)</div>
+      <div class="command-purpose">Skip DEX decoding — faster, only resources and manifest.</div>
+      <div class="code-block"><code>apktool d -s app.apk</code><button class="copy-btn" onclick="copyText('apktool d -s app.apk',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Decode Without Resources (Smali Only)</div>
+      <div class="command-purpose">Only DEX → Smali. Skip resource decoding.</div>
+      <div class="code-block"><code>apktool d -r app.apk</code><button class="copy-btn" onclick="copyText('apktool d -r app.apk',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. Decode with Debug Info</div>
+      <div class="command-purpose">Preserve line numbers for debugging.</div>
+      <div class="code-block"><code>apktool d -d app.apk</code><button class="copy-btn" onclick="copyText('apktool d -d app.apk',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Rebuilding Commands</div>
+
+    <div class="command">
+      <div class="command-title">7. Rebuild APK</div>
+      <div class="command-purpose">Package modified folder back into APK.</div>
+      <div class="code-block"><code>apktool b app_folder</code><button class="copy-btn" onclick="copyText('apktool b app_folder',this)">COPY</button></div>
+      <div class="command-output">I: Using Apktool 2.9.3
+I: Checking whether sources has changed...
+I: Smaling smali folder into classes.dex...
+I: Checking whether resources has changed...
+I: Building resources...
+I: Copying libs...
+I: Building apk file...
+I: Copying unknown files/dir...
+I: Built apk into: app_folder/dist/app.apk</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. Rebuild with Custom Output</div>
+      <div class="command-block"><code>apktool b app_folder -o modified.apk</code><button class="copy-btn" onclick="copyText('apktool b app_folder -o modified.apk',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. Force Rebuild</div>
+      <div class="command-block"><code>apktool b -f app_folder</code><button class="copy-btn" onclick="copyText('apktool b -f app_folder',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Rebuild with Debug Info</div>
+      <div class="command-block"><code>apktool b -d app_folder</code><button class="copy-btn" onclick="copyText('apktool b -d app_folder',this)">COPY</button></div>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">📝</div>
+      <div class="info-text">
+        <strong>Important:</strong> After rebuilding, the APK is <strong>unsigned</strong>. Android will refuse to install it. You must sign it (next section).
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Signing the Rebuilt APK</div>
+
+    <div class="command">
+      <div class="command-title">11. Generate Keystore (One Time)</div>
+      <div class="command-purpose">Create your signing key.</div>
+      <div class="code-block"><code>keytool -genkey -v -keystore mykey.keystore -alias mykey -keyalg RSA -keysize 2048 -validity 10000</code><button class="copy-btn" onclick="copyText('keytool -genkey -v -keystore mykey.keystore -alias mykey -keyalg RSA -keysize 2048 -validity 10000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Sign APK with apksigner (Modern)</div>
+      <div class="command-purpose">Android's official signing tool.</div>
+      <div class="code-block"><code>apksigner sign --ks mykey.keystore --ks-key-alias mykey modified.apk</code><button class="copy-btn" onclick="copyText('apksigner sign --ks mykey.keystore --ks-key-alias mykey modified.apk',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. Sign APK with jarsigner (Legacy)</div>
+      <div class="command-block"><code>jarsigner -verbose -keystore mykey.keystore modified.apk mykey</code><button class="copy-btn" onclick="copyText('jarsigner -verbose -keystore mykey.keystore modified.apk mykey',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Zipalign (Optimize)</div>
+      <div class="command-purpose">Align APK for better runtime performance.</div>
+      <div class="code-block"><code>zipalign -v 4 modified.apk final.apk</code><button class="copy-btn" onclick="copyText('zipalign -v 4 modified.apk final.apk',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. Verify Signature</div>
+      <div class="command-block"><code>apksigner verify final.apk</code><button class="copy-btn" onclick="copyText('apksigner verify final.apk',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Frameworks & Resources</div>
+
+    <div class="command">
+      <div class="command-title">16. Install Framework</div>
+      <div class="command-purpose">Install framework-res.apk from a ROM/device for system app decoding.</div>
+      <div class="code-block"><code>apktool if framework-res.apk</code><button class="copy-btn" onclick="copyText('apktool if framework-res.apk',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. List Installed Frameworks</div>
+      <div class="command-block"><code>apktool list-frameworks</code><button class="copy-btn" onclick="copyText('apktool list-frameworks',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Empty Framework Directory</div>
+      <div class="command-purpose">Clear cached frameworks if decode fails.</div>
+      <div class="code-block"><code>apktool empty-framework-dir</code><button class="copy-btn" onclick="copyText('apktool empty-framework-dir',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Advanced Commands</div>
+
+    <div class="command">
+      <div class="command-title">19. Decode a Specific DEX File</div>
+      <div class="command-purpose">If APK has multiple DEX files (multidex), decode all.</div>
+      <div class="code-block"><code>apktool d app.apk --only-main-classes</code><button class="copy-btn" onclick="copyText('apktool d app.apk --only-main-classes',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Decode Using Specific API Level</div>
+      <div class="command-purpose">Some APKs need a specific Android API for correct decoding.</div>
+      <div class="code-block"><code>apktool d -p framework-res.apk app.apk</code><button class="copy-btn" onclick="copyText('apktool d -p framework-res.apk app.apk',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">21. Change App Version (Smali)</div>
+      <div class="command-purpose">After decoding, edit <code>apktool.yml</code> to change version.</div>
+      <div class="code-block"><code>nano app_folder/apktool.yml</code><button class="copy-btn" onclick="copyText('nano app_folder/apktool.yml',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Modify AndroidManifest.xml</div>
+      <div class="command-purpose">After decode, manifest is plain XML — add permissions, activities, etc.</div>
+      <div class="code-block"><code>nano app_folder/AndroidManifest.xml</code><button class="copy-btn" onclick="copyText('nano app_folder/AndroidManifest.xml',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">23. Patch Root Detection <span class="danger-badge">⚠ AUTHORIZED TESTING ONLY</span></div>
+      <div class="command-purpose">Find <code>isRooted</code> method in Smali and force it to return false.</div>
+      <div class="code-block"><code>grep -r "isRooted" app_folder/smali/</code><button class="copy-btn" onclick="copyText('grep -r \"isRooted\" app_folder/smali/',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">24. Patch SSL Pinning <span class="danger-badge">⚠ AUTHORIZED TESTING ONLY</span></div>
+      <div class="command-purpose">Look for CertificatePinner in Smali and disable it.</div>
+      <div class="code-block"><code>grep -r "CertificatePinner" app_folder/smali/</code><button class="copy-btn" onclick="copyText('grep -r \"CertificatePinner\" app_folder/smali/',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. Extract Native Libraries</div>
+      <div class="command-purpose">APK's .so files are in lib/ folder — analyze with Ghidra/IDA.</div>
+      <div class="code-block"><code>ls app_folder/lib/</code><button class="copy-btn" onclick="copyText('ls app_folder/lib/',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">26. Extract Strings for Analysis</div>
+      <div class="command-block"><code>strings app_folder/classes.dex | grep -i "api\|key\|secret\|password"</code><button class="copy-btn" onclick="copyText('strings app_folder/classes.dex | grep -i \"api\\|key\\|secret\\|password\"',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Complete Workflow — Patch & Rebuild</div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Decode the APK</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>apktool d target.apk</code><button class="copy-btn" onclick="copyText('apktool d target.apk',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Locate the Target Code</div>
+        <div class="wf-desc">Search Smali folder for method to patch.<br><div class="code-block" style="margin-top:10px"><code>grep -r "isPremium" target/smali/</code><button class="copy-btn" onclick="copyText('grep -r \"isPremium\" target/smali/',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Edit the Smali File</div>
+        <div class="wf-desc">Open in editor, modify return value.<br><div class="code-block" style="margin-top:10px"><code>nano target/smali/com/example/App.smali</code><button class="copy-btn" onclick="copyText('nano target/smali/com/example/App.smali',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Rebuild the APK</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>apktool b target -o patched.apk</code><button class="copy-btn" onclick="copyText('apktool b target -o patched.apk',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Zipalign</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>zipalign -v 4 patched.apk patched-aligned.apk</code><button class="copy-btn" onclick="copyText('zipalign -v 4 patched.apk patched-aligned.apk',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Sign</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>apksigner sign --ks mykey.keystore --ks-key-alias mykey patched-aligned.apk</code><button class="copy-btn" onclick="copyText('apksigner sign --ks mykey.keystore --ks-key-alias mykey patched-aligned.apk',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 7: Install & Test</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>adb install patched-aligned.apk</code><button class="copy-btn" onclick="copyText('adb install patched-aligned.apk',this)">COPY</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Command</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>d</code></td><td>Decode</td><td>Decode APK to folder</td></tr>
+          <tr><td><code>b</code></td><td>Build</td><td>Rebuild APK from folder</td></tr>
+          <tr><td><code>if</code></td><td>Install Framework</td><td>Install framework-res.apk</td></tr>
+          <tr><td><code>-f</code></td><td>Both</td><td>Force overwrite</td></tr>
+          <tr><td><code>-o</code></td><td>Both</td><td>Output directory/file</td></tr>
+          <tr><td><code>-s</code></td><td>Decode</td><td>Skip sources (Smali)</td></tr>
+          <tr><td><code>-r</code></td><td>Decode</td><td>Skip resources</td></tr>
+          <tr><td><code>-d</code></td><td>Both</td><td>Debug info</td></tr>
+          <tr><td><code>-p</code></td><td>Decode</td><td>Use specific framework</td></tr>
+          <tr><td><code>--only-main-classes</code></td><td>Decode</td><td>Skip non-main DEX files</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Apktool vs Other Tools</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Apktool</strong></td><td>Decode/rebuild APK</td><td>Editing Smali + resources</td></tr>
+          <tr><td><strong>jadx</strong></td><td>DEX → Java source</td><td>Reading code</td></tr>
+          <tr><td><strong>dex2jar</strong></td><td>DEX → JAR</td><td>Using Java tools</td></tr>
+          <tr><td><strong>Frida</strong></td><td>Runtime instrumentation</td><td>Dynamic analysis</td></tr>
+          <tr><td><strong>Objection</strong></td><td>Runtime manipulation</td><td>Bypassing SSL pinning at runtime</td></tr>
+          <tr><td><strong>Ghidra/IDA</strong></td><td>Native lib analysis</td><td>Analyzing .so files</td></tr>
+          <tr><td><strong>MobSF</strong></td><td>Automated analysis</td><td>Quick overview</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"brut.androlib.exception" during decode</h3>
+    <ul>
+      <li>Framework mismatch — try <code>apktool if framework-res.apk</code></li>
+      <li>Clear cached frameworks: <code>apktool empty-framework-dir</code></li>
+      <li>Update Apktool: <code>sudo apt install --only-upgrade apktool</code></li>
+    </ul>
+
+    <h3>"Rebuild fails with resource errors"</h3>
+    <ul>
+      <li>Decode with <code>--only-main-classes</code> to skip problematic files</li>
+      <li>Try <code>apktool b -f folder</code></li>
+      <li>Check <code>apktool.yml</code> for version mismatches</li>
+    </ul>
+
+    <h3>"App crashes after rebuild"</h3>
+    <ul>
+      <li>Ensure signature is valid: <code>apksigner verify app.apk</code></li>
+      <li>Check that zipalign was run</li>
+      <li>Some apps use signature verification — need to patch</li>
+    </ul>
+
+    <h3>"APK won't install"</h3>
+    <ul>
+      <li>Uninstall original first (signature mismatch)</li>
+      <li>Enable "Unknown sources"</li>
+      <li>Signature check: <code>adb install -r patched.apk</code></li>
+    </ul>
+
+    <h3>"Smali code is unreadable"</h3>
+    <ul>
+      <li>Use jadx alongside Apktool for Java view</li>
+      <li>Smali is assembly-like, not Java — takes practice</li>
+      <li>Check original file naming pattern (a.smali, b.smali = obfuscated)</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Reverse engineering apps you don't own or lack permission to modify may violate copyright laws, EULAs, and the DMCA. Only use Apktool on:
+      <br>• Apps you own or developed
+      <br>• Apps you have written permission to test
+      <br>• Security research with proper authorization
+      <br>• CTF challenges and learning labs
+      <br>Publishing modified versions of proprietary apps is <strong>illegal</strong>.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+// PROTECTED
+(function(){
+  var t = localStorage.getItem("sch_token");
+  var u = localStorage.getItem("sch_user");
+  if (!t || !u) { window.location.replace("login.html"); return; }
+  try {
+    JSON.parse(u);
+    if (!t.includes(".") || t.split(".").length !== 3) throw 0;
+  } catch(e) {
+    localStorage.removeItem("sch_token");
+    localStorage.removeItem("sch_user");
+    window.location.replace("login.html");
+  }
+})();
+
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(()=>{});
+}
+function initMatrix(){
+  const c=document.getElementById('matrix');if(!c)return;
+  const ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const fs=14;let cols=Math.floor(c.width/fs);let drops=Array(cols).fill(1);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(8,5,13,.03)';ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';ctx.font=fs+'px JetBrains Mono,monospace';
+    for(let i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  addEventListener('resize',()=>{resize();cols=Math.floor(c.width/fs);drops=Array(cols).fill(1)});
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

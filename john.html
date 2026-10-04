@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>John the Ripper — Password Auditing Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🔓</div>
+      <div class="hero-info">
+        <div class="hero-name">JOHN THE RIPPER</div>
+        <div class="hero-cat">PASSWORD AUDITING / HASH CRACKING</div>
+        <div class="hero-badges">
+          <span class="badge badge-advanced">ADVANCED</span>
+          <span class="badge badge-count">30+ COMMANDS</span>
+          <span class="badge badge-tag">PASSWORD AUDITING</span>
+        </div>
+      </div>
+    </div>
+    <p><strong style="color:var(--secondary)">John the Ripper</strong> is an offline password-security auditing tool that tests password hashes against candidate passwords and cracking modes. It is widely used for authorized security labs, CTFs, password-audit exercises, and forensic workflows.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is John the Ripper? (Deep Theory)</div>
+    <p><strong>John the Ripper (JtR)</strong> is designed to help security professionals evaluate password strength from password hashes. It works offline: the tool receives hashes, generates password candidates, applies transformations or attack modes, hashes those candidates, and compares the results with the supplied hashes.</p>
+    <h3>How John Works</h3>
+    <ol>
+      <li>Obtain password hashes from an authorized lab or audit source.</li>
+      <li>Identify or auto-detect the hash format where possible.</li>
+      <li>Choose a cracking mode such as wordlist, single, incremental, or mask.</li>
+      <li>John generates candidates and compares their hashes against the target hash set.</li>
+      <li>Recovered passwords can be displayed with <code>--show</code>.</li>
+    </ol>
+    <h3>Why It Is Useful</h3>
+    <ul>
+      <li><strong>Password auditing:</strong> identify weak passwords in controlled environments.</li>
+      <li><strong>CTF/lab work:</strong> recover intentionally vulnerable credentials.</li>
+      <li><strong>Format testing:</strong> work with many password-hash formats and protected files.</li>
+      <li><strong>Rule-based testing:</strong> apply common password mutations to wordlists.</li>
+    </ul>
+    <div class="info-box"><div class="info-icon">💡</div><div class="info-text"><strong>Key Insight:</strong> John does not magically decrypt every password hash. Success depends on the hash format, candidate quality, attack mode, password complexity, available hardware, and configuration.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation & First Check</div>
+    <h3>Install on Kali Linux</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y john</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y john',this)">COPY</button></div>
+    <h3>Check Version / Help</h3>
+    <div class="code-block"><code>john --version
+john --help</code><button class="copy-btn" onclick="copyText('john --version\njohn --help',this)">COPY</button></div>
+    <h3>List Supported Formats</h3>
+    <div class="code-block"><code>john --list=formats</code><button class="copy-btn" onclick="copyText('john --list=formats',this)">COPY</button></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">John the Ripper Commands</div>
+
+    <div class="command"><div class="command-title">1. Show Help</div><div class="command-purpose">Display John command-line options.</div><div class="code-block"><code>john --help</code><button class="copy-btn" onclick="copyText('john --help',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">2. Show Version</div><div class="command-purpose">Check the installed John version.</div><div class="code-block"><code>john --version</code><button class="copy-btn" onclick="copyText('john --version',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">3. List Supported Formats</div><div class="command-purpose">Display hash formats supported by the installed build.</div><div class="code-block"><code>john --list=formats</code><button class="copy-btn" onclick="copyText('john --list=formats',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">4. Basic Wordlist Attack</div><div class="command-purpose">Test a hash file against a supplied password wordlist in an authorized lab.</div><div class="code-block"><code>john --wordlist=passwords.txt hashes.txt</code><button class="copy-btn" onclick="copyText('john --wordlist=passwords.txt hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">5. Wordlist With a Specific Format</div><div class="command-purpose">Explicitly tell John which hash format to use when the format is known.</div><div class="code-block"><code>john --format=FORMAT --wordlist=passwords.txt hashes.txt</code><button class="copy-btn" onclick="copyText('john --format=FORMAT --wordlist=passwords.txt hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">6. Show Cracked Passwords</div><div class="command-purpose">Display credentials John has already recovered for the loaded hash file.</div><div class="code-block"><code>john --show hashes.txt</code><button class="copy-btn" onclick="copyText('john --show hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">7. Single Crack Mode</div><div class="command-purpose">Generate candidates from account information and test them.</div><div class="code-block"><code>john --single hashes.txt</code><button class="copy-btn" onclick="copyText('john --single hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">8. Incremental Mode</div><div class="command-purpose">Use John's incremental/brute-force style candidate generation in a controlled lab.</div><div class="code-block"><code>john --incremental hashes.txt</code><button class="copy-btn" onclick="copyText('john --incremental hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">9. Mask Mode</div><div class="command-purpose">Generate candidates matching a defined character pattern.</div><div class="code-block"><code>john --mask='?d?d?d?d' hashes.txt</code><button class="copy-btn" onclick="copyText("john --mask='?d?d?d?d' hashes.txt",this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">10. Apply Rules to a Wordlist</div><div class="command-purpose">Apply John word mangling rules to candidate words.</div><div class="code-block"><code>john --wordlist=passwords.txt --rules hashes.txt</code><button class="copy-btn" onclick="copyText('john --wordlist=passwords.txt --rules hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">11. Use a Named Rule Set</div><div class="command-purpose">Select a specific rules section from the John configuration.</div><div class="code-block"><code>john --wordlist=passwords.txt --rules=Wordlist hashes.txt</code><button class="copy-btn" onclick="copyText('john --wordlist=passwords.txt --rules=Wordlist hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">12. Check Current Status</div><div class="command-purpose">Display progress, speed, and current cracking status.</div><div class="code-block"><code>john --status</code><button class="copy-btn" onclick="copyText('john --status',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">13. Restore an Interrupted Session</div><div class="command-purpose">Resume a John session after stopping it.</div><div class="code-block"><code>john --restore</code><button class="copy-btn" onclick="copyText('john --restore',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">14. Create a Named Session</div><div class="command-purpose">Give a cracking job a session name for easier resume/status control.</div><div class="code-block"><code>john --session=lab01 --wordlist=passwords.txt hashes.txt</code><button class="copy-btn" onclick="copyText('john --session=lab01 --wordlist=passwords.txt hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">15. Restore a Named Session</div><div class="command-purpose">Resume a previously named John session.</div><div class="code-block"><code>john --restore=lab01</code><button class="copy-btn" onclick="copyText('john --restore=lab01',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">16. List Sessions</div><div class="command-purpose">View available session information on the local system.</div><div class="code-block"><code>john --status=lab01</code><button class="copy-btn" onclick="copyText('john --status=lab01',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">17. Benchmark John</div><div class="command-purpose">Measure cracking performance on the local machine.</div><div class="code-block"><code>john --test</code><button class="copy-btn" onclick="copyText('john --test',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">18. Benchmark a Format</div><div class="command-purpose">Benchmark a particular hash format when supported.</div><div class="code-block"><code>john --test --format=FORMAT</code><button class="copy-btn" onclick="copyText('john --test --format=FORMAT',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">19. Show Cracked Passwords for a Format</div><div class="command-purpose">Display recovered entries while explicitly selecting the format.</div><div class="code-block"><code>john --format=FORMAT --show hashes.txt</code><button class="copy-btn" onclick="copyText('john --format=FORMAT --show hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">20. Generate Candidates Only</div><div class="command-purpose">Use John's candidate-generation mode for inspecting attack behavior.</div><div class="code-block"><code>john --wordlist=passwords.txt --stdout</code><button class="copy-btn" onclick="copyText('john --wordlist=passwords.txt --stdout',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">21. Wordlist With Custom Rules and Candidate Output</div><div class="command-purpose">Inspect transformed candidates before using them in an audit.</div><div class="code-block"><code>john --wordlist=passwords.txt --rules --stdout</code><button class="copy-btn" onclick="copyText('john --wordlist=passwords.txt --rules --stdout',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">22. Convert Linux Password Files</div><div class="command-purpose">Combine authorized passwd/shadow files into a John-readable input.</div><div class="code-block"><code>unshadow passwd.txt shadow.txt &gt; hashes.txt</code><button class="copy-btn" onclick="copyText('unshadow passwd.txt shadow.txt > hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">23. Extract Hashes From a ZIP Archive</div><div class="command-purpose">Create a John-compatible hash from an authorized protected ZIP file.</div><div class="code-block"><code>zip2john protected.zip &gt; zip_hash.txt</code><button class="copy-btn" onclick="copyText('zip2john protected.zip > zip_hash.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">24. Extract Hashes From a RAR Archive</div><div class="command-purpose">Prepare an authorized protected RAR archive for offline password auditing.</div><div class="code-block"><code>rar2john protected.rar &gt; rar_hash.txt</code><button class="copy-btn" onclick="copyText('rar2john protected.rar > rar_hash.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">25. Extract Hashes From an SSH Private Key</div><div class="command-purpose">Prepare an authorized encrypted SSH key for offline password auditing.</div><div class="code-block"><code>ssh2john id_rsa &gt; ssh_hash.txt</code><button class="copy-btn" onclick="copyText('ssh2john id_rsa > ssh_hash.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">26. Extract a PDF Password Hash</div><div class="command-purpose">Prepare an authorized password-protected PDF for offline auditing.</div><div class="code-block"><code>pdf2john protected.pdf &gt; pdf_hash.txt</code><button class="copy-btn" onclick="copyText('pdf2john protected.pdf > pdf_hash.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">27. Extract a KeePass Hash</div><div class="command-purpose">Prepare an authorized KeePass database for offline password auditing.</div><div class="code-block"><code>keepass2john vault.kdbx &gt; keepass_hash.txt</code><button class="copy-btn" onclick="copyText('keepass2john vault.kdbx > keepass_hash.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">28. Use a Custom Pot File</div><div class="command-purpose">Store recovered passwords in a separate local pot file for an isolated project.</div><div class="code-block"><code>john --pot=lab.pot --wordlist=passwords.txt hashes.txt</code><button class="copy-btn" onclick="copyText('john --pot=lab.pot --wordlist=passwords.txt hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">29. Force a Known Format</div><div class="command-purpose">Use this when automatic format detection is ambiguous and you know the correct format.</div><div class="code-block"><code>john --format=FORMAT hashes.txt</code><button class="copy-btn" onclick="copyText('john --format=FORMAT hashes.txt',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">30. Combine Format and Rules</div><div class="command-purpose">Run a rule-based wordlist audit against a known hash format.</div><div class="code-block"><code>john --format=FORMAT --wordlist=passwords.txt --rules hashes.txt</code><button class="copy-btn" onclick="copyText('john --format=FORMAT --wordlist=passwords.txt --rules hashes.txt',this)">COPY</button></div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Workflow</div>
+    <h3>1. Identify the Hash Format</h3>
+    <div class="code-block"><code>john --list=formats</code><button class="copy-btn" onclick="copyText('john --list=formats',this)">COPY</button></div>
+    <h3>2. Prepare Your Authorized Hash File</h3>
+    <div class="code-block"><code>cat hashes.txt</code><button class="copy-btn" onclick="copyText('cat hashes.txt',this)">COPY</button></div>
+    <h3>3. Start With a Wordlist</h3>
+    <div class="code-block"><code>john --wordlist=passwords.txt hashes.txt</code><button class="copy-btn" onclick="copyText('john --wordlist=passwords.txt hashes.txt',this)">COPY</button></div>
+    <h3>4. Check Results</h3>
+    <div class="code-block"><code>john --show hashes.txt</code><button class="copy-btn" onclick="copyText('john --show hashes.txt',this)">COPY</button></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Important Options Reference</div>
+    <div class="table-wrap"><table><thead><tr><th>Option</th><th>Purpose</th><th>Example</th></tr></thead><tbody>
+      <tr><td>--wordlist=FILE</td><td>Use a password candidate list</td><td>--wordlist=passwords.txt</td></tr>
+      <tr><td>--rules</td><td>Apply word mangling rules</td><td>--rules</td></tr>
+      <tr><td>--format=FORMAT</td><td>Force a known hash format</td><td>--format=FORMAT</td></tr>
+      <tr><td>--show</td><td>Display recovered passwords</td><td>--show hashes.txt</td></tr>
+      <tr><td>--status</td><td>Show running job status</td><td>john --status</td></tr>
+      <tr><td>--restore</td><td>Resume a stopped session</td><td>john --restore</td></tr>
+      <tr><td>--session=NAME</td><td>Name a cracking session</td><td>--session=lab01</td></tr>
+      <tr><td>--incremental</td><td>Use incremental candidate generation</td><td>--incremental</td></tr>
+      <tr><td>--mask=MASK</td><td>Generate candidates from a mask</td><td>--mask='?d?d?d?d'</td></tr>
+      <tr><td>--pot=FILE</td><td>Use a custom pot file</td><td>--pot=lab.pot</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Supported Lab Workflows</div>
+    <ul>
+      <li><strong>Linux hashes:</strong> prepare authorized passwd/shadow data with <code>unshadow</code>.</li>
+      <li><strong>Archives:</strong> extract hashes from protected ZIP/RAR files you own or are authorized to audit.</li>
+      <li><strong>Documents:</strong> prepare password-protected PDF or KeePass files for offline testing.</li>
+      <li><strong>CTFs:</strong> use supplied challenge hashes and wordlists to recover intentionally vulnerable credentials.</li>
+      <li><strong>Password audits:</strong> measure whether organizational password choices are resistant to offline guessing.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting & Common Issues</div>
+    <h3>Hash Format Not Recognized</h3><ul><li>Check the input file for accidental spaces, line breaks, or missing fields.</li><li>Use <code>john --list=formats</code> and explicitly specify the known format.</li></ul>
+    <h3>No Passwords Recovered</h3><ul><li>Try a better wordlist or authorized candidate set.</li><li>Check whether the password is likely outside the chosen attack mode.</li><li>Confirm the hash format is correct.</li></ul>
+    <h3>Very Slow Performance</h3><ul><li>Use <code>john --test</code> to benchmark the local build.</li><li>Choose a focused wordlist/rule set instead of unnecessarily broad candidate generation.</li></ul>
+    <h3>Session Interrupted</h3><ul><li>Use <code>john --status</code> to inspect a running job.</li><li>Use <code>john --restore</code> or a named session to continue.</li></ul>
+    <h3>Archive Converter Missing</h3><ul><li>Check whether the relevant <code>*2john</code> utility is installed and available in your PATH.</li><li>Use the converter that matches the exact file format.</li></ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> John the Ripper is a password-auditing and offline hash-testing tool. Use it only with hashes, accounts, archives, documents, and systems you own or have explicit permission to test.
+      <br><br><strong>Legal / Safe Use:</strong>
+      <br>✅ Your own systems and test data
+      <br>✅ CTF competitions and VulnHub/THM-style labs
+      <br>✅ Authorized penetration tests with written scope
+      <br>✅ Isolated password-security research
+      <br><br><strong>Avoid:</strong>
+      <br>❌ Testing credentials or hashes belonging to others without permission
+      <br>❌ Using recovered passwords to access third-party accounts
+      <br>❌ Uploading sensitive password hashes to public services
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Amass — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-intermediate{background:rgba(255,189,46,.12);color:#ffbd2e;border:1px solid rgba(255,189,46,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden;animation:cmdIn .5s ease backwards}
+@keyframes cmdIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🌐</div>
+      <div class="hero-info">
+        <div class="hero-name">AMASS</div>
+        <div class="hero-cat">OSINT · Attack Surface Mapping</div>
+        <div class="hero-badges">
+          <span class="badge badge-intermediate">Intermediate</span>
+          <span class="badge badge-count">25+ Commands</span>
+          <span class="badge badge-tag">Subdomain Enum</span>
+          <span class="badge badge-tag">DNS Recon</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Amass</strong> is the industry-standard tool for <strong>attack surface mapping</strong> and <strong>external asset discovery</strong>. Created by Jeff Foley (OWASP project), Amass uses dozens of data sources to discover subdomains, IP addresses, ASNs, and network relationships. If you're doing bug bounty or red team recon, Amass is your first tool.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Amass? (Deep Theory)</div>
+    <p>Imagine you're a hacker targeting a company. Before you attack, you need to know: <strong>what servers do they have? What subdomains? What IPs? What services are exposed?</strong> This is called <strong>attack surface mapping</strong>.</p>
+
+    <p>Amass does this automatically. It queries dozens of sources — DNS servers, certificate transparency logs, WHOIS databases, search engines, public APIs — and pieces together a map of a company's entire internet-facing infrastructure.</p>
+
+    <h3>What Does Amass Actually Discover?</h3>
+    <ul>
+      <li><strong>Subdomains</strong> — Like mail.example.com, api.example.com, dev.example.com</li>
+      <li><strong>IP Addresses</strong> — All IPs associated with the target's domains</li>
+      <li><strong>ASNs</strong> — Autonomous System Numbers (network ownership)</li>
+      <li><strong>Netblocks</strong> — CIDR ranges owned by the target</li>
+      <li><strong>DNS Records</strong> — A, AAAA, MX, NS, TXT, SOA, CNAME, PTR</li>
+      <li><strong>Certificates</strong> — SSL/TLS certs revealing hidden domains</li>
+      <li><strong>WHOIS Data</strong> — Registration info, contacts</li>
+      <li><strong>Relationships</strong> — Graph of how domains/IPs/ASNs connect</li>
+    </ul>
+
+    <h3>Amass's 4 Main Subcommands</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Subcommand</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>amass intel</code></td><td>Discover root domains, ASNs, netblocks</td></tr>
+          <tr><td><code>amass enum</code></td><td>Enumerate subdomains of a known domain</td></tr>
+          <tr><td><code>amass db</code></td><td>Manage the local database of findings</td></tr>
+          <tr><td><code>amass viz</code></td><td>Visualize the attack surface graph</td></tr>
+          <tr><td><code>amass track</code></td><td>Track changes over time</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Why it's powerful:</strong> Amass doesn't just use one source. It queries 50+ OSINT sources simultaneously, cross-references them, and eliminates false positives. That's why it's the industry standard.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Passive vs Active Enumeration</div>
+    <p>Amass has two modes of operation — understanding the difference is critical:</p>
+
+    <h3>Passive Enumeration</h3>
+    <ul>
+      <li>Uses <strong>only third-party data sources</strong> — never touches the target directly</li>
+      <li>No packets sent to target = <strong>invisible to defenders</strong></li>
+      <li>Slower but safer for stealth operations</li>
+      <li>Sources: Certificate Transparency, VirusTotal, Shodan, SecurityTrails, etc.</li>
+    </ul>
+
+    <h3>Active Enumeration</h3>
+    <ul>
+      <li><strong>Sends DNS queries, TCP connections, HTTP requests</strong> to the target</li>
+      <li>Can be detected by IDS/IPS — leaves logs</li>
+      <li>Faster and more accurate</li>
+      <li>Also does zone transfers, DNS brute-forcing, cert grabbing</li>
+    </ul>
+
+    <h3>Brute-Force Enumeration</h3>
+    <ul>
+      <li>Uses a <strong>wordlist</strong> to guess subdomains</li>
+      <li>Example: admin.example.com, dev.example.com, mail.example.com</li>
+      <li>Very loud — target's DNS server sees thousands of queries</li>
+      <li>Combines with passive data for best results</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux / Debian / Ubuntu</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y amass</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y amass',this)">COPY</button></div>
+
+    <h3>macOS (Homebrew)</h3>
+    <div class="code-block"><code>brew install amass</code><button class="copy-btn" onclick="copyText('brew install amass',this)">COPY</button></div>
+
+    <h3>From Source (Go)</h3>
+    <div class="code-block"><code>go install -v github.com/owasp-amass/amass/v3/...@master</code><button class="copy-btn" onclick="copyText('go install -v github.com/owasp-amass/amass/v3/...@master',this)">COPY</button></div>
+
+    <h3>Docker</h3>
+    <div class="code-block"><code>docker run -v $(pwd):/out caffix/amass enum -d example.com -o /out/results.txt</code><button class="copy-btn" onclick="copyText('docker run -v $(pwd):/out caffix/amass enum -d example.com -o /out/results.txt',this)">COPY</button></div>
+
+    <h3>Verify</h3>
+    <div class="code-block"><code>amass --version</code><button class="copy-btn" onclick="copyText('amass --version',this)">COPY</button></div>
+    <div class="command-output">Amass v3.23.3</div>
+
+    <div class="info-box">
+      <div class="info-icon">🔑</div>
+      <div class="info-text">
+        <strong>API Keys (Optional but Recommended):</strong> Some data sources require API keys. Add them to <code>~/.config/amass/config.ini</code> for more results. Free sources include crt.sh, VirusTotal, etc.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Simple Subdomain Enumeration</div>
+      <div class="command-purpose">Find all subdomains of a target using default sources.</div>
+      <div class="code-block"><code>amass enum -d example.com</code><button class="copy-btn" onclick="copyText('amass enum -d example.com',this)">COPY</button></div>
+      <div class="command-output">www.example.com
+mail.example.com
+api.example.com
+dev.example.com
+blog.example.com</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Save Results to File</div>
+      <div class="code-block"><code>amass enum -d example.com -o results.txt</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -o results.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Silent Mode (No Progress)</div>
+      <div class="command-purpose">Clean output for piping to other tools.</div>
+      <div class="code-block"><code>amass enum -d example.com -silent</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -silent',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Multiple Domains</div>
+      <div class="command-block"><code>amass enum -d example.com -d example.org -d example.net</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -d example.org -d example.net',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Domains From File</div>
+      <div class="command-block"><code>amass enum -df domains.txt</code><button class="copy-btn" onclick="copyText('amass enum -df domains.txt',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Passive Enumeration</div>
+
+    <div class="command">
+      <div class="command-title">6. Passive Only</div>
+      <div class="command-purpose">Use only OSINT sources — no direct queries to target.</div>
+      <div class="code-block"><code>amass enum -passive -d example.com</code><button class="copy-btn" onclick="copyText('amass enum -passive -d example.com',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. List All Sources</div>
+      <div class="command-purpose">See all available OSINT data sources.</div>
+      <div class="code-block"><code>amass enum -list</code><button class="copy-btn" onclick="copyText('amass enum -list',this)">COPY</button></div>
+      <div class="command-output">Available data sources:
+  - Argonaut
+  - AskSearch
+  - Baidu
+  - Bing
+  - BufferOver
+  - CertSpotter
+  - CIRCL
+  - Crtsh
+  - DNSDB
+  - ...</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. Use Specific Sources</div>
+      <div class="command-purpose">Only use certain sources — combine whitelist or blacklist.</div>
+      <div class="code-block"><code>amass enum -d example.com -include crtsh,virustotal,shodan</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -include crtsh,virustotal,shodan',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. Exclude Sources</div>
+      <div class="code-block"><code>amass enum -d example.com -exclude bing,baidu</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -exclude bing,baidu',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Active Enumeration</div>
+
+    <div class="command">
+      <div class="command-title">10. Active Mode</div>
+      <div class="command-purpose">Sends actual DNS queries + HTTPS probes to target.</div>
+      <div class="code-block"><code>amass enum -active -d example.com</code><button class="copy-btn" onclick="copyText('amass enum -active -d example.com',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">11. Brute Force with Wordlist</div>
+      <div class="command-purpose">Try words from a list as subdomains.</div>
+      <div class="code-block"><code>amass enum -brute -d example.com -w subdomains.txt</code><button class="copy-btn" onclick="copyText('amass enum -brute -d example.com -w subdomains.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Combine Active + Brute</div>
+      <div class="command-purpose">Maximum coverage — all methods together.</div>
+      <div class="code-block"><code>amass enum -active -brute -d example.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt</code><button class="copy-btn" onclick="copyText('amass enum -active -brute -d example.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. DNS Resolve Found Subdomains</div>
+      <div class="command-purpose">After enumeration, resolve IPs for each subdomain.</div>
+      <div class="code-block"><code>amass enum -d example.com -ip</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -ip',this)">COPY</button></div>
+      <div class="command-output">www.example.com 93.184.216.34
+mail.example.com 93.184.216.35
+api.example.com 93.184.216.40</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Show DNS Records</div>
+      <div class="code-block"><code>amass enum -d example.com -dns</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -dns',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Intelligence Gathering (amass intel)</div>
+
+    <div class="command">
+      <div class="command-title">15. Find Root Domains of Organization</div>
+      <div class="command-purpose">Discover all domains belonging to a company.</div>
+      <div class="code-block"><code>amass intel -org "Example Inc"</code><button class="copy-btn" onclick="copyText('amass intel -org \"Example Inc\"',this)">COPY</button></div>
+      <div class="command-output">example.com
+example.org
+example.net
+example.io</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Enumerate ASN</div>
+      <div class="command-purpose">Find all netblocks owned by an ASN.</div>
+      <div class="code-block"><code>amass intel -asn 12345</code><button class="copy-btn" onclick="copyText('amass intel -asn 12345',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. Find Domains in WHOIS Reverse</div>
+      <div class="command-purpose">Find domains registered by an email or name.</div>
+      <div class="code-block"><code>amass intel -whois -d example.com</code><button class="copy-btn" onclick="copyText('amass intel -whois -d example.com',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Reverse WHOIS by Email</div>
+      <div class="code-block"><code>amass intel -whois -d example.com -emails</code><button class="copy-btn" onclick="copyText('amass intel -whois -d example.com -emails',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">19. CIDR Netblock Search</div>
+      <div class="code-block"><code>amass intel -cidr 192.168.0.0/16</code><button class="copy-btn" onclick="copyText('amass intel -cidr 192.168.0.0/16',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Reverse DNS on IP Range</div>
+      <div class="code-block"><code>amass intel -addr 192.168.1.0/24</code><button class="copy-btn" onclick="copyText('amass intel -addr 192.168.1.0/24',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Advanced Features</div>
+
+    <div class="command">
+      <div class="command-title">21. Config File</div>
+      <div class="command-purpose">Use custom config with API keys.</div>
+      <div class="code-block"><code>amass enum -d example.com -config ~/.config/amass/config.ini</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -config ~/.config/amass/config.ini',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Timeout Control</div>
+      <div class="command-purpose">Set max time (minutes) for enumeration.</div>
+      <div class="code-block"><code>amass enum -d example.com -timeout 30</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -timeout 30',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Increase Concurrency</div>
+      <div class="command-purpose">Faster but noisier — more parallel queries.</div>
+      <div class="code-block"><code>amass enum -d example.com -active -max-dns-queries 500</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -active -max-dns-queries 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Use Proxy</div>
+      <div class="command-block"><code>amass enum -d example.com -proxy socks5://127.0.0.1:9050</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -proxy socks5://127.0.0.1:9050',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. Save to Database</div>
+      <div class="command-purpose">Persist results in Amass's local DB for tracking.</div>
+      <div class="code-block"><code>amass enum -d example.com -oA ./output -dir ./amass_db</code><button class="copy-btn" onclick="copyText('amass enum -d example.com -oA ./output -dir ./amass_db',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">26. View Database</div>
+      <div class="command-block"><code>amass db -show -dir ./amass_db</code><button class="copy-btn" onclick="copyText('amass db -show -dir ./amass_db',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. Track Changes Over Time</div>
+      <div class="command-purpose">See what subdomains appeared since last scan.</div>
+      <div class="code-block"><code>amass track -d example.com -dir ./amass_db</code><button class="copy-btn" onclick="copyText('amass track -d example.com -dir ./amass_db',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. Visualize Graph</div>
+      <div class="command-purpose">Generate an HTML/JS visualization of attack surface.</div>
+      <div class="code-block"><code>amass viz -d3 -dir ./amass_db -o graph.html</code><button class="copy-btn" onclick="copyText('amass viz -d3 -dir ./amass_db -o graph.html',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Practical Workflows</div>
+
+    <h3>Bug Bounty Recon Workflow</h3>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Passive Recon First</div>
+        <div class="wf-desc">Start with passive to avoid detection.<br><div class="code-block" style="margin-top:10px"><code>amass enum -passive -d target.com -o passive-subs.txt</code><button class="copy-btn" onclick="copyText('amass enum -passive -d target.com -o passive-subs.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Active Enumeration</div>
+        <div class="wf-desc">Now use active methods for more findings.<br><div class="code-block" style="margin-top:10px"><code>amass enum -active -d target.com -o active-subs.txt</code><button class="copy-btn" onclick="copyText('amass enum -active -d target.com -o active-subs.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Brute Force Deep Dive</div>
+        <div class="wf-desc">Use large wordlist for maximum coverage.<br><div class="code-block" style="margin-top:10px"><code>amass enum -brute -d target.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt -o brute-subs.txt</code><button class="copy-btn" onclick="copyText('amass enum -brute -d target.com -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Combine All Results</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>cat passive-subs.txt active-subs.txt brute-subs.txt | sort -u > all-subs.txt</code><button class="copy-btn" onclick="copyText('cat passive-subs.txt active-subs.txt brute-subs.txt | sort -u > all-subs.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Resolve IPs</div>
+        <div class="wf-desc">Get IP addresses for all subdomains.<br><div class="code-block" style="margin-top:10px"><code>amass enum -d target.com -oA ./output -dir ./amass_db -ip</code><button class="copy-btn" onclick="copyText('amass enum -d target.com -oA ./output -dir ./amass_db -ip',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Scan Live Hosts</div>
+        <div class="wf-desc">Filter live subdomains and scan them.<br><div class="code-block" style="margin-top:10px"><code>cat all-subs.txt | httpx -silent | nmap -iL - -sV -T4</code><button class="copy-btn" onclick="copyText('cat all-subs.txt | httpx -silent | nmap -iL - -sV -T4',this)">COPY</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>-d</code></td><td>Target domain</td></tr>
+          <tr><td><code>-df</code></td><td>Domains from file</td></tr>
+          <tr><td><code>-o</code></td><td>Output file</td></tr>
+          <tr><td><code>-oA</code></td><td>Output all formats</td></tr>
+          <tr><td><code>-dir</code></td><td>Database directory</td></tr>
+          <tr><td><code>-passive</code></td><td>Passive mode only</td></tr>
+          <tr><td><code>-active</code></td><td>Active enumeration</td></tr>
+          <tr><td><code>-brute</code></td><td>Brute-force mode</td></tr>
+          <tr><td><code>-w</code></td><td>Wordlist file</td></tr>
+          <tr><td><code>-ip</code></td><td>Show IP addresses</td></tr>
+          <tr><td><code>-dns</code></td><td>Show DNS records</td></tr>
+          <tr><td><code>-silent</code></td><td>Silent output</td></tr>
+          <tr><td><code>-config</code></td><td>Config file</td></tr>
+          <tr><td><code>-timeout</code></td><td>Timeout in minutes</td></tr>
+          <tr><td><code>-include</code></td><td>Include specific sources</td></tr>
+          <tr><td><code>-exclude</code></td><td>Exclude sources</td></tr>
+          <tr><td><code>-proxy</code></td><td>Use SOCKS/HTTP proxy</td></tr>
+          <tr><td><code>-org</code></td><td>Organization name (intel)</td></tr>
+          <tr><td><code>-asn</code></td><td>ASN number (intel)</td></tr>
+          <tr><td><code>-cidr</code></td><td>CIDR range (intel)</td></tr>
+          <tr><td><code>-addr</code></td><td>IP address range (intel)</td></tr>
+          <tr><td><code>-whois</code></td><td>WHOIS lookups (intel)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Amass vs Other Tools</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Method</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Amass</strong></td><td>Multi-source OSINT + active</td><td>Complete attack surface mapping</td></tr>
+          <tr><td><strong>Subfinder</strong></td><td>Passive only</td><td>Fast passive enumeration</td></tr>
+          <tr><td><strong>Assetfinder</strong></td><td>Passive</td><td>Quick subdomain lookup</td></tr>
+          <tr><td><strong>Findomain</strong></td><td>Passive multi-source</td><td>Fast OSINT enumeration</td></tr>
+          <tr><td><strong>Gobuster</strong></td><td>DNS brute-force</td><td>Wordlist-based subdomain discovery</td></tr>
+          <tr><td><strong>dnsrecon</strong></td><td>DNS enumeration</td><td>DNS record analysis</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"No results found"</h3>
+    <ul>
+      <li>Domain might be behind Cloudflare/WAF — use passive mode</li>
+      <li>Try adding API keys to <code>~/.config/amass/config.ini</code></li>
+      <li>Increase timeout: <code>-timeout 60</code></li>
+    </ul>
+
+    <h3>"Rate limit exceeded"</h3>
+    <ul>
+      <li>Some sources limit free queries — reduce concurrency: <code>-max-dns-queries 100</code></li>
+      <li>Use <code>-config</code> with registered API keys</li>
+    </ul>
+
+    <h3>"Slow enumeration"</h3>
+    <ul>
+      <li>Use <code>-passive</code> for speed</li>
+      <li>Reduce sources: <code>-include crtsh,virustotal</code></li>
+      <li>Set timeout: <code>-timeout 10</code></li>
+    </ul>
+
+    <h3>"Too many false positives"</h3>
+    <ul>
+      <li>Use <code>-active -ip</code> to verify live hosts</li>
+      <li>Combine with <code>httpx</code> to filter responsive hosts</li>
+    </ul>
+
+    <h3>Amass uses too much memory</h3>
+    <ul>
+      <li>Reduce concurrency: <code>-max-dns-queries 50</code></li>
+      <li>Delete old database: <code>rm -rf ./amass_db</code></li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Amass queries external data sources and, in active mode, sends requests to target infrastructure. Only use against domains you own or have <strong>explicit written permission</strong> to test. Unauthorized reconnaissance may violate laws including the Computer Fraud and Abuse Act (CFAA) and similar legislation worldwide.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+// PROTECTED
+(function(){
+  var t = localStorage.getItem("sch_token");
+  var u = localStorage.getItem("sch_user");
+  if (!t || !u) { window.location.replace("login.html"); return; }
+  try {
+    JSON.parse(u);
+    if (!t.includes(".") || t.split(".").length !== 3) throw 0;
+  } catch(e) {
+    localStorage.removeItem("sch_token");
+    localStorage.removeItem("sch_user");
+    window.location.replace("login.html");
+  }
+})();
+
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(()=>{});
+}
+function initMatrix(){
+  const c=document.getElementById('matrix');if(!c)return;
+  const ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const fs=14;let cols=Math.floor(c.width/fs);let drops=Array(cols).fill(1);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(8,5,13,.03)';ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';ctx.font=fs+'px JetBrains Mono,monospace';
+    for(let i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  addEventListener('resize',()=>{resize();cols=Math.floor(c.width/fs);drops=Array(cols).fill(1)});
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

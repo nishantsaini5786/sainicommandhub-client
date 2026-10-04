@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Hydra — Network Login Brute-Force Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🛡️</div>
+      <div class="hero-info">
+        <div class="hero-name">HYDRA</div>
+        <div class="hero-cat">Network Login Auditor · Parallel Authentication Testing</div>
+        <div class="hero-badges">
+          <span class="badge badge-advanced">Advanced</span>
+          <span class="badge badge-count">50+ Usage Patterns</span>
+          <span class="badge badge-tag">C</span>
+          <span class="badge badge-tag">Parallelized</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Hydra</strong> (THC-Hydra) is a parallelized network login auditing tool used to test authentication services against supplied username and password candidates. It supports many protocols and is useful in authorized penetration tests, CTFs, and isolated security labs.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Hydra? (Deep Theory)</div>
+    <p><strong>THC-Hydra</strong> automates authentication testing against network services. Instead of manually trying credentials one by one, Hydra can coordinate many login attempts in parallel and report successful combinations.</p>
+
+    <h3>How Hydra Works</h3>
+    <ul>
+      <li><strong>Target Service</strong> — Connects to a supported authentication protocol such as SSH, FTP, HTTP form authentication, SMB, RDP, or others.</li>
+      <li><strong>Username Input</strong> — Accepts a single username with <code>-l</code> or a username list with <code>-L</code>.</li>
+      <li><strong>Password Input</strong> — Accepts a single password with <code>-p</code> or a password list with <code>-P</code>.</li>
+      <li><strong>Parallel Attempts</strong> — Uses multiple tasks with <code>-t</code> to process candidates concurrently.</li>
+      <li><strong>Result Reporting</strong> — Displays valid credentials when a service accepts them.</li>
+    </ul>
+
+    <h3>Why Hydra is Useful</h3>
+    <ul>
+      <li><strong>Protocol Coverage</strong> — Supports many common network authentication services.</li>
+      <li><strong>Parallelization</strong> — Multiple tasks can reduce testing time in controlled environments.</li>
+      <li><strong>Flexible Inputs</strong> — Single credentials, username lists, password lists, and combinations.</li>
+      <li><strong>Service-Specific Syntax</strong> — Each module can use protocol-specific options.</li>
+      <li><strong>Output Options</strong> — Results can be displayed or saved for lab documentation.</li>
+      <li><strong>CTF Friendly</strong> — Commonly encountered in intentionally vulnerable training machines.</li>
+    </ul>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text"><strong>Key Insight:</strong> Hydra tests authentication controls; it does not magically recover a password. Its success depends on the candidate lists, protocol, rate limits, account policy, and the target service.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+    <h3>1. Authorized Penetration Testing</h3>
+    <p>Assess whether exposed services accept weak or reused credentials during an approved security assessment.</p>
+    <h3>2. CTF & VulnHub Labs</h3>
+    <p>Test intentionally vulnerable SSH, FTP, HTTP, SMB, and other services inside a challenge environment.</p>
+    <h3>3. Password Policy Auditing</h3>
+    <p>Measure whether controlled test accounts resist common password candidates.</p>
+    <h3>4. Service Configuration Testing</h3>
+    <p>Verify that authentication services have appropriate lockout, throttling, and monitoring controls.</p>
+    <h3>5. Security Training</h3>
+    <p>Demonstrate how weak credentials can be discovered and why strong authentication controls matter.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation & Setup</div>
+    <h3>Kali Linux / Debian</h3>
+    <div class="code-block"><code>sudo apt update
+sudo apt install -y hydra</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y hydra',this)">COPY</button></div>
+    <h3>Check Version</h3>
+    <div class="code-block"><code>hydra -h
+hydra -V</code><button class="copy-btn" onclick="copyText('hydra -h\nhydra -V',this)">COPY</button></div>
+    <h3>List Supported Help / Modules</h3>
+    <div class="code-block"><code>hydra -U ssh
+hydra -U ftp
+hydra -U http-post-form</code><button class="copy-btn" onclick="copyText('hydra -U ssh\nhydra -U ftp\nhydra -U http-post-form',this)">COPY</button></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Usage & Core Commands</div>
+
+    <div class="command"><div class="command-title">1. Show Help</div><div class="command-purpose">Display Hydra command-line options.</div><div class="code-block"><code>hydra -h</code><button class="copy-btn" onclick="copyText('hydra -h',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">2. Show Version</div><div class="command-purpose">Check the installed Hydra version.</div><div class="code-block"><code>hydra -V</code><button class="copy-btn" onclick="copyText('hydra -V',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">3. Single Username + Password List</div><div class="command-purpose">Authorized lab example against an FTP service.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt ftp://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt ftp://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">4. Username List + Password List</div><div class="command-purpose">Try combinations from two supplied files.</div><div class="code-block"><code>hydra -L users.txt -P passwords.txt ftp://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -L users.txt -P passwords.txt ftp://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">5. Single Username + Single Password</div><div class="command-purpose">Test one known credential pair in your lab.</div><div class="code-block"><code>hydra -l testuser -p 'TestPassword123!' ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -p \"TestPassword123!\" ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">6. SSH Authentication Test</div><div class="command-purpose">Test an SSH service using a controlled username and wordlist.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">7. FTP Authentication Test</div><div class="command-purpose">Test an FTP login service in an authorized lab.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt ftp://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt ftp://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">8. SMB Authentication Test</div><div class="command-purpose">Use the SMB module against a lab host.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt smb://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt smb://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">9. RDP Authentication Test</div><div class="command-purpose">Test RDP credentials only on an authorized training system.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt rdp://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt rdp://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">10. Set Number of Parallel Tasks</div><div class="command-purpose">Increase or decrease concurrent login attempts.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -t 4 ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -t 4 ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">11. Stop After First Valid Credential</div><div class="command-purpose">Stop once Hydra finds a valid login.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -f ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -f ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">12. Verbose Output</div><div class="command-purpose">Show more details while the lab test is running.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -vV ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -vV ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">13. Save Results to a File</div><div class="command-purpose">Write discovered results to a local report file.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -o hydra-results.txt ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -o hydra-results.txt ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">14. Specify a Custom Port</div><div class="command-purpose">Test a service running on a non-default port.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -s 2222 ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -s 2222 ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">15. Username and Password Lists with SSH</div><div class="command-purpose">Combine both list inputs for an authorized SSH lab.</div><div class="code-block"><code>hydra -L users.txt -P passwords.txt ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -L users.txt -P passwords.txt ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">16. Check a Module's Syntax</div><div class="command-purpose">Display protocol-specific options.</div><div class="code-block"><code>hydra -U ssh</code><button class="copy-btn" onclick="copyText('hydra -U ssh',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">17. FTP Module Help</div><div class="command-purpose">Display FTP-specific module information.</div><div class="code-block"><code>hydra -U ftp</code><button class="copy-btn" onclick="copyText('hydra -U ftp',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">18. HTTP Form Module Help</div><div class="command-purpose">Display the HTTP form module syntax before building a lab test.</div><div class="code-block"><code>hydra -U http-post-form</code><button class="copy-btn" onclick="copyText('hydra -U http-post-form',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">19. HTTP Basic Authentication</div><div class="command-purpose">Test HTTP Basic Auth on a controlled web application.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt LAB_IP http-get /protected/</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt LAB_IP http-get /protected/',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">20. HTTP POST Form (Lab Example)</div><div class="command-purpose">Use the form module only when you understand the application's login response.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt LAB_IP http-post-form "/login:user=^USER^&amp;pass=^PASS^:F=Invalid credentials"</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt LAB_IP http-post-form "/login:user=^USER^&pass=^PASS^:F=Invalid credentials"',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">21. HTTPS Form Module</div><div class="command-purpose">Use HTTPS form testing against an authorized application.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt LAB_IP https-post-form "/login:user=^USER^&amp;pass=^PASS^:F=Invalid"</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt LAB_IP https-post-form "/login:user=^USER^&pass=^PASS^:F=Invalid"',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">22. Use a Delay Between Attempts</div><div class="command-purpose">Slow the testing rate when a lab service needs lower request pressure.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -W 2 ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -W 2 ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">23. Quiet Mode</div><div class="command-purpose">Reduce non-essential console output.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -q ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -q ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">24. Debug Output</div><div class="command-purpose">Use debug information when troubleshooting a lab module.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -d ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -d ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">25. IPv6 Target</div><div class="command-purpose">Test an IPv6 lab host when the selected module supports it.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt ssh://[LAB_IPV6]</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt ssh://[LAB_IPV6]',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">26. Username File + Fixed Password</div><div class="command-purpose">Test several controlled accounts against one known test password.</div><div class="code-block"><code>hydra -L users.txt -p 'TestPassword123!' ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -L users.txt -p \"TestPassword123!\" ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">27. Fixed Username + Password File</div><div class="command-purpose">Common lab pattern for one test account.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt ftp://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt ftp://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">28. Use a Larger Task Count Carefully</div><div class="command-purpose">Increase concurrency only when the authorized service and lab network can handle it.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -t 8 ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -t 8 ssh://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">29. Combine Verbose + Save Output</div><div class="command-purpose">Useful when documenting a lab exercise.</div><div class="code-block"><code>hydra -l testuser -P passwords.txt -vV -o hydra-report.txt ftp://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -vV -o hydra-report.txt ftp://LAB_IP',this)">COPY</button></div></div>
+    <div class="command"><div class="command-title">30. Stop After First Result + Save</div><div class="command-purpose">Stop after the first valid result and record it locally.</div><div class="code-block"><code>hydra -L users.txt -P passwords.txt -f -o first-result.txt ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -L users.txt -P passwords.txt -f -o first-result.txt ssh://LAB_IP',this)">COPY</button></div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Important Options Quick Reference</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Option</th><th>Meaning</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>-l</code></td><td>Single username</td><td><code>-l testuser</code></td></tr>
+        <tr><td><code>-L</code></td><td>Username list</td><td><code>-L users.txt</code></td></tr>
+        <tr><td><code>-p</code></td><td>Single password</td><td><code>-p 'TestPassword123!'</code></td></tr>
+        <tr><td><code>-P</code></td><td>Password list</td><td><code>-P passwords.txt</code></td></tr>
+        <tr><td><code>-s</code></td><td>Custom port</td><td><code>-s 2222</code></td></tr>
+        <tr><td><code>-t</code></td><td>Parallel tasks</td><td><code>-t 4</code></td></tr>
+        <tr><td><code>-f</code></td><td>Stop after first valid credential</td><td><code>-f</code></td></tr>
+        <tr><td><code>-vV</code></td><td>Verbose / show attempts</td><td><code>-vV</code></td></tr>
+        <tr><td><code>-o</code></td><td>Save output</td><td><code>-o results.txt</code></td></tr>
+        <tr><td><code>-W</code></td><td>Wait between attempts</td><td><code>-W 2</code></td></tr>
+        <tr><td><code>-q</code></td><td>Quiet output</td><td><code>-q</code></td></tr>
+        <tr><td><code>-d</code></td><td>Debug mode</td><td><code>-d</code></td></tr>
+        <tr><td><code>-U</code></td><td>Module-specific help</td><td><code>-U ssh</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Supported Protocol Examples</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Protocol / Module</th><th>Typical Purpose</th><th>Lab Example</th></tr></thead>
+      <tbody>
+        <tr><td>SSH</td><td>Remote shell authentication audit</td><td><code>ssh://LAB_IP</code></td></tr>
+        <tr><td>FTP</td><td>File-transfer authentication audit</td><td><code>ftp://LAB_IP</code></td></tr>
+        <tr><td>SMB</td><td>Windows file-sharing authentication</td><td><code>smb://LAB_IP</code></td></tr>
+        <tr><td>RDP</td><td>Remote desktop authentication</td><td><code>rdp://LAB_IP</code></td></tr>
+        <tr><td>HTTP Basic</td><td>Protected web resource testing</td><td><code>http-get</code></td></tr>
+        <tr><td>HTTP Form</td><td>Web login form testing</td><td><code>http-post-form</code></td></tr>
+        <tr><td>HTTPS Form</td><td>Encrypted web login testing</td><td><code>https-post-form</code></td></tr>
+        <tr><td>Telnet</td><td>Legacy remote login testing</td><td><code>telnet://LAB_IP</code></td></tr>
+        <tr><td>SMTP</td><td>Mail authentication testing</td><td><code>smtp://LAB_IP</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Lab Workflows</div>
+    <div class="workflow">
+      <div class="wf-step"><div class="wf-title">Workflow 1: CTF SSH Authentication Lab</div><div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>nmap -p 22 LAB_IP
+hydra -l testuser -P passwords.txt -t 4 ssh://LAB_IP
+ssh testuser@LAB_IP</code><button class="copy-btn" onclick="copyText('nmap -p 22 LAB_IP\nhydra -l testuser -P passwords.txt -t 4 ssh://LAB_IP\nssh testuser@LAB_IP',this)">COPY</button></div>Discover SSH → test the supplied lab account → verify the result.</div></div>
+      <div class="wf-step"><div class="wf-title">Workflow 2: FTP Lab</div><div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>nmap -p 21 -sV LAB_IP
+hydra -l testuser -P passwords.txt ftp://LAB_IP
+ftp LAB_IP</code><button class="copy-btn" onclick="copyText('nmap -p 21 -sV LAB_IP\nhydra -l testuser -P passwords.txt ftp://LAB_IP\nftp LAB_IP',this)">COPY</button></div>Identify FTP → test the authorized account → validate access manually.</div></div>
+      <div class="wf-step"><div class="wf-title">Workflow 3: HTTP Login Form Lab</div><div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>curl -i http://LAB_IP/login
+hydra -l testuser -P passwords.txt LAB_IP http-post-form "/login:user=^USER^&amp;pass=^PASS^:F=Invalid credentials"</code><button class="copy-btn" onclick="copyText('curl -i http://LAB_IP/login\nhydra -l testuser -P passwords.txt LAB_IP http-post-form "/login:user=^USER^&pass=^PASS^:F=Invalid credentials"',this)">COPY</button></div>Understand the request and failure response first, then test only the lab application.</div></div>
+      <div class="wf-step"><div class="wf-title">Workflow 4: Rate-Limit Validation</div><div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>hydra -l testuser -P passwords.txt -t 1 -W 3 ssh://LAB_IP</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -t 1 -W 3 ssh://LAB_IP',this)">COPY</button></div>Use low concurrency to observe how the service handles repeated authentication failures.</div></div>
+      <div class="wf-step"><div class="wf-title">Workflow 5: Documenting a Lab Result</div><div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>hydra -l testuser -P passwords.txt -vV -o hydra-report.txt ssh://LAB_IP
+cat hydra-report.txt</code><button class="copy-btn" onclick="copyText('hydra -l testuser -P passwords.txt -vV -o hydra-report.txt ssh://LAB_IP\ncat hydra-report.txt',this)">COPY</button></div>Run the test → save output → include the result in your authorized lab notes.</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting & Common Issues</div>
+    <h3>Connection Refused</h3><ul><li>Confirm the service is actually listening with <code>nmap -p PORT LAB_IP</code>.</li><li>Check the VM network mode and firewall rules in your lab.</li></ul>
+    <h3>Module Error</h3><ul><li>Check module-specific syntax with <code>hydra -U module</code>.</li><li>Verify the protocol and port are correct.</li></ul>
+    <h3>No Valid Credentials Found</h3><ul><li>Verify the username/password lists are correct for the lab.</li><li>Confirm the login failure condition for HTTP forms.</li><li>Check whether the account is locked or rate-limited.</li></ul>
+    <h3>Too Many Connections</h3><ul><li>Reduce concurrency with <code>-t 1</code> or <code>-t 2</code>.</li><li>Increase the wait interval with <code>-W</code> where appropriate.</li></ul>
+    <h3>HTTP Form Test Fails</h3><ul><li>Inspect the form with browser developer tools or <code>curl</code>.</li><li>Confirm the POST path, parameter names, and failure string.</li><li>Check whether the application uses CSRF tokens or dynamic fields that require a different testing approach.</li></ul>
+    <h3>Results Not Saved</h3><ul><li>Use an absolute or writable output path with <code>-o</code>.</li><li>Check permissions in the current directory.</li></ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Hydra performs repeated authentication attempts. Use it only on systems, accounts, and applications you own or have explicit permission to test.
+      <br><br><strong>Legal / Safe Use:</strong>
+      <br>✅ Your own systems and test accounts
+      <br>✅ CTF competitions and VulnHub/THM-style labs
+      <br>✅ Authorized penetration tests with written scope
+      <br>✅ Isolated security research environments
+      <br><br><strong>Avoid:</strong>
+      <br>❌ Testing public services without permission
+      <br>❌ Guessing credentials for third-party accounts
+      <br>❌ Attempting to bypass rate limits on systems you do not control
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

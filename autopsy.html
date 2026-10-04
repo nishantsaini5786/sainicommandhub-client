@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Autopsy — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-intermediate{background:rgba(255,189,46,.12);color:#ffbd2e;border:1px solid rgba(255,189,46,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden;animation:cmdIn .5s ease backwards}
+@keyframes cmdIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+// PROTECTED
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🔬</div>
+      <div class="hero-info">
+        <div class="hero-name">AUTOPSY</div>
+        <div class="hero-cat">Digital Forensics · Disk & File Analysis Platform</div>
+        <div class="hero-badges">
+          <span class="badge badge-intermediate">Intermediate</span>
+          <span class="badge badge-count">15+ Modules</span>
+          <span class="badge badge-tag">Forensics</span>
+          <span class="badge badge-tag">GUI</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Autopsy</strong> is the world's leading open-source digital forensics platform. It's a <strong>graphical interface</strong> for The Sleuth Kit (TSK) and other forensic tools. Autopsy lets investigators analyze disk images, recover deleted files, extract artifacts, and build timelines — all through a user-friendly GUI. Used by law enforcement, incident responders, and forensic analysts worldwide.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Autopsy? (Deep Theory)</div>
+    <p>When a cybercrime occurs, investigators need to analyze the suspect's computer — but they can't just turn it on (evidence could be modified). Instead, they make a <strong>forensic image</strong> (bit-for-bit copy) of the disk, then analyze that image with tools like Autopsy.</p>
+
+    <h3>What Autopsy Does</h3>
+    <ul>
+      <li><strong>Reads disk images</strong> — E01, DD, RAW, VHD, VMDK, etc.</li>
+      <li><strong>Recovers deleted files</strong> — from unallocated space</li>
+      <li><strong>Extracts metadata</strong> — timestamps, EXIF, MFT records</li>
+      <li><strong>Parses artifacts</strong> — browser history, USB devices, registry</li>
+      <li><strong>Extracts keywords</strong> — searches images for text matches</li>
+      <li><strong>Builds timeline</strong> — activity timeline of events</li>
+      <li><strong>Hashes files</strong> — MD5/SHA256 for verification</li>
+      <li><strong>Generates reports</strong> — HTML, PDF, Excel, CSV</li>
+    </ul>
+
+    <h3>Autopsy vs The Sleuth Kit</h3>
+    <ul>
+      <li><strong>TSK</strong> — Command-line tools (fls, icat, mmls, etc.)</li>
+      <li><strong>Autopsy</strong> — GUI frontend for TSK + additional modules</li>
+      <li><strong>Best Practice:</strong> Autopsy for interactive analysis, TSK for automation</li>
+    </ul>
+
+    <h3>Autopsy Modules (Plugins)</h3>
+    <ul>
+      <li><strong>Recent Activity</strong> — browser history, downloads, cookies</li>
+      <li><strong>Hash Lookup</strong> — check against NSRL, known bad files</li>
+      <li><strong>File Type Identification</strong> — magic bytes vs extension</li>
+      <li><strong>Extension Mismatch</strong> — detect renamed malware</li>
+      <li><strong>EXIF Parser</strong> — GPS, camera, timestamps from images</li>
+      <li><strong>Keyword Search</strong> — Indexed search across disk</li>
+      <li><strong>Email Parser</strong> — PST, MBOX, EML files</li>
+      <li><strong>Web Artifacts</strong> — Chrome/Firefox/Safari/Edge</li>
+      <li><strong>Timeline</strong> — chronological activity analysis</li>
+      <li><strong>Registry</strong> — Windows registry hives parsing</li>
+      <li><strong>Android Analyzer</strong> — extract from Android images</li>
+      <li><strong>PhotoRec Carver</strong> — recover photos from raw data</li>
+    </ul>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Why Autopsy matters:</strong> It's the easiest way to do professional forensics without learning 50 CLI tools. Law enforcement agencies and companies use it — it's court-admissible when used properly.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. Cybercrime Investigation</h3>
+    <p>Law enforcement analyzing suspect's computer for evidence — deleted files, browsing history, chat logs.</p>
+
+    <h3>2. Incident Response</h3>
+    <p>After a breach, analysts examine compromised systems to understand what attacker did, when, and what they stole.</p>
+
+    <h3>3. Employee Misconduct</h3>
+    <p>Corporate investigations — data theft, policy violations, unauthorized access. Analyze disk images from workstations.</p>
+
+    <h3>4. Malware Analysis</h3>
+    <p>Analyze infected disk images to understand malware persistence, C2 communications, and infection chain.</p>
+
+    <h3>5. Data Recovery</h3>
+    <p>Recover accidentally deleted files, formatted drives, or corrupted partitions.</p>
+
+    <h3>6. Legal eDiscovery</h3>
+    <p>Legal teams analyze corporate devices to find relevant documents, emails, and communications.</p>
+
+    <h3>7. CTF / Training</h3>
+    <p>Forensics CTF challenges often involve disk images — Autopsy is perfect for these.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux / Debian / Ubuntu</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y autopsy</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y autopsy',this)">COPY</button></div>
+
+    <h3>Windows</h3>
+    <p>Download installer from <code>sleuthkit.org/autopsy</code></p>
+
+    <h3>macOS</h3>
+    <div class="code-block"><code>brew install --cask autopsy</code><button class="copy-btn" onclick="copyText('brew install --cask autopsy',this)">COPY</button></div>
+
+    <h3>Verify</h3>
+    <div class="code-block"><code>autopsy --version</code><button class="copy-btn" onclick="copyText('autopsy --version',this)">COPY</button></div>
+    <div class="command-output">Autopsy 4.21.0</div>
+
+    <div class="info-box">
+      <div class="info-icon">☕</div>
+      <div class="info-text">
+        <strong>Requirement:</strong> Autopsy needs <strong>Java 8+</strong> installed. Check with <code>java -version</code>. If missing: <code>sudo apt install default-jdk</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Getting Started — CLI Launch</div>
+
+    <div class="command">
+      <div class="command-title">1. Launch Autopsy GUI</div>
+      <div class="command-purpose">Start the graphical interface (opens in browser on newer versions).</div>
+      <div class="code-block"><code>autopsy</code><button class="copy-btn" onclick="copyText('autopsy',this)">COPY</button></div>
+      <div class="command-output">Autopsy starting...
+Opening browser at http://localhost:8080/autopsy/</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Launch on Custom Port</div>
+      <div class="command-block"><code>autopsy -p 9999</code><button class="copy-btn" onclick="copyText('autopsy -p 9999',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Launch with Custom Case Directory</div>
+      <div class="command-block"><code>autopsy -d /path/to/cases</code><button class="copy-btn" onclick="copyText('autopsy -d /path/to/cases',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Check Java Version</div>
+      <div class="command-block"><code>java -version</code><button class="copy-btn" onclick="copyText('java -version',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Memory Settings</div>
+      <div class="command-purpose">Increase heap memory for large disk images.</div>
+      <div class="code-block"><code>JAVA_OPTS="-Xmx8G" autopsy</code><button class="copy-btn" onclick="copyText('JAVA_OPTS=\"-Xmx8G\" autopsy',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Workflow — Analyzing a Disk Image</div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Create New Case</div>
+        <div class="wf-desc">Open Autopsy → Click "New Case" → Enter case name, examiner name, case directory.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Add Data Source</div>
+        <div class="wf-desc">Choose image type: Disk Image, Local Disk, Logical Files, or Android image.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Select Image File</div>
+        <div class="wf-desc">Browse to your .E01, .dd, .raw, or .img file. Autopsy auto-detects format.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Configure Ingest Modules</div>
+        <div class="wf-desc">Enable modules you want: Recent Activity, Hash Lookup, File Type ID, EXIF Parser, Keyword Search, Timeline.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Wait for Ingest</div>
+        <div class="wf-desc">Autopsy processes the image. Time depends on disk size and modules enabled. Can take hours for large disks.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Browse Results</div>
+        <div class="wf-desc">Left panel shows: Data Sources → Views (File Types, Deleted Files, Keyword Hits) → Results.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 7: Analyze & Tag</div>
+        <div class="wf-desc">Mark interesting files with Tags (Follow Up, Notable Item, etc.). Add comments.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 8: Generate Report</div>
+        <div class="wf-desc">Tools → Generate Report → Choose format: HTML, PDF, XLS, CSV.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Key Sections in Autopsy</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Section</th><th>What It Shows</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Data Sources</strong></td><td>List of disks/images added to case</td></tr>
+          <tr><td><strong>Views</strong></td><td>Predefined views: File Types, Deleted Files, etc.</td></tr>
+          <tr><td><strong>File Types</strong></td><td>Filter by images, videos, docs, archives, execs</td></tr>
+          <tr><td><strong>Deleted Files</strong></td><td>Files found in unallocated space</td></tr>
+          <tr><td><strong>Keyword Hits</strong></td><td>Files matching search keywords</td></tr>
+          <tr><td><strong>Web History</strong></td><td>Browser history, downloads, cookies</td></tr>
+          <tr><td><strong>Timeline</strong></td><td>Chronological events</td></tr>
+          <tr><td><strong>Extracted Content</strong></td><td>Files found inside archives/docs</td></tr>
+          <tr><td><strong>Results</strong></td><td>Output from ingest modules</td></tr>
+          <tr><td><strong>Tags</strong></td><td>Your marked files</td></tr>
+          <tr><td><strong>Reports</strong></td><td>Generated forensic reports</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Companion CLI Tools (The Sleuth Kit)</div>
+    <p>Autopsy is GUI — but you can also use <strong>TSK command-line tools</strong> for scripting and automation.</p>
+
+    <div class="command">
+      <div class="command-title">1. fls — List Files</div>
+      <div class="command-purpose">List files and directories in disk image.</div>
+      <div class="code-block"><code>fls -r -o 2048 disk.img</code><button class="copy-btn" onclick="copyText('fls -r -o 2048 disk.img',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. icat — Extract File by Inode</div>
+      <div class="command-purpose">Extract file from image using inode number.</div>
+      <div class="code-block"><code>icat -o 2048 disk.img 12345 > extracted.txt</code><button class="copy-btn" onclick="copyText('icat -o 2048 disk.img 12345 > extracted.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. mmls — Partition Table</div>
+      <div class="command-purpose">Show partition layout of disk image.</div>
+      <div class="code-block"><code>mmls disk.img</code><button class="copy-btn" onclick="copyText('mmls disk.img',this)">COPY</button></div>
+      <div class="command-output">GUID Partition Table (EFI)
+Offset Sector: 0
+Units are in 512-byte sectors
+     Slot      Start        End          Length       Description
+     00:  Meta    0000000000   0000000000   0000000001   Safety Table
+     01:  Meta    0000000001   0000000001   0000000001   GPT Header
+     02:  000     0000002048   0000500735   0000498688   EFI system partition
+     03:  001     0000500736   0050000000   0049499264   Microsoft basic data</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. istat — Inode Info</div>
+      <div class="command-purpose">Show metadata for a specific inode.</div>
+      <div class="code-block"><code>istat -o 2048 disk.img 12345</code><button class="copy-btn" onclick="copyText('istat -o 2048 disk.img 12345',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. fsstat — File System Info</div>
+      <div class="command-block"><code>fsstat -o 2048 disk.img</code><button class="copy-btn" onclick="copyText('fsstat -o 2048 disk.img',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. blkcat — Block Content</div>
+      <div class="command-purpose">Extract content of a specific block.</div>
+      <div class="code-block"><code>blkcat -o 2048 disk.img 12345</code><button class="copy-btn" onclick="copyText('blkcat -o 2048 disk.img 12345',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. tsk_recover — Bulk Recover</div>
+      <div class="command-purpose">Recover all files from disk image to output folder.</div>
+      <div class="code-block"><code>tsk_recover -o 2048 disk.img recovered_files/</code><button class="copy-btn" onclick="copyText('tsk_recover -o 2048 disk.img recovered_files/',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. hfind — Hash Lookup</div>
+      <div class="command-purpose">Look up hash in NSRL database.</div>
+      <div class="code-block"><code>hfind /usr/share/nsrl/nsrl.db 5d41402abc4b2a76b9719d911017c592</code><button class="copy-btn" onclick="copyText('hfind /usr/share/nsrl/nsrl.db 5d41402abc4b2a76b9719d911017c592',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. sorter — File Classification</div>
+      <div class="command-purpose">Sort files by type (images, executables, docs).</div>
+      <div class="code-block"><code>sorter -d output_dir -h -sha256 disk.img</code><button class="copy-btn" onclick="copyText('sorter -d output_dir -h -sha256 disk.img',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. mactime — Timeline</div>
+      <div class="command-purpose">Build activity timeline from bodyfile.</div>
+      <div class="code-block"><code>fls -r -m / disk.img > bodyfile.txt && mactime -b bodyfile.txt -d > timeline.csv</code><button class="copy-btn" onclick="copyText('fls -r -m / disk.img > bodyfile.txt && mactime -b bodyfile.txt -d > timeline.csv',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Creating Forensic Images</div>
+    <p>Before analyzing, you need a forensic image. Common tools:</p>
+
+    <h3>1. dd — Basic Imaging</h3>
+    <div class="code-block"><code>sudo dd if=/dev/sdb of=disk.img bs=4M status=progress</code><button class="copy-btn" onclick="copyText('sudo dd if=/dev/sdb of=disk.img bs=4M status=progress',this)">COPY</button></div>
+
+    <h3>2. dcfldd — Enhanced dd</h3>
+    <div class="code-block"><code>sudo dcfldd if=/dev/sdb of=disk.img hash=sha256 hashwindow=1G</code><button class="copy-btn" onclick="copyText('sudo dcfldd if=/dev/sdb of=disk.img hash=sha256 hashwindow=1G',this)">COPY</button></div>
+
+    <h3>3. ddrescue — Damaged Drives</h3>
+    <div class="code-block"><code>sudo ddrescue /dev/sdb disk.img disk.log</code><button class="copy-btn" onclick="copyText('sudo ddrescue /dev/sdb disk.img disk.log',this)">COPY</button></div>
+
+    <h3>4. Guymager — GUI Imaging</h3>
+    <div class="code-block"><code>sudo guymager</code><button class="copy-btn" onclick="copyText('sudo guymager',this)">COPY</button></div>
+
+    <div class="info-box">
+      <div class="info-icon">🛡️</div>
+      <div class="info-text">
+        <strong>Best Practice:</strong> Always work on a copy (image), never the original. Use write blockers when imaging physical drives. Verify hash (MD5/SHA256) before and after.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags Reference (TSK)</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Tool</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>-o</code></td><td>All</td><td>Offset to start of partition (in sectors)</td></tr>
+          <tr><td><code>-r</code></td><td>fls</td><td>Recursive listing</td></tr>
+          <tr><td><code>-m</code></td><td>fls</td><td>Bodyfile output format</td></tr>
+          <tr><td><code>-d</code></td><td>fls</td><td>Deleted files only</td></tr>
+          <tr><td><code>-l</code></td><td>fls</td><td>Long listing</td></tr>
+          <tr><td><code>-p</code></td><td>fls</td><td>Display full path</td></tr>
+          <tr><td><code>-f</code></td><td>All</td><td>File system type (ntfs, ext4, fat)</td></tr>
+          <tr><td><code>-i</code></td><td>icat</td><td>Inode number</td></tr>
+          <tr><td><code>-b</code></td><td>mactime</td><td>Bodyfile input</td></tr>
+          <tr><td><code>-d</code></td><td>mactime</td><td>CSV output for timeline</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Autopsy vs Other Tools</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Type</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Autopsy</strong></td><td>GUI forensics</td><td>Complete case management</td></tr>
+          <tr><td><strong>Sleuth Kit</strong></td><td>CLI forensics</td><td>Scripting, automation</td></tr>
+          <tr><td><strong>FTK Imager</strong></td><td>GUI imaging</td><td>Creating & mounting images</td></tr>
+          <tr><td><strong>EnCase</strong></td><td>Commercial GUI</td><td>Enterprise forensics</td></tr>
+          <tr><td><strong>Volatility</strong></td><td>Memory forensics</td><td>RAM dumps</td></tr>
+          <tr><td><strong>Foremost</strong></td><td>CLI carving</td><td>File recovery from raw data</td></tr>
+          <tr><td><strong>Binwalk</strong></td><td>CLI firmware</td><td>IoT/firmware images</td></tr>
+          <tr><td><strong>Guymager</strong></td><td>GUI imaging</td><td>Fast forensic imaging</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"Autopsy won't start / Java error"</h3>
+    <ul>
+      <li>Check Java: <code>java -version</code> (needs Java 8 or 11)</li>
+      <li>Install: <code>sudo apt install openjdk-11-jdk</code></li>
+      <li>Unsupported Java: Autopsy doesn't work with Java 17+ yet</li>
+    </ul>
+
+    <h3>"Ingest is very slow"</h3>
+    <ul>
+      <li>Disable unused modules (Hash Lookup is slowest)</li>
+      <li>Increase heap memory: <code>JAVA_OPTS="-Xmx8G" autopsy</code></li>
+      <li>Use SSD for case directory</li>
+    </ul>
+
+    <h3>"Image won't load"</h3>
+    <ul>
+      <li>Check file integrity: <code>md5sum image.E01</code></li>
+      <li>Split E01 files — all parts must be in same folder</li>
+      <li>Try different format (DD/RAW usually works universally)</li>
+    </ul>
+
+    <h3>"Autopsy crashes on large images"</h3>
+    <ul>
+      <li>Increase heap: <code>-Xmx16G</code></li>
+      <li>Process one partition at a time</li>
+      <li>Use CLI tools (fls, icat) for targeted analysis</li>
+    </ul>
+
+    <h3>"Deleted files not found"</h3>
+    <ul>
+      <li>Not all deleted files are recoverable</li>
+      <li>Check "Deleted Files" view in Autopsy</li>
+      <li>Try file carving with PhotoRec or Foremost for raw recovery</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Digital forensics involves highly sensitive personal data. Only analyze devices you own, have legal authority over, or have <strong>explicit written permission</strong> to examine. Unauthorized access to computer data is a crime in most countries. For legal cases, follow chain-of-custody procedures and consult qualified experts.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(()=>{});
+}
+function initMatrix(){
+  const c=document.getElementById('matrix');if(!c)return;
+  const ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const fs=14;let cols=Math.floor(c.width/fs);let drops=Array(cols).fill(1);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(8,5,13,.03)';ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';ctx.font=fs+'px JetBrains Mono,monospace';
+    for(let i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  addEventListener('resize',()=>{resize();cols=Math.floor(c.width/fs);drops=Array(cols).fill(1)});
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

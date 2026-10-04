@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>HTTPx — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-beginner{background:rgba(0,255,65,.12);color:var(--neon-green);border:1px solid rgba(0,255,65,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">📡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🌐</div>
+      <div class="hero-info">
+        <div class="hero-name">HTTPX</div>
+        <div class="hero-cat">Web Testing · Fast HTTP Toolkit for Probing & Reconnaissance</div>
+        <div class="hero-badges">
+          <span class="badge badge-beginner">Beginner</span>
+          <span class="badge badge-count">40+ Commands</span>
+          <span class="badge badge-tag">Go</span>
+          <span class="badge badge-tag">Multi-Purpose</span>
+          <span class="badge badge-tag">Pipeline Friendly</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">HTTPx</strong> is a <strong>blazingly fast HTTP toolkit</strong> written in Go, designed for web reconnaissance, probing, and testing at scale. It takes URLs or subdomains as input and returns HTTP status codes, response headers, titles, body content, and more. HTTPx is the <strong>Swiss Army knife</strong> of HTTP investigation — perfect for bug bounty hunting, OSINT, and penetration testing workflows. One binary, infinite possibilities.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is HTTPx? (Deep Theory)</div>
+    <p>HTTPx is not just a status code checker. It's a <strong>comprehensive HTTP client</strong> that:
+      <br>• Probes HTTP/HTTPS endpoints at scale
+      <br>• Extracts response metadata (title, headers, body, status, etc.)
+      <br>• Chains with other tools via stdin/stdout (pipeline-friendly)
+      <br>• Handles authentication, proxies, custom headers
+      <br>• Filters and formats output for further analysis
+    </p>
+
+    <h3>Why HTTPx is Powerful</h3>
+    <ul>
+      <li><strong>Speed</strong> — Concurrent probing of thousands of URLs in seconds</li>
+      <li><strong>Lightweight</strong> — Single static binary, no dependencies, cross-platform</li>
+      <li><strong>Feature-Rich</strong> — Status codes, titles, headers, body, tech detection, redirects</li>
+      <li><strong>Pipeline-Compatible</strong> — Input from stdin, output JSON/plain text for chaining</li>
+      <li><strong>Flexible Output</strong> — JSON, CSV, custom templates for easy parsing</li>
+      <li><strong>Production-Ready</strong> — Used by security teams and bug bounty hunters at scale</li>
+    </ul>
+
+    <h3>When to Use HTTPx</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Use Case</th><th>Scenario</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Subdomain Validation</td><td>Got 100 subdomains, which are alive?</td><td>🎯 Quick HTTP probe</td></tr>
+          <tr><td>Title Extraction</td><td>Bulk find page titles for organization</td><td>📋 Automated tagging</td></tr>
+          <tr><td>Tech Detection</td><td>Find WordPress sites, admin panels, tech stacks</td><td>🔍 Quick fingerprinting</td></tr>
+          <tr><td>Status Code Filtering</td><td>Find 200s, 401s, 403s for opportunities</td><td>🚀 Opportunity hunting</td></tr>
+          <tr><td>Header Extraction</td><td>Find Server headers, WAF detection</td><td>🛡️ Defense assessment</td></tr>
+          <tr><td>Redirect Chains</td><td>Follow 30x redirects to final destination</td><td>🔗 URL resolution</td></tr>
+          <tr><td>Response Comparison</td><td>Diff responses between URLs</td><td>⚖️ Change detection</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>HTTPx in the Workflow</h3>
+    <p style="margin-top: 16px;">
+      <code>gobuster/ffuf</code> (find URLs) → <code>httpx</code> (probe/filter) → <code>burp/ffuf</code> (deep test)
+    </p>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Real Example:</strong> You have 500 subdomains from subdomain enumeration. HTTPx probes all 500 in ~10 seconds and returns only the 47 that are alive with HTTP 200. Feed those to Burp Suite for actual testing.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. Subdomain Validation & Probing</h3>
+    <p>Filter live hosts from a massive subdomain list. Combine with gobuster/assetfinder output.</p>
+
+    <h3>2. Bug Bounty Reconnaissance</h3>
+    <p>Quickly validate scope URLs and find interesting endpoints before manual testing.</p>
+
+    <h3>3. Redirect Chain Following</h3>
+    <p>Trace short URLs to their final destination (phishing, URL shorteners, etc.).</p>
+
+    <h3>4. Technology Fingerprinting</h3>
+    <p>Detect WordPress, Joomla, Drupal, etc., at scale via headers and page titles.</p>
+
+    <h3>5. WAF Detection</h3>
+    <p>Identify Cloudflare, AWS WAF, ModSecurity by analyzing response headers and patterns.</p>
+
+    <h3>6. Status Code Hunting</h3>
+    <p>Find 401 (auth required), 403 (forbidden), 500 (errors) for vulnerability opportunities.</p>
+
+    <h3>7. Response Comparison</h3>
+    <p>Compare HTTP responses between versions, CDNs, or time periods for changes.</p>
+
+    <h3>8. Chaining with Other Tools</h3>
+    <p>Feed URLs from gobuster, subfinder, or custom lists to httpx for validation and enrichment.</p>
+
+    <h3>9. API Endpoint Discovery</h3>
+    <p>Probe API endpoints with different headers and methods to find live APIs.</p>
+
+    <h3>10. Compliance & Monitoring</h3>
+    <p>Continuous monitoring of web properties for uptime, status changes, and certificate issues.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux (Pre-installed)</h3>
+    <div class="code-block"><code>httpx -version</code><button class="copy-btn" onclick="copyText('httpx -version',this)">COPY</button></div>
+
+    <h3>Install on Linux/macOS</h3>
+    <div class="code-block"><code>sudo apt install -y httpx-toolkit</code><button class="copy-btn" onclick="copyText('sudo apt install -y httpx-toolkit',this)">COPY</button></div>
+
+    <h3>Install via Go (Latest)</h3>
+    <div class="code-block"><code>go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest</code><button class="copy-btn" onclick="copyText('go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest',this)">COPY</button></div>
+
+    <h3>Docker</h3>
+    <div class="code-block"><code>docker pull projectdiscovery/httpx:latest
+docker run --rm projectdiscovery/httpx:latest -u http://example.com</code><button class="copy-btn" onclick="copyText('docker run --rm projectdiscovery/httpx:latest -u http://example.com',this)">COPY</button></div>
+
+    <h3>From Source</h3>
+    <div class="code-block"><code>git clone https://github.com/projectdiscovery/httpx.git
+cd httpx/cmd/httpx && go build</code><button class="copy-btn" onclick="copyText('git clone https://github.com/projectdiscovery/httpx.git && cd httpx/cmd/httpx && go build',this)">COPY</button></div>
+
+    <div class="info-box">
+      <div class="info-icon">📚</div>
+      <div class="info-text">
+        <strong>Verify Installation:</strong> <code>httpx -version</code> should output the version. If command not found, add <code>$GOPATH/bin</code> to <code>$PATH</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Usage & Common Flags</div>
+
+    <div class="command">
+      <div class="command-title">1. Single URL Probe</div>
+      <div class="command-purpose">Get HTTP status and details for one URL.</div>
+      <div class="code-block"><code>httpx -u http://example.com</code><button class="copy-btn" onclick="copyText('httpx -u http://example.com',this)">COPY</button></div>
+      <div class="command-output">http://example.com [200] [10234]</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Multiple URLs from List</div>
+      <div class="command-purpose">Probe URLs from a file (one per line).</div>
+      <div class="code-block"><code>httpx -l urls.txt</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Read from Stdin</div>
+      <div class="command-purpose">Perfect for chaining with other tools (pipes).</div>
+      <div class="code-block"><code>cat subdomains.txt | httpx</code><button class="copy-btn" onclick="copyText('cat subdomains.txt | httpx',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Show HTTP Status Codes</div>
+      <div class="command-purpose">Default output format.</div>
+      <div class="code-block"><code>httpx -l urls.txt -status-code</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -status-code',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Extract Page Titles</div>
+      <div class="command-purpose">Get HTML title from each page.</div>
+      <div class="code-block"><code>httpx -l urls.txt -title</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -title',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. Get Response Length</div>
+      <div class="code-block"><code>httpx -l urls.txt -length</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -length',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. Show Server Header</div>
+      <div class="command-purpose">Identify web server technology.</div>
+      <div class="code-block"><code>httpx -l urls.txt -server</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -server',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. Extract All Headers</div>
+      <div class="code-block"><code>httpx -l urls.txt -headers</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -headers',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. Combine Multiple Flags</div>
+      <div class="command-purpose">Get status, title, server, and length in one output.</div>
+      <div class="code-block"><code>httpx -l urls.txt -status-code -title -server -length</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -status-code -title -server -length',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Filter by Status Code</div>
+      <div class="command-purpose">Only show URLs returning specific status codes.</div>
+      <div class="code-block"><code>httpx -l urls.txt -status-code -sc 200,301,302</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -status-code -sc 200,301,302',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">11. Exclude Status Codes</div>
+      <div class="code-block"><code>httpx -l urls.txt -status-code -mc 404,500</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -status-code -mc 404,500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Follow Redirects</div>
+      <div class="command-purpose">Trace 301/302 chains to final destination.</div>
+      <div class="code-block"><code>httpx -l urls.txt -follow-redirects</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -follow-redirects',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. Increase Threads (Speed)</div>
+      <div class="command-purpose">Default is 150. Increase for faster scanning.</div>
+      <div class="code-block"><code>httpx -l urls.txt -threads 500</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -threads 500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Custom Timeout</div>
+      <div class="code-block"><code>httpx -l urls.txt -timeout 30s</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -timeout 30s',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. JSON Output</div>
+      <div class="command-purpose">Get structured JSON for parsing/further analysis.</div>
+      <div class="code-block"><code>httpx -l urls.txt -json</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -json',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Save to File</div>
+      <div class="code-block"><code>httpx -l urls.txt -o results.txt</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -o results.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. Verbose Mode</div>
+      <div class="command-block"><code>httpx -l urls.txt -v</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -v',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Silent Mode (No Banner)</div>
+      <div class="code-block"><code>httpx -l urls.txt -silent</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -silent',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">19. Rate Limit (Requests/Second)</div>
+      <div class="code-block"><code>httpx -l urls.txt -rate-limit 100</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -rate-limit 100',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Custom User-Agent</div>
+      <div class="code-block"><code>httpx -l urls.txt -H "User-Agent: Mozilla/5.0"</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -H \"User-Agent: Mozilla/5.0\"',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Authentication & Advanced Options</div>
+
+    <div class="command">
+      <div class="command-title">21. Basic Authentication</div>
+      <div class="code-block"><code>httpx -l urls.txt -auth "username:password"</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -auth \"username:password\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Custom Header</div>
+      <div class="code-block"><code>httpx -l urls.txt -H "X-API-Key: secret123"</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -H \"X-API-Key: secret123\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Multiple Custom Headers</div>
+      <div class="code-block"><code>httpx -l urls.txt -H "Authorization: Bearer token" -H "Accept: application/json"</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -H \"Authorization: Bearer token\" -H \"Accept: application/json\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Cookies</div>
+      <div class="code-block"><code>httpx -l urls.txt -H "Cookie: session=abc123; user=admin"</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -H \"Cookie: session=abc123; user=admin\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. Use Proxy</div>
+      <div class="command-purpose">Route traffic through proxy (Burp, etc.).</div>
+      <div class="code-block"><code>httpx -l urls.txt -proxy http://127.0.0.1:8080</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -proxy http://127.0.0.1:8080',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">26. Ignore SSL Errors</div>
+      <div class="code-block"><code>httpx -l urls.txt -insecure</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -insecure',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. HTTP Method (POST/PUT)</div>
+      <div class="code-block"><code>httpx -l urls.txt -method POST</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -method POST',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. POST Data</div>
+      <div class="code-block"><code>httpx -l urls.txt -method POST -body "username=admin&password=test"</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -method POST -body \"username=admin&password=test\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">29. Extract CSP Headers</div>
+      <div class="command-purpose">Find Content Security Policy misconfigurations.</div>
+      <div class="code-block"><code>httpx -l urls.txt -csp</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -csp',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">30. Detect Waf</div>
+      <div class="command-purpose">Identify WAF/IDS/IPS based on responses.</div>
+      <div class="code-block"><code>httpx -l urls.txt -waf-detection</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -waf-detection',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">31. Tech Detection</div>
+      <div class="command-purpose">Detect WordPress, Joomla, Drupal, CMS, etc.</div>
+      <div class="code-block"><code>httpx -l urls.txt -tech-detect</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -tech-detect',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">32. Screenshot Support (Headless Browser)</div>
+      <div class="command-block"><code>httpx -l urls.txt -screenshot</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -screenshot',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">33. Extract Meta Tags</div>
+      <div class="code-block"><code>httpx -l urls.txt -extract-keywords</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -extract-keywords',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">34. Get ASN/GeoIP Info</div>
+      <div class="code-block"><code>httpx -l urls.txt -asn</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -asn',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">35. Custom Port Probe</div>
+      <div class="command-purpose">Probe specific ports if not default 80/443.</div>
+      <div class="code-block"><code>httpx -l hosts.txt -ports 8080,8443,3000</code><button class="copy-btn" onclick="copyText('httpx -l hosts.txt -ports 8080,8443,3000',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Advanced Filtering & Output</div>
+
+    <div class="command">
+      <div class="command-title">36. Match Body Content</div>
+      <div class="command-purpose">Filter URLs containing specific text in response body.</div>
+      <div class="code-block"><code>httpx -l urls.txt -mr "password" -title</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -mr \"password\" -title',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">37. Match Response Size</div>
+      <div class="command-block"><code>httpx -l urls.txt -msize 1000:10000</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -msize 1000:10000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">38. CSV Output</div>
+      <div class="code-block"><code>httpx -l urls.txt -csv -o results.csv</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -csv -o results.csv',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">39. Output Only URLs (No Extra Info)</div>
+      <div class="code-block"><code>httpx -l urls.txt -silent | grep "200"</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -silent | grep \"200\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">40. Store Response Body</div>
+      <div class="command-purpose">Save full response for each URL.</div>
+      <div class="code-block"><code>httpx -l urls.txt -store-response -store-response-dir responses/</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -store-response -store-response-dir responses/',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Workflows</div>
+
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Workflow 1: Subdomain Validation</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>subfinder -d target.com -silent | httpx -status-code -title -o live-subs.txt</code><button class="copy-btn" onclick="copyText('subfinder -d target.com -silent | httpx -status-code -title -o live-subs.txt',this)">COPY</button></div>Find all subdomains of target.com and filter to only live ones with HTTP status and titles.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 2: Gobuster Integration</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>gobuster dir -u http://target.com -w wordlist.txt -q | httpx -status-code -title -mc 404</code><button class="copy-btn" onclick="copyText('gobuster dir -u http://target.com -w wordlist.txt -q | httpx -status-code -title -mc 404',this)">COPY</button></div>Feed gobuster results to httpx and filter out 404s.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 3: Tech Stack Detection</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>httpx -l urls.txt -tech-detect -server -title -json | jq '.[] | {url: .url, tech: .tech, server: .server}'</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -tech-detect -server -title -json | jq \'.[] | {url: .url, tech: .tech, server: .server}\'',this)">COPY</button></div>Detect technologies and parse with jq for reporting.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 4: Status Code Hunting</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>httpx -l urls.txt -status-code -sc 200,401,403 -o interesting.txt</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -status-code -sc 200,401,403 -o interesting.txt',this)">COPY</button></div>Find 200 (success), 401 (auth required), and 403 (forbidden) responses.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 5: Redirect Chain Tracing</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>cat urls.txt | httpx -follow-redirects -location</code><button class="copy-btn" onclick="copyText('cat urls.txt | httpx -follow-redirects -location',this)">COPY</button></div>Follow all 301/302 redirects to see final destination.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 6: WAF Detection at Scale</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>httpx -l urls.txt -waf-detection -o waf-results.txt</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -waf-detection -o waf-results.txt',this)">COPY</button></div>Scan all URLs for WAF/IDS signatures.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 7: Response Body Analysis</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>httpx -l urls.txt -store-response -store-response-dir ./responses/ && grep -r "admin" ./responses/</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -store-response -store-response-dir ./responses/ && grep -r \"admin\" ./responses/',this)">COPY</button></div>Store all responses and search for specific keywords.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 8: JSON Parsing for Reports</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>httpx -l urls.txt -json | jq '[.[] | select(.status_code == 200)] | length'</code><button class="copy-btn" onclick="copyText('httpx -l urls.txt -json | jq \'[.[] | select(.status_code == 200)] | length\'',this)">COPY</button></div>Count total 200s with jq.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">HTTPx vs Other Tools Comparison</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>HTTPx</th><th>curl</th><th>wget</th><th>Burp Intruder</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Speed</strong></td><td>⚡⚡⚡⚡</td><td>⚡⚡</td><td>⚡⚡</td><td>⚡⚡⚡</td></tr>
+          <tr><td><strong>Batch Probing</strong></td><td>✅ Built-in</td><td>❌ Manual loop</td><td>❌ Limited</td><td>✅ Yes</td></tr>
+          <tr><td><strong>Status Filtering</strong></td><td>✅ Easy</td><td>❌ Manual</td><td>❌ Manual</td><td>✅ Yes</td></tr>
+          <tr><td><strong>Pipeline Friendly</strong></td><td>✅ Yes</td><td>❌ Complex</td><td>❌ Limited</td><td>❌ GUI only</td></tr>
+          <tr><td><strong>JSON Output</strong></td><td>✅ Native</td><td>❌ No</td><td>❌ No</td><td>✅ Export</td></tr>
+          <tr><td><strong>Tech Detection</strong></td><td>✅ Yes</td><td>❌ No</td><td>❌ No</td><td>⚠️ Limited</td></tr>
+          <tr><td><strong>WAF Detection</strong></td><td>✅ Yes</td><td>❌ No</td><td>❌ No</td><td>❌ No</td></tr>
+          <tr><td><strong>Learning Curve</strong></td><td>✅ Easy</td><td>⚠️ Complex</td><td>✅ Easy</td><td>✅ Easy</td></tr>
+          <tr><td><strong>Use Case</strong></td><td>Bulk probing</td><td>Manual requests</td><td>File downloads</td><td>Interactive testing</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags Quick Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>-u</code></td><td>Single URL to probe</td></tr>
+          <tr><td><code>-l</code></td><td>File with list of URLs</td></tr>
+          <tr><td><code>-status-code</code></td><td>Show HTTP status code</td></tr>
+          <tr><td><code>-title</code></td><td>Extract page title</td></tr>
+          <tr><td><code>-server</code></td><td>Show Server header</td></tr>
+          <tr><td><code>-length</code></td><td>Show response length</td></tr>
+          <tr><td><code>-sc</code></td><td>Filter specific status codes</td></tr>
+          <tr><td><code>-mc</code></td><td>Match status codes</td></tr>
+          <tr><td><code>-follow-redirects</code></td><td>Follow 301/302 chains</td></tr>
+          <tr><td><code>-threads</code></td><td>Number of concurrent threads</td></tr>
+          <tr><td><code>-timeout</code></td><td>HTTP timeout (default 10s)</td></tr>
+          <tr><td><code>-json</code></td><td>JSON output</td></tr>
+          <tr><td><code>-csv</code></td><td>CSV output</td></tr>
+          <tr><td><code>-o</code></td><td>Output file</td></tr>
+          <tr><td><code>-H</code></td><td>Custom header</td></tr>
+          <tr><td><code>-auth</code></td><td>Basic auth (username:password)</td></tr>
+          <tr><td><code>-proxy</code></td><td>HTTP proxy URL</td></tr>
+          <tr><td><code>-insecure</code></td><td>Ignore SSL errors</td></tr>
+          <tr><td><code>-method</code></td><td>HTTP method (GET/POST/PUT)</td></tr>
+          <tr><td><code>-body</code></td><td>POST data</td></tr>
+          <tr><td><code>-waf-detection</code></td><td>Detect WAF/IDS</td></tr>
+          <tr><td><code>-tech-detect</code></td><td>Detect technologies</td></tr>
+          <tr><td><code>-silent</code></td><td>Silent mode (no banner)</td></tr>
+          <tr><td><code>-v</code></td><td>Verbose mode</td></tr>
+          <tr><td><code>-rate-limit</code></td><td>Requests per second</td></tr>
+          <tr><td><code>-ports</code></td><td>Custom ports to probe</td></tr>
+          <tr><td><code>-store-response</code></td><td>Save response bodies</td></tr>
+          <tr><td><code>-csp</code></td><td>Extract CSP headers</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+
+    <h3>Timeout Errors / Slow Responses</h3>
+    <ul>
+      <li>Increase timeout: <code>-timeout 30s</code></li>
+      <li>Reduce threads to avoid overwhelming target: <code>-threads 50</code></li>
+      <li>Use rate-limit: <code>-rate-limit 100</code></li>
+    </ul>
+
+    <h3>SSL Certificate Errors</h3>
+    <ul>
+      <li>Use <code>-insecure</code> flag to bypass SSL verification</li>
+      <li>Or use http:// instead of https://</li>
+    </ul>
+
+    <h3>Too Many Requests / Rate Limited (429)</h3>
+    <ul>
+      <li>Reduce threads: <code>-threads 10</code></li>
+      <li>Add rate limit: <code>-rate-limit 50</code></li>
+      <li>Add delay between requests: <code>-delay 1000ms</code> (if supported)</li>
+    </ul>
+
+    <h3>Empty or No Output</h3>
+    <ul>
+      <li>Check URL format (must be http://... or https://...)</li>
+      <li>Use <code>-v</code> for verbose mode to see errors</li>
+      <li>Test single URL first: <code>httpx -u http://example.com</code></li>
+    </ul>
+
+    <h3>JSON Output Parsing Issues</h3>
+    <ul>
+      <li>Use <code>jq</code> for JSON parsing: <code>httpx -l urls.txt -json | jq '.'</code></li>
+      <li>Ensure valid JSON: <code>httpx -l urls.txt -json -o output.json</code></li>
+    </ul>
+
+    <h3>Command Not Found</h3>
+    <ul>
+      <li>Install: <code>go install github.com/projectdiscovery/httpx/cmd/httpx@latest</code></li>
+      <li>Check PATH: <code>echo $PATH | grep go</code></li>
+      <li>Add to PATH if needed: <code>export PATH=$PATH:~/go/bin</code></li>
+    </ul>
+
+    <h3>Proxy Not Working</h3>
+    <ul>
+      <li>Ensure proxy is running (Burp, mitmproxy, etc.)</li>
+      <li>Use correct format: <code>-proxy http://127.0.0.1:8080</code></li>
+      <li>For HTTPS through proxy, add <code>-insecure</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Pro Tips & Best Practices</div>
+
+    <h3>Combine with Other Tools</h3>
+    <p><strong>Subfinder → HTTPx → Burp:</strong> Find live subdomains, then test in Burp Suite.</p>
+    <p><strong>Gobuster → HTTPx → ffuf:</strong> Find directories, validate, then fuzz for bypasses.</p>
+
+    <h3>Use JSON for Automation</h3>
+    <p>Export to JSON and parse with <code>jq</code>, <code>python</code>, or <code>jshon</code> for reports and CI/CD pipelines.</p>
+
+    <h3>Monitor for Changes</h3>
+    <p>Run httpx regularly and diff results to detect new endpoints, status changes, or tech updates.</p>
+
+    <h3>Combine Filters for Precision</h3>
+    <p><code>httpx -l urls.txt -sc 200 -title -mr "admin"</code> finds only 200s with "admin" in title.</p>
+
+    <h3>Store Responses for Deep Analysis</h3>
+    <p>Use <code>-store-response</code> to save full HTML, then grep or search locally.</p>
+
+    <h3>Respect Rate Limits</h3>
+    <p>Always use <code>-rate-limit</code> on production targets to avoid DoS accusations.</p>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> HTTPx sends HTTP requests to web servers. Unauthorized scanning is <strong>illegal</strong>:
+      <br>• On your own systems ✅ OK
+      <br>• In authorized penetration tests (signed contract) ✅ OK
+      <br>• In bug bounty programs (within scope) ✅ OK
+      <br>• On any other system ❌ ILLEGAL
+      <br>
+      <br>Even a single HTTP request to an unauthorized target can violate the CFAA (US), Computer Misuse Act (UK), IT Act (India), and similar laws. Always get <strong>written authorization</strong> before scanning any external systems. Even high-volume requests can be classified as Denial of Service.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

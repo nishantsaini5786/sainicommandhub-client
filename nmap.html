@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Nmap — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+
+/* BG FX */
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+
+/* Navbar */
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+
+/* Container */
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-beginner{background:rgba(0,255,65,.12);color:var(--neon-green);border:1px solid rgba(0,255,65,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+
+/* Section */
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+
+/* Code block */
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.code-block code .comment{color:var(--text-dim)}
+.code-block code .flag{color:var(--neon-yellow)}
+.code-block code .value{color:var(--secondary)}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+
+/* Command card */
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;animation:cmdIn .5s ease backwards;position:relative;overflow:hidden}
+@keyframes cmdIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command.dangerous{border-color:rgba(255,0,64,.3);background:rgba(255,0,64,.04)}
+.command.dangerous::before{background:linear-gradient(180deg,var(--neon-red),var(--accent));opacity:1}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.danger-badge{font-family:var(--font-mono);font-size:.58rem;padding:3px 10px;border-radius:12px;background:rgba(255,0,64,.15);border:1px solid rgba(255,0,64,.4);color:var(--neon-red);letter-spacing:.5px;animation:dangerBlink 1.5s ease-in-out infinite}
+@keyframes dangerBlink{0%,100%{opacity:1}50%{opacity:.6}}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+
+/* Info box */
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+
+/* Warning */
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+
+/* Table */
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+
+/* Workflow */
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+
+/* Footer */
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+
+/* Responsive */
+@media(max-width:640px){
+  body{padding:76px 14px 30px}
+  .hero-top{flex-direction:column;text-align:center;gap:16px}
+  .hero-icon{width:80px;height:80px;font-size:2.2rem}
+  .hero-badges{justify-content:center}
+  .navbar{padding:12px 14px}
+  .nav-brand{font-size:.7rem}
+  .section{padding:20px 16px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🔍</div>
+      <div class="hero-info">
+        <div class="hero-name">NMAP</div>
+        <div class="hero-cat">Information Gathering · Network Scanner</div>
+        <div class="hero-badges">
+          <span class="badge badge-beginner">Beginner</span>
+          <span class="badge badge-count">30+ Commands</span>
+          <span class="badge badge-tag">Port Scanner</span>
+          <span class="badge badge-tag">OS Detection</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Nmap (Network Mapper)</strong> is the industry-standard open-source tool for network discovery and security auditing. It uses raw IP packets to determine hosts, services, operating systems, packet filters, and hundreds of other characteristics. Used by network admins, pentesters, and ethical hackers worldwide.
+    </p>
+  </div>
+
+  <!-- WHAT IS NMAP -->
+  <div class="section">
+    <div class="section-title">What is Nmap?</div>
+    <p>Nmap is a free, open-source utility for network discovery and security auditing. Originally released in 1997 by Gordon Lyon (Fyodor), it has become the de-facto standard for network reconnaissance.</p>
+    <p>Nmap is not just a port scanner. It can:</p>
+    <ul>
+      <li><strong>Discover live hosts</strong> on a network (host discovery)</li>
+      <li><strong>Enumerate open ports</strong> and identify services (port scanning)</li>
+      <li><strong>Detect service versions</strong> (banner grabbing + fingerprinting)</li>
+      <li><strong>Identify operating systems</strong> via TCP/IP stack fingerprinting</li>
+      <li><strong>Run vulnerability scripts</strong> via the Nmap Scripting Engine (NSE)</li>
+      <li><strong>Bypass firewalls and IDS/IPS</strong> using advanced evasion techniques</li>
+      <li><strong>Map entire networks</strong> with topology and traceroute data</li>
+    </ul>
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Why it matters:</strong> Before exploiting anything, you must know what's there. Nmap is the first tool in every penetration tester's arsenal.
+      </div>
+    </div>
+  </div>
+
+  <!-- INSTALLATION -->
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux / Debian / Ubuntu</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y nmap</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y nmap',this)">COPY</button></div>
+
+    <h3>Fedora / RHEL / CentOS</h3>
+    <div class="code-block"><code>sudo dnf install -y nmap</code><button class="copy-btn" onclick="copyText('sudo dnf install -y nmap',this)">COPY</button></div>
+
+    <h3>macOS (via Homebrew)</h3>
+    <div class="code-block"><code>brew install nmap</code><button class="copy-btn" onclick="copyText('brew install nmap',this)">COPY</button></div>
+
+    <h3>Windows</h3>
+    <p>Download the official installer from <span style="color:var(--secondary)">nmap.org/download.html</span></p>
+
+    <h3>Verify Installation</h3>
+    <div class="code-block"><code>nmap --version</code><button class="copy-btn" onclick="copyText('nmap --version',this)">COPY</button></div>
+    <div class="command-output">Nmap version 7.94 ( https://nmap.org )
+Platform: x86_64-pc-linux-gnu</div>
+  </div>
+
+  <!-- BASIC SYNTAX -->
+  <div class="section">
+    <div class="section-title">Basic Syntax</div>
+    <div class="code-block"><code>nmap [Scan Type] [Options] {target specification}</code><button class="copy-btn" onclick="copyText('nmap [Scan Type] [Options] {target specification}',this)">COPY</button></div>
+    <ul>
+      <li><strong>Target</strong> — IP address, hostname, CIDR range, or file with targets</li>
+      <li><strong>Options</strong> — flags like <code>-sV</code>, <code>-O</code>, <code>-p</code>, <code>-A</code> etc.</li>
+    </ul>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- BASIC COMMANDS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Basic Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Single Host Scan</div>
+      <div class="command-purpose">Scans the <strong>top 1000 TCP ports</strong> on a single target — most commonly used first command.</div>
+      <div class="code-block"><code>nmap 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap 192.168.1.1',this)">COPY</button></div>
+      <div class="command-output">Starting Nmap 7.94 ( https://nmap.org )
+Nmap scan report for 192.168.1.1
+Host is up (0.0021s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT    STATE SERVICE
+22/tcp  open  ssh
+80/tcp  open  http
+443/tcp open  https</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Multiple Hosts</div>
+      <div class="command-purpose">Scan multiple IP addresses at once.</div>
+      <div class="code-block"><code>nmap 192.168.1.1 192.168.1.5 192.168.1.10</code><button class="copy-btn" onclick="copyText('nmap 192.168.1.1 192.168.1.5 192.168.1.10',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Scan a Subnet (CIDR)</div>
+      <div class="command-purpose">Scan entire /24 network — <strong>254 hosts</strong>.</div>
+      <div class="code-block"><code>nmap 192.168.1.0/24</code><button class="copy-btn" onclick="copyText('nmap 192.168.1.0/24',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Scan From File</div>
+      <div class="command-purpose">Read targets from a text file (one per line).</div>
+      <div class="code-block"><code>nmap -iL targets.txt</code><button class="copy-btn" onclick="copyText('nmap -iL targets.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Scan a Range</div>
+      <div class="command-purpose">Scan IP range using dash syntax.</div>
+      <div class="code-block"><code>nmap 192.168.1.1-50</code><button class="copy-btn" onclick="copyText('nmap 192.168.1.1-50',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- HOST DISCOVERY -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Host Discovery (Ping Scans)</div>
+
+    <div class="command">
+      <div class="command-title">6. Ping Sweep (-sn)</div>
+      <div class="command-purpose">Find live hosts <strong>without scanning ports</strong>. Fastest way to map a network.</div>
+      <div class="code-block"><code>nmap -sn 192.168.1.0/24</code><button class="copy-btn" onclick="copyText('nmap -sn 192.168.1.0/24',this)">COPY</button></div>
+      <div class="command-output">Nmap scan report for 192.168.1.1
+Host is up (0.002s latency).
+Nmap scan report for 192.168.1.10
+Host is up (0.005s latency).</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. Skip Host Discovery (-Pn)</div>
+      <div class="command-purpose">Treat all hosts as online — skip ping. Useful when ICMP is blocked by firewall.</div>
+      <div class="code-block"><code>nmap -Pn 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -Pn 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. TCP SYN Ping (-PS)</div>
+      <div class="command-purpose">Use TCP SYN packets for host discovery (bypasses ICMP filtering).</div>
+      <div class="code-block"><code>nmap -PS22,80,443 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -PS22,80,443 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. ARP Ping (-PR)</div>
+      <div class="command-purpose">For local networks — faster than ICMP. Works even if ICMP is blocked.</div>
+      <div class="code-block"><code>nmap -PR 192.168.1.0/24</code><button class="copy-btn" onclick="copyText('nmap -PR 192.168.1.0/24',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Disable DNS Resolution (-n)</div>
+      <div class="command-purpose">Speed up scans by skipping reverse DNS lookups.</div>
+      <div class="code-block"><code>nmap -n 192.168.1.0/24</code><button class="copy-btn" onclick="copyText('nmap -n 192.168.1.0/24',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- PORT SCANNING -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Port Scanning Techniques</div>
+
+    <div class="command">
+      <div class="command-title">11. TCP SYN Scan (-sS) — Stealth</div>
+      <div class="command-purpose">The <strong>default and most popular scan</strong>. Fast, stealthy, never completes TCP handshake. Requires root.</div>
+      <div class="code-block"><code>sudo nmap -sS 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -sS 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. TCP Connect Scan (-sT)</div>
+      <div class="command-purpose">Full TCP handshake scan. Works without root but slower and noisier than SYN.</div>
+      <div class="code-block"><code>nmap -sT 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -sT 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. UDP Scan (-sU)</div>
+      <div class="command-purpose">Scan UDP ports. Slower than TCP but discovers DNS, SNMP, DHCP services.</div>
+      <div class="code-block"><code>sudo nmap -sU 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -sU 192.168.1.1',this)">COPY</button></div>
+      <div class="command-output">PORT     STATE         SERVICE
+53/udp   open          domain
+67/udp   open|filtered dhcps
+161/udp  open          snmp</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Combined TCP + UDP</div>
+      <div class="command-purpose">Scan both TCP and UDP in one command.</div>
+      <div class="code-block"><code>sudo nmap -sS -sU 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -sS -sU 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. ACK Scan (-sA)</div>
+      <div class="command-purpose">Maps <strong>firewall rules</strong>. Distinguishes filtered vs unfiltered ports.</div>
+      <div class="code-block"><code>sudo nmap -sA 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -sA 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. FIN Scan (-sF)</div>
+      <div class="command-purpose">Stealthy scan — sends FIN packets. Bypasses some firewalls.</div>
+      <div class="code-block"><code>sudo nmap -sF 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -sF 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. XMAS Scan (-sX)</div>
+      <div class="command-purpose">Sends packets with FIN+PSH+URG flags — reveals open ports on some systems.</div>
+      <div class="code-block"><code>sudo nmap -sX 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -sX 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. NULL Scan (-sN)</div>
+      <div class="command-purpose">Sends packets with no flags set.</div>
+      <div class="code-block"><code>sudo nmap -sN 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -sN 192.168.1.1',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- PORT SELECTION -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Port Selection</div>
+
+    <div class="command">
+      <div class="command-title">19. Scan Specific Ports (-p)</div>
+      <div class="code-block"><code>nmap -p 22,80,443 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -p 22,80,443 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Scan Port Range</div>
+      <div class="code-block"><code>nmap -p 1-1000 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -p 1-1000 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">21. Scan ALL 65535 Ports</div>
+      <div class="command-purpose">Full port scan — slow but thorough.</div>
+      <div class="code-block"><code>nmap -p- 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -p- 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Fast Scan — Top 100 Ports</div>
+      <div class="command-purpose">Scan only the top 100 most common ports.</div>
+      <div class="code-block"><code>nmap -F 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -F 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Top N Ports</div>
+      <div class="command-purpose">Scan top 500 most common ports.</div>
+      <div class="code-block"><code>nmap --top-ports 500 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --top-ports 500 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Scan All TCP Ports</div>
+      <div class="code-block"><code>nmap -p T:1-65535 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -p T:1-65535 192.168.1.1',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SERVICE DETECTION -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Service & Version Detection</div>
+
+    <div class="command">
+      <div class="command-title">25. Service Version Detection (-sV)</div>
+      <div class="command-purpose">Detect service <strong>name and version</strong> on each open port. Critical for finding vulnerable software.</div>
+      <div class="code-block"><code>nmap -sV 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -sV 192.168.1.1',this)">COPY</button></div>
+      <div class="command-output">PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.5
+80/tcp open  http    Apache httpd 2.4.41 ((Ubuntu))
+443/tcp open ssl/https</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">26. Aggressive Version Detection</div>
+      <div class="command-purpose">More probes, slower but more accurate.</div>
+      <div class="code-block"><code>nmap -sV --version-intensity 9 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -sV --version-intensity 9 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. OS Detection (-O)</div>
+      <div class="command-purpose">Identify the <strong>operating system</strong> via TCP/IP stack fingerprinting.</div>
+      <div class="code-block"><code>sudo nmap -O 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -O 192.168.1.1',this)">COPY</button></div>
+      <div class="command-output">Running: Linux 4.X|5.X
+OS CPE: cpe:/o:linux:linux_kernel:4
+OS details: Linux 4.15 - 5.6</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. Aggressive Scan (-A)</div>
+      <div class="command-purpose"><strong>All-in-one scan</strong>: OS detection + version detection + script scanning + traceroute.</div>
+      <div class="code-block"><code>sudo nmap -A 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -A 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">29. Aggressive with More Probes</div>
+      <div class="code-block"><code>sudo nmap -A --version-all 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -A --version-all 192.168.1.1',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- NSE SCRIPTS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Nmap Scripting Engine (NSE)</div>
+    <p>NSE has 600+ scripts. Categories: <code>default</code>, <code>safe</code>, <code>vuln</code>, <code>auth</code>, <code>brute</code>, <code>discovery</code>, <code>exploit</code>, <code>malware</code>, <code>intrusive</code>.</p>
+
+    <div class="command">
+      <div class="command-title">30. Default Scripts (-sC)</div>
+      <div class="command-purpose">Run default NSE scripts — safe, useful for reconnaissance.</div>
+      <div class="code-block"><code>nmap -sC 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -sC 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">31. Vulnerability Scan</div>
+      <div class="command-purpose">Run all <strong>vulnerability detection</strong> scripts.</div>
+      <div class="code-block"><code>sudo nmap --script vuln 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap --script vuln 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command dangerous">
+      <div class="command-title">32. Brute Force Login <span class="danger-badge">⚠ AUTHORIZED USE ONLY</span></div>
+      <div class="command-purpose">Brute-force login on supported services (SSH, FTP, etc.).</div>
+      <div class="code-block"><code>nmap --script ssh-brute -p 22 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --script ssh-brute -p 22 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">33. HTTP Enumeration</div>
+      <div class="code-block"><code>nmap --script http-enum -p 80,443 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --script http-enum -p 80,443 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">34. SMB Enumeration</div>
+      <div class="command-purpose">Enumerate SMB shares, users, OS info — critical for Windows networks.</div>
+      <div class="code-block"><code>nmap --script smb-enum-shares,smb-enum-users -p 445 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --script smb-enum-shares,smb-enum-users -p 445 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">35. SMB Vulnerabilities (MS17-010)</div>
+      <div class="command-purpose">Check if target is vulnerable to EternalBlue.</div>
+      <div class="code-block"><code>nmap --script smb-vuln-ms17-010 -p 445 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --script smb-vuln-ms17-010 -p 445 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">36. SSL/TLS Enumeration</div>
+      <div class="code-block"><code>nmap --script ssl-enum-ciphers -p 443 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --script ssl-enum-ciphers -p 443 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">37. DNS Enumeration</div>
+      <div class="code-block"><code>nmap --script dns-zone-transfer -p 53 <nameserver></code><button class="copy-btn" onclick="copyText('nmap --script dns-zone-transfer -p 53 <nameserver>',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">38. MySQL Enumeration</div>
+      <div class="code-block"><code>nmap --script mysql-info,mysql-enum -p 3306 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --script mysql-info,mysql-enum -p 3306 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">39. Show Script Help</div>
+      <div class="command-purpose">Read documentation for any NSE script.</div>
+      <div class="code-block"><code>nmap --script-help smb-enum-shares</code><button class="copy-btn" onclick="copyText('nmap --script-help smb-enum-shares',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">40. Run Category Scripts</div>
+      <div class="command-purpose">Run all scripts in the <code>discovery</code> category.</div>
+      <div class="code-block"><code>nmap --script "discovery" 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --script \"discovery\" 192.168.1.1',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TIMING & PERFORMANCE -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Timing & Performance</div>
+    <p>Timing templates range from <code>-T0</code> (paranoid, slowest) to <code>-T5</code> (insane, fastest).</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Name</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><code>-T0</code></td><td>Paranoid</td><td>IDS evasion, extremely slow</td></tr>
+          <tr><td><code>-T1</code></td><td>Sneaky</td><td>IDS evasion</td></tr>
+          <tr><td><code>-T2</code></td><td>Polite</td><td>Reduce bandwidth, less intrusive</td></tr>
+          <tr><td><code>-T3</code></td><td>Normal</td><td>Default</td></tr>
+          <tr><td><code>-T4</code></td><td>Aggressive</td><td>Fast, assumes good network</td></tr>
+          <tr><td><code>-T5</code></td><td>Insane</td><td>Fastest, may miss ports</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="command">
+      <div class="command-title">41. Aggressive Timing</div>
+      <div class="code-block"><code>nmap -T4 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -T4 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">42. Insane Timing</div>
+      <div class="code-block"><code>nmap -T5 192.168.1.0/24</code><button class="copy-btn" onclick="copyText('nmap -T5 192.168.1.0/24',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">43. Minimum Packet Rate</div>
+      <div class="command-purpose">Send at least 300 packets per second.</div>
+      <div class="code-block"><code>nmap --min-rate 300 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --min-rate 300 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">44. Maximum Parallelism</div>
+      <div class="code-block"><code>nmap --max-parallelism 100 192.168.1.0/24</code><button class="copy-btn" onclick="copyText('nmap --max-parallelism 100 192.168.1.0/24',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- FIREWALL EVASION -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Firewall / IDS Evasion</div>
+
+    <div class="command">
+      <div class="command-title">45. Fragment Packets (-f)</div>
+      <div class="command-purpose">Split packets into tiny fragments to bypass simple packet filters.</div>
+      <div class="code-block"><code>sudo nmap -f 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -f 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">46. Decoy Scan (-D)</div>
+      <div class="command-purpose">Hide your IP among decoys. Target sees multiple source IPs.</div>
+      <div class="code-block"><code>sudo nmap -D RND:10 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -D RND:10 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">47. Spoof MAC Address</div>
+      <div class="code-block"><code>sudo nmap --spoof-mac 0 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap --spoof-mac 0 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">48. Custom Source Port</div>
+      <div class="command-purpose">Use DNS source port (53) which is often allowed through firewalls.</div>
+      <div class="code-block"><code>sudo nmap --source-port 53 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap --source-port 53 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">49. Append Random Data</div>
+      <div class="code-block"><code>sudo nmap --data-length 200 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap --data-length 200 192.168.1.1',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- OUTPUT FORMATS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Output Formats</div>
+
+    <div class="command">
+      <div class="command-title">50. Normal Output (-oN)</div>
+      <div class="code-block"><code>nmap -oN scan.txt 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -oN scan.txt 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">51. XML Output (-oX)</div>
+      <div class="command-purpose">Machine-readable XML — used for tooling integration.</div>
+      <div class="code-block"><code>nmap -oX scan.xml 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -oX scan.xml 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">52. Grepable Output (-oG)</div>
+      <div class="command-purpose">Easy to grep / parse with awk / sed.</div>
+      <div class="code-block"><code>nmap -oG scan.gnmap 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -oG scan.gnmap 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">53. All Formats (-oA)</div>
+      <div class="command-purpose">Saves .nmap, .xml, and .gnmap together.</div>
+      <div class="code-block"><code>nmap -oA scan 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -oA scan 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">54. Verbose Output (-v)</div>
+      <div class="command-purpose">Show progress in real-time.</div>
+      <div class="code-block"><code>nmap -v 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -v 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">55. Debug Mode (-d)</div>
+      <div class="code-block"><code>nmap -d 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap -d 192.168.1.1',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ADVANCED / COMBINED -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Advanced & Combined Scans</div>
+
+    <div class="command">
+      <div class="command-title">56. The Ultimate Pentest Scan</div>
+      <div class="command-purpose">Combines aggressive scan + all ports + version + scripts + OS detection.</div>
+      <div class="code-block"><code>sudo nmap -A -p- -T4 -sC -sV 192.168.1.1</code><button class="copy-btn" onclick="copyText('sudo nmap -A -p- -T4 -sC -sV 192.168.1.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">57. Fast Discovery + Detailed Scan</div>
+      <div class="command-purpose">Step 1: fast discovery. Step 2: detailed scan of live hosts only.</div>
+      <div class="code-block"><code>nmap -sn 192.168.1.0/24 -oG - | awk '/Up$/{print $2}' > live.txt
+nmap -iL live.txt -sV -T4</code><button class="copy-btn" onclick="copyText('nmap -sn 192.168.1.0/24 -oG - | awk \'/Up$/{print $2}\' > live.txt && nmap -iL live.txt -sV -T4',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">58. Compare Two Scans</div>
+      <div class="command-purpose">See what changed between scans — useful for monitoring.</div>
+      <div class="code-block"><code>nmap -oX scan1.xml 192.168.1.1
+nmap -oX scan2.xml 192.168.1.1
+ndiff scan1.xml scan2.xml</code><button class="copy-btn" onclick="copyText('nmap -oX scan1.xml 192.168.1.1 && nmap -oX scan2.xml 192.168.1.1 && ndiff scan1.xml scan2.xml',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">59. Zenmap (GUI)</div>
+      <div class="command-purpose">Graphical frontend for Nmap — great for beginners.</div>
+      <div class="code-block"><code>zenmap</code><button class="copy-btn" onclick="copyText('zenmap',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">60. Traceroute (--traceroute)</div>
+      <div class="command-purpose">Map the network path to target.</div>
+      <div class="code-block"><code>nmap --traceroute 192.168.1.1</code><button class="copy-btn" onclick="copyText('nmap --traceroute 192.168.1.1',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- PRACTICAL WORKFLOWS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Practical Workflows</div>
+
+    <h3>Beginner Workflow — Simple Recon</h3>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Host Discovery</div>
+        <div class="wf-desc">Find live hosts on your local network.<br>
+          <div class="code-block" style="margin-top:10px"><code>nmap -sn 192.168.1.0/24</code><button class="copy-btn" onclick="copyText('nmap -sn 192.168.1.0/24',this)">COPY</button></div>
+        </div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Port Scan</div>
+        <div class="wf-desc">Scan a live host for open ports.<br>
+          <div class="code-block" style="margin-top:10px"><code>nmap -F 192.168.1.5</code><button class="copy-btn" onclick="copyText('nmap -F 192.168.1.5',this)">COPY</button></div>
+        </div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Service + OS Detection</div>
+        <div class="wf-desc">Identify services and OS.<br>
+          <div class="code-block" style="margin-top:10px"><code>sudo nmap -sV -O 192.168.1.5</code><button class="copy-btn" onclick="copyText('sudo nmap -sV -O 192.168.1.5',this)">COPY</button></div>
+        </div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Save Results</div>
+        <div class="wf-desc">Export in all formats for reporting.<br>
+          <div class="code-block" style="margin-top:10px"><code>sudo nmap -sV -O -oA recon 192.168.1.5</code><button class="copy-btn" onclick="copyText('sudo nmap -sV -O -oA recon 192.168.1.5',this)">COPY</button></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Advanced Workflow — Full Pentest</h3>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Fast Network Discovery</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>nmap -sn -T4 192.168.1.0/24 -oG live.txt</code><button class="copy-btn" onclick="copyText('nmap -sn -T4 192.168.1.0/24 -oG live.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Full TCP + UDP Scan</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>sudo nmap -sS -sU -p- -T4 --min-rate 1000 192.168.1.5</code><button class="copy-btn" onclick="copyText('sudo nmap -sS -sU -p- -T4 --min-rate 1000 192.168.1.5',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Deep Service Analysis</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>sudo nmap -sV --version-all -sC -O --traceroute -p <open-ports> 192.168.1.5</code><button class="copy-btn" onclick="copyText('sudo nmap -sV --version-all -sC -O --traceroute -p <open-ports> 192.168.1.5',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Vulnerability Scripts</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>sudo nmap --script vuln -p <open-ports> 192.168.1.5</code><button class="copy-btn" onclick="copyText('sudo nmap --script vuln -p <open-ports> 192.168.1.5',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Report Generation</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>nmap -oA full-scan 192.168.1.5</code><button class="copy-btn" onclick="copyText('nmap -oA full-scan 192.168.1.5',this)">COPY</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- COMMON FLAGS REFERENCE -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Common Flags Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>-sS</code></td><td>TCP SYN scan (stealth)</td></tr>
+          <tr><td><code>-sT</code></td><td>TCP connect scan</td></tr>
+          <tr><td><code>-sU</code></td><td>UDP scan</td></tr>
+          <tr><td><code>-sV</code></td><td>Version detection</td></tr>
+          <tr><td><code>-O</code></td><td>OS detection</td></tr>
+          <tr><td><code>-A</code></td><td>Aggressive: OS + version + scripts + traceroute</td></tr>
+          <tr><td><code>-sC</code></td><td>Run default scripts</td></tr>
+          <tr><td><code>-sn</code></td><td>Ping sweep (no port scan)</td></tr>
+          <tr><td><code>-Pn</code></td><td>Skip host discovery</td></tr>
+          <tr><td><code>-p-</code></td><td>Scan all 65535 ports</td></tr>
+          <tr><td><code>-F</code></td><td>Fast scan (top 100 ports)</td></tr>
+          <tr><td><code>-T4</code></td><td>Aggressive timing</td></tr>
+          <tr><td><code>-T5</code></td><td>Insane timing</td></tr>
+          <tr><td><code>-v</code></td><td>Verbose output</td></tr>
+          <tr><td><code>-oN</code></td><td>Normal output file</td></tr>
+          <tr><td><code>-oX</code></td><td>XML output file</td></tr>
+          <tr><td><code>-oG</code></td><td>Grepable output</td></tr>
+          <tr><td><code>-oA</code></td><td>All formats</td></tr>
+          <tr><td><code>-f</code></td><td>Fragment packets</td></tr>
+          <tr><td><code>-D</code></td><td>Decoy scan</td></tr>
+          <tr><td><code>-n</code></td><td>No DNS resolution</td></tr>
+          <tr><td><code>-iL</code></td><td>Read targets from file</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- USE CASES -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+    <h3>1. Network Inventory</h3>
+    <p>Discover all devices on a corporate network — routers, servers, printers, IoT.</p>
+    <div class="code-block"><code>nmap -sn -PR 10.0.0.0/24</code><button class="copy-btn" onclick="copyText('nmap -sn -PR 10.0.0.0/24',this)">COPY</button></div>
+
+    <h3>2. Penetration Testing</h3>
+    <p>Full port scan, service enumeration, and vulnerability detection on authorized targets.</p>
+    <div class="code-block"><code>sudo nmap -A -p- -T4 -sC -sV --script vuln &lt;authorized-target&gt;</code><button class="copy-btn" onclick="copyText('sudo nmap -A -p- -T4 -sC -sV --script vuln <authorized-target>',this)">COPY</button></div>
+
+    <h3>3. Security Auditing</h3>
+    <p>Verify firewall rules — see which ports are actually exposed.</p>
+    <div class="code-block"><code>nmap -sA -p 1-1000 &lt;firewall-ip&gt;</code><button class="copy-btn" onclick="copyText('nmap -sA -p 1-1000 <firewall-ip>',this)">COPY</button></div>
+
+    <h3>4. Compliance & Monitoring</h3>
+    <p>Detect unauthorized services/apps appearing on the network.</p>
+    <div class="code-block"><code>nmap -sV -p 1-10000 10.0.0.0/24 -oA audit-$(date +%Y%m%d)</code><button class="copy-btn" onclick="copyText('nmap -sV -p 1-10000 10.0.0.0/24 -oA audit-$(date +%Y%m%d)',this)">COPY</button></div>
+
+    <h3>5. Bug Bounty Recon</h3>
+    <p>Discover live hosts, subdomains, and exposed services for bug bounty programs.</p>
+    <div class="code-block"><code>nmap -iL subdomains.txt -sV -T4 --open -oA bounty-recon</code><button class="copy-btn" onclick="copyText('nmap -iL subdomains.txt -sV -T4 --open -oA bounty-recon',this)">COPY</button></div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TROUBLESHOOTING -->
+  <!-- ============================================ -->
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>Scan shows all ports as filtered</h3>
+    <ul>
+      <li>Firewall is dropping packets — try <code>-Pn</code> or <code>-sA</code></li>
+      <li>Try <code>--source-port 53</code> to bypass simple filters</li>
+      <li>Use <code>-f</code> for packet fragmentation</li>
+    </ul>
+
+    <h3>Nmap is too slow</h3>
+    <ul>
+      <li>Use <code>-T4</code> or <code>-T5</code></li>
+      <li>Add <code>-n</code> to skip DNS lookups</li>
+      <li>Use <code>--min-rate 1000</code></li>
+      <li>Scan only specific ports: <code>-p 22,80,443</code></li>
+    </ul>
+
+    <h3>Permission denied</h3>
+    <ul>
+      <li>SYN, UDP, OS detection require <strong>root</strong> — use <code>sudo</code></li>
+      <li>Or use <code>-sT</code> (TCP connect) which doesn't need root</li>
+    </ul>
+
+    <h3>Missing NSE scripts</h3>
+    <ul>
+      <li>Update Nmap: <code>sudo apt update && sudo apt upgrade nmap</code></li>
+      <li>Scripts located at <code>/usr/share/nmap/scripts/</code></li>
+    </ul>
+  </div>
+
+  <!-- WARNING -->
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Nmap scanning can be detected and logged. Only scan systems you own or have <strong>explicit written permission</strong> to test. Unauthorized scanning is illegal in most countries and can lead to criminal charges.
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.
+  </div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+// PROTECTED
+(function(){
+  var t = localStorage.getItem("sch_token");
+  var u = localStorage.getItem("sch_user");
+  if (!t || !u) { window.location.replace("login.html"); return; }
+  try {
+    JSON.parse(u);
+    if (!t.includes(".") || t.split(".").length !== 3) throw 0;
+  } catch(e) {
+    localStorage.removeItem("sch_token");
+    localStorage.removeItem("sch_user");
+    window.location.replace("login.html");
+  }
+})();
+
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    const t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2000);
+    setTimeout(()=>{btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(()=>{});
+}
+
+function initMatrix(){
+  const c=document.getElementById('matrix');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const fs=14;
+  let cols=Math.floor(c.width/fs);
+  let drops=Array(cols).fill(1);
+  setInterval(()=>{
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono,monospace';
+    for(let i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  addEventListener('resize',()=>{resize();cols=Math.floor(c.width/fs);drops=Array(cols).fill(1)});
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

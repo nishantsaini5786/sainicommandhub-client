@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>SpiderFoot — OSINT Automation Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🕵️</div>
+      <div class="hero-info">
+        <div class="hero-name">STEGHIDE</div>
+        <div class="hero-cat">STEGANOGRAPHY / DATA HIDING / DIGITAL FORENSICS</div>
+        <div class="hero-badges">
+          <span class="badge badge-advanced">INTERMEDIATE</span>
+          <span class="badge badge-count">66+ COMMANDS</span>
+          <span class="badge badge-tag">STEGANOGRAPHY</span>
+        </div>
+      </div>
+    </div>
+    <p><strong style="color:var(--secondary)">steghide</strong> is a command-line steganography tool for embedding and extracting data from supported JPEG, BMP, WAV and AU cover files. It supports compression, encryption and integrity checking, making it useful for controlled steganography labs and digital-forensics exercises.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Steghide? (Deep Theory)</div>
+    <p>Steganography is about hiding the <strong>existence</strong> of a message rather than merely encrypting its contents. Steghide uses a cover file and embeds secret data into it, producing a stego file. The cover's visual or audio content remains usable while the embedded payload is intended to be recoverable by steghide.</p>
+    <h3>Core Concepts</h3>
+    <ul>
+      <li><strong>Cover file:</strong> the carrier such as JPEG, BMP, WAV or AU.</li>
+      <li><strong>Secret data:</strong> the file being embedded.</li>
+      <li><strong>Stego file:</strong> the resulting carrier containing embedded data.</li>
+      <li><strong>Capacity:</strong> the amount of data that can be stored in the chosen cover.</li>
+      <li><strong>Passphrase:</strong> protects the embedded data when encryption is enabled.</li>
+      <li><strong>Compression:</strong> reduces payload size before embedding; steghide supports levels 1–9.</li>
+      <li><strong>CRC32:</strong> steghide can store an integrity checksum for the embedded data.</li>
+    </ul>
+    <h3>The Mental Model</h3>
+    <p><code>COVER + SECRET + PASSPHRASE → EMBEDDING → STEGO FILE → INFO / EXTRACT → RECOVERED DATA</code></p>
+    <div class="info-box"><div class="info-icon">💡</div><div class="info-text"><strong>Important:</strong> Steganography is not the same as encryption. A hidden file may be difficult to notice, but once discovered it can still be analyzed. Use encryption and strong passphrases when confidentiality is actually required.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation & First Checks</div>
+    <h3>Kali Linux</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install steghide</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install steghide',this)">COPY</button></div>
+    <h3>Verify Installation</h3>
+    <div class="code-block"><code>steghide --version</code><button class="copy-btn" onclick="copyText('steghide --version',this)">COPY</button></div>
+    <div class="code-block"><code>which steghide</code><button class="copy-btn" onclick="copyText('which steghide',this)">COPY</button></div>
+    <p>Current Kali documentation lists steghide as version 0.6.0 in the Kali package repository. The upstream project documentation describes the classic command structure: <code>embed</code>, <code>extract</code>, <code>info</code>, <code>encinfo</code>, <code>version</code>, <code>license</code> and <code>help</code>.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Steghide Command Library — 66 Commands</div>
+    <p>These examples are intended for your own files, CTFs, forensic samples or explicitly authorized labs. Use harmless test payloads while learning.</p>
+    <div class="command">
+<div class="command-title">1. Show Help</div>
+<div class="command-purpose">Display the built-in steghide usage and available commands.</div>
+<div class="code-block"><code>steghide --help</code><button class="copy-btn" onclick="copyText('steghide --help',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">2. Short Help</div>
+<div class="command-purpose">Show the same help screen using the short option.</div>
+<div class="code-block"><code>steghide -h</code><button class="copy-btn" onclick="copyText('steghide -h',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">3. Show Version</div>
+<div class="command-purpose">Print the installed steghide version.</div>
+<div class="code-block"><code>steghide --version</code><button class="copy-btn" onclick="copyText('steghide --version',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">4. Short Version</div>
+<div class="command-purpose">Print version information with the short form.</div>
+<div class="code-block"><code>steghide -v</code><button class="copy-btn" onclick="copyText('steghide -v',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">5. Show License</div>
+<div class="command-purpose">Display the program license text.</div>
+<div class="code-block"><code>steghide --license</code><button class="copy-btn" onclick="copyText('steghide --license',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">6. Show Encryption Algorithms</div>
+<div class="command-purpose">List encryption algorithms and supported modes.</div>
+<div class="code-block"><code>steghide encinfo</code><button class="copy-btn" onclick="copyText('steghide encinfo',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">7. Embed a Text File</div>
+<div class="command-purpose">Hide a text file inside a JPEG cover file.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">8. Embed with a New Output File</div>
+<div class="command-purpose">Write the stego result to a separate file.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">9. Embed with Passphrase</div>
+<div class="command-purpose">Provide a passphrase non-interactively.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -p &quot;LabPass123&quot;</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -p &quot;LabPass123&quot;',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">10. Embed with AES/Rijndael Default</div>
+<div class="command-purpose">Use steghide default encryption settings.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">11. Disable Encryption</div>
+<div class="command-purpose">Embed without encryption for a controlled lab test.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -e none</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -e none',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">12. Compression Level 1</div>
+<div class="command-purpose">Use faster, lower compression.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -z 1</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -z 1',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">13. Compression Level 9</div>
+<div class="command-purpose">Use the highest supported compression level.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -z 9</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -z 9',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">14. Disable Compression</div>
+<div class="command-purpose">Embed the data without steghide compression.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -Z</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -Z',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">15. Disable CRC32 Checksum</div>
+<div class="command-purpose">Omit steghide checksum data when appropriate for a lab.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -K</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -K',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">16. Do Not Embed Original Name</div>
+<div class="command-purpose">Avoid storing the embedded file name.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -N</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -N',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">17. Force Output Overwrite</div>
+<div class="command-purpose">Overwrite an existing output file when necessary.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -f</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -f',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">18. Verbose Embed</div>
+<div class="command-purpose">Show more details during embedding.</div>
+<div class="code-block"><code>steghide embed -v -cf cover.jpg -ef secret.txt -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide embed -v -cf cover.jpg -ef secret.txt -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">19. Quiet Embed</div>
+<div class="command-purpose">Suppress informational messages during embedding.</div>
+<div class="code-block"><code>steghide embed -q -cf cover.jpg -ef secret.txt -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide embed -q -cf cover.jpg -ef secret.txt -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">20. Embed Binary Data</div>
+<div class="command-purpose">Embed a binary file such as a ZIP archive.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef archive.zip -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef archive.zip -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">21. Embed a PDF</div>
+<div class="command-purpose">Embed a PDF as the secret payload in a lab.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef notes.pdf -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef notes.pdf -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">22. Embed an Image</div>
+<div class="command-purpose">Embed one image file inside a supported cover.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.png -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.png -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">23. Embed from Standard Input</div>
+<div class="command-purpose">Read the secret data from standard input.</div>
+<div class="code-block"><code>cat secret.txt | steghide embed -cf cover.jpg -ef - -sf stego.jpg</code><button class="copy-btn" onclick="copyText('cat secret.txt | steghide embed -cf cover.jpg -ef - -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">24. Inspect a Cover File</div>
+<div class="command-purpose">Display format and capacity information.</div>
+<div class="code-block"><code>steghide info cover.jpg</code><button class="copy-btn" onclick="copyText('steghide info cover.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">25. Inspect a Stego File</div>
+<div class="command-purpose">Inspect a file that may contain embedded data.</div>
+<div class="code-block"><code>steghide info stego.jpg</code><button class="copy-btn" onclick="copyText('steghide info stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">26. Inspect with a Passphrase</div>
+<div class="command-purpose">Ask steghide to inspect embedded-data metadata using a passphrase.</div>
+<div class="code-block"><code>steghide info stego.jpg -p &quot;LabPass123&quot;</code><button class="copy-btn" onclick="copyText('steghide info stego.jpg -p &quot;LabPass123&quot;',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">27. Extract Embedded Data</div>
+<div class="command-purpose">Extract data using the original embedded filename.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">28. Extract to a Specific File</div>
+<div class="command-purpose">Choose the output filename explicitly.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg -xf recovered.txt</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg -xf recovered.txt',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">29. Extract with Passphrase</div>
+<div class="command-purpose">Supply the known passphrase for extraction.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg -p &quot;LabPass123&quot;</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg -p &quot;LabPass123&quot;',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">30. Extract and Force Overwrite</div>
+<div class="command-purpose">Overwrite an existing extraction file.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg -xf recovered.txt -f</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg -xf recovered.txt -f',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">31. Verbose Extraction</div>
+<div class="command-purpose">Show detailed extraction progress.</div>
+<div class="code-block"><code>steghide extract -v -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide extract -v -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">32. Quiet Extraction</div>
+<div class="command-purpose">Suppress informational output.</div>
+<div class="code-block"><code>steghide extract -q -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide extract -q -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">33. Extract to Standard Output</div>
+<div class="command-purpose">Write extracted data to standard output.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg -xf -</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg -xf -',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">34. Pipe Extracted Text</div>
+<div class="command-purpose">Send extracted text directly into another command.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg -xf - | less</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg -xf - | less',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">35. Extract and Hash</div>
+<div class="command-purpose">Extract to a file and calculate its SHA-256 hash.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg -xf recovered.bin &amp;&amp; sha256sum recovered.bin</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg -xf recovered.bin &amp;&amp; sha256sum recovered.bin',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">36. Check Extracted File Type</div>
+<div class="command-purpose">Identify the type of recovered data.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg -xf recovered.bin &amp;&amp; file recovered.bin</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg -xf recovered.bin &amp;&amp; file recovered.bin',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">37. Check Capacity Before Embedding</div>
+<div class="command-purpose">Inspect whether the cover has enough capacity.</div>
+<div class="code-block"><code>steghide info cover.jpg</code><button class="copy-btn" onclick="copyText('steghide info cover.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">38. JPEG Cover</div>
+<div class="command-purpose">Use a JPEG cover file.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">39. BMP Cover</div>
+<div class="command-purpose">Use a BMP cover file.</div>
+<div class="code-block"><code>steghide embed -cf cover.bmp -ef secret.txt -sf stego.bmp</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.bmp -ef secret.txt -sf stego.bmp',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">40. WAV Cover</div>
+<div class="command-purpose">Use a WAV audio cover file.</div>
+<div class="code-block"><code>steghide embed -cf cover.wav -ef secret.txt -sf stego.wav</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.wav -ef secret.txt -sf stego.wav',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">41. AU Cover</div>
+<div class="command-purpose">Use an AU audio cover file.</div>
+<div class="code-block"><code>steghide embed -cf cover.au -ef secret.txt -sf stego.au</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.au -ef secret.txt -sf stego.au',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">42. List Supported Encryption</div>
+<div class="command-purpose">Review supported algorithm/mode combinations before selecting one.</div>
+<div class="code-block"><code>steghide encinfo</code><button class="copy-btn" onclick="copyText('steghide encinfo',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">43. Use an Explicit Algorithm/Mode</div>
+<div class="command-purpose">Select a supported algorithm and mode shown by encinfo.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -e rijndael-128 cbc</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -e rijndael-128 cbc',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">44. Use a Longer Passphrase</div>
+<div class="command-purpose">Use a stronger lab passphrase containing spaces.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -p &quot;correct horse battery staple&quot;</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -p &quot;correct horse battery staple&quot;',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">45. Embed Without a New Filename</div>
+<div class="command-purpose">Let steghide use its default output behavior.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">46. Extract a Nameless Payload</div>
+<div class="command-purpose">Specify an output filename when the embedded name was not stored.</div>
+<div class="code-block"><code>steghide extract -sf stego.jpg -xf recovered.txt</code><button class="copy-btn" onclick="copyText('steghide extract -sf stego.jpg -xf recovered.txt',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">47. Verbose File Inspection</div>
+<div class="command-purpose">Show detailed information about a candidate file.</div>
+<div class="code-block"><code>steghide -v info suspicious.jpg</code><button class="copy-btn" onclick="copyText('steghide -v info suspicious.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">48. Quiet File Inspection</div>
+<div class="command-purpose">Reduce informational output during inspection.</div>
+<div class="code-block"><code>steghide -q info suspicious.jpg</code><button class="copy-btn" onclick="copyText('steghide -q info suspicious.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">49. Inspect WAV Capacity</div>
+<div class="command-purpose">Check available capacity in a WAV cover.</div>
+<div class="code-block"><code>steghide info cover.wav</code><button class="copy-btn" onclick="copyText('steghide info cover.wav',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">50. Inspect BMP Capacity</div>
+<div class="command-purpose">Check available capacity in a BMP cover.</div>
+<div class="code-block"><code>steghide info cover.bmp</code><button class="copy-btn" onclick="copyText('steghide info cover.bmp',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">51. Inspect AU Capacity</div>
+<div class="command-purpose">Check available capacity in an AU cover.</div>
+<div class="code-block"><code>steghide info cover.au</code><button class="copy-btn" onclick="copyText('steghide info cover.au',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">52. Compare Original and Stego Hashes</div>
+<div class="command-purpose">Record hashes to demonstrate that the stego file is a different artifact.</div>
+<div class="code-block"><code>sha256sum cover.jpg stego.jpg</code><button class="copy-btn" onclick="copyText('sha256sum cover.jpg stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">53. Preserve the Original Cover</div>
+<div class="command-purpose">Copy the original before performing an experiment.</div>
+<div class="code-block"><code>cp cover.jpg cover-original.jpg</code><button class="copy-btn" onclick="copyText('cp cover.jpg cover-original.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">54. Create a Lab Workspace</div>
+<div class="command-purpose">Create a clean directory for a steghide exercise.</div>
+<div class="code-block"><code>mkdir -p ~/steghide-lab &amp;&amp; cd ~/steghide-lab</code><button class="copy-btn" onclick="copyText('mkdir -p ~/steghide-lab &amp;&amp; cd ~/steghide-lab',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">55. Create Sample Secret</div>
+<div class="command-purpose">Create a harmless test message.</div>
+<div class="code-block"><code>printf &quot;SAINICOMMANDHUB steghide lab\n&quot; &gt; secret.txt</code><button class="copy-btn" onclick="copyText('printf &quot;SAINICOMMANDHUB steghide lab\\n&quot; &gt; secret.txt',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">56. Verify Cover Type</div>
+<div class="command-purpose">Confirm the cover format before using steghide.</div>
+<div class="code-block"><code>file cover.jpg</code><button class="copy-btn" onclick="copyText('file cover.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">57. Inspect Metadata Separately</div>
+<div class="command-purpose">Use file metadata tools alongside steghide during analysis.</div>
+<div class="code-block"><code>exiftool stego.jpg</code><button class="copy-btn" onclick="copyText('exiftool stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">58. Compare Metadata</div>
+<div class="command-purpose">Compare original and stego metadata during a controlled experiment.</div>
+<div class="code-block"><code>exiftool cover-original.jpg stego.jpg</code><button class="copy-btn" onclick="copyText('exiftool cover-original.jpg stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">59. Detect File Signatures</div>
+<div class="command-purpose">Inspect the file header and embedded strings as supporting evidence.</div>
+<div class="code-block"><code>xxd -l 64 stego.jpg</code><button class="copy-btn" onclick="copyText('xxd -l 64 stego.jpg',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">60. Search Printable Strings</div>
+<div class="command-purpose">Look for readable strings without assuming they are embedded secrets.</div>
+<div class="code-block"><code>strings -n 8 stego.jpg | head</code><button class="copy-btn" onclick="copyText('strings -n 8 stego.jpg | head',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">61. Verify Recovered Content</div>
+<div class="command-purpose">Compare a recovered secret against the original using SHA-256.</div>
+<div class="code-block"><code>sha256sum secret.txt recovered.txt</code><button class="copy-btn" onclick="copyText('sha256sum secret.txt recovered.txt',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">62. Test Round Trip</div>
+<div class="command-purpose">Embed then extract a harmless test payload.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -p &quot;LabPass123&quot; &amp;&amp; steghide extract -sf stego.jpg -xf recovered.txt -p &quot;LabPass123&quot;</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg -p &quot;LabPass123&quot; &amp;&amp; steghide extract -sf stego.jpg -xf recovered.txt -p &quot;LabPass123&quot;',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">63. Test Compression Variants</div>
+<div class="command-purpose">Compare a default embed with an explicit compression level.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego-z9.jpg -z 9</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego-z9.jpg -z 9',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">64. Test No Compression</div>
+<div class="command-purpose">Compare behavior when compression is disabled.</div>
+<div class="code-block"><code>steghide embed -cf cover.jpg -ef secret.txt -sf stego-nocomp.jpg -Z</code><button class="copy-btn" onclick="copyText('steghide embed -cf cover.jpg -ef secret.txt -sf stego-nocomp.jpg -Z',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">65. Inspect Embedded Metadata</div>
+<div class="command-purpose">Use info with the known lab passphrase to see embedded properties.</div>
+<div class="code-block"><code>steghide info stego.jpg -p &quot;LabPass123&quot;</code><button class="copy-btn" onclick="copyText('steghide info stego.jpg -p &quot;LabPass123&quot;',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">66. Display Program Help Again</div>
+<div class="command-purpose">Useful quick reference when you forget an option.</div>
+<div class="code-block"><code>steghide help</code><button class="copy-btn" onclick="copyText('steghide help',this)">COPY</button></div>
+</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Practical Steghide Workflow</div>
+    <h3>1. Prepare a clean lab</h3>
+    <p>Keep the original cover file untouched. Work on a copy so that you can compare the original and resulting stego artifact.</p>
+    <h3>2. Check capacity</h3>
+    <p>Run <code>steghide info</code> before embedding. The available capacity depends on the cover format and its contents.</p>
+    <h3>3. Embed a harmless payload</h3>
+    <p>Start with a short text file. This makes it easy to verify the complete round trip.</p>
+    <h3>4. Inspect the resulting artifact</h3>
+    <p>Use <code>steghide info</code>, <code>file</code>, hashes and metadata tools as separate pieces of evidence.</p>
+    <h3>5. Extract and verify</h3>
+    <p>Extract the payload and compare its SHA-256 hash with the original. This proves that the lab round trip preserved the payload.</p>
+    <div class="info-box"><div class="info-icon">🧠</div><div class="info-text"><strong>Forensics mindset:</strong> A file not being extractable with steghide does not prove that it contains no hidden data. Steghide only detects/extracts data compatible with its own format and parameters.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Option Reference</div>
+    <div class="table-wrap"><table><thead><tr><th>Option</th><th>Purpose</th></tr></thead><tbody>
+      <tr><td><code>-cf</code></td><td>Choose the cover file.</td></tr>
+      <tr><td><code>-ef</code></td><td>Choose the file to embed.</td></tr>
+      <tr><td><code>-sf</code></td><td>Choose the output stego file.</td></tr>
+      <tr><td><code>-xf</code></td><td>Choose the extraction output file.</td></tr>
+      <tr><td><code>-p</code></td><td>Supply a passphrase.</td></tr>
+      <tr><td><code>-e</code></td><td>Select encryption algorithm/mode or <code>none</code>.</td></tr>
+      <tr><td><code>-z</code></td><td>Compression level 1–9.</td></tr>
+      <tr><td><code>-Z</code></td><td>Disable compression.</td></tr>
+      <tr><td><code>-K</code></td><td>Disable CRC32 checksum embedding.</td></tr>
+      <tr><td><code>-N</code></td><td>Do not embed the original secret filename.</td></tr>
+      <tr><td><code>-f</code></td><td>Force overwrite.</td></tr>
+      <tr><td><code>-q</code></td><td>Quiet mode.</td></tr>
+      <tr><td><code>-v</code></td><td>Verbose mode.</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Supported Cover Formats</div>
+    <ul>
+      <li><strong>JPEG:</strong> common image carrier for steghide exercises.</li>
+      <li><strong>BMP:</strong> supported image carrier.</li>
+      <li><strong>WAV:</strong> supported audio carrier.</li>
+      <li><strong>AU:</strong> supported audio carrier.</li>
+    </ul>
+    <p>Steghide identifies the format from the file header rather than relying only on the filename extension. The classic upstream manual documents these four cover formats. citeturn0search0turn0search1</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Steghide + Forensics Workflow</div>
+    <h3>When you receive a suspicious image</h3>
+    <p>Start with non-destructive analysis: preserve the original, calculate a hash, identify the file type, inspect metadata, and then test steghide compatibility. Do not modify the original evidence.</p>
+    <div class="code-block"><code>sha256sum suspicious.jpg
+file suspicious.jpg
+exiftool suspicious.jpg
+steghide info suspicious.jpg</code><button class="copy-btn" onclick="copyText('sha256sum suspicious.jpg
+file suspicious.jpg
+exiftool suspicious.jpg
+steghide info suspicious.jpg',this)">COPY</button></div>
+    <h3>When steghide finds embedded data</h3>
+    <p>Record the reported embedded filename, size, encryption/compression status and capacity. If you have the authorized passphrase, extract to a new filename and hash the recovered file.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>“steghide: command not found”</h3>
+    <p>Install the Kali package and verify with <code>which steghide</code> and <code>steghide --version</code>.</p>
+    <h3>Unsupported file format</h3>
+    <p>Check the actual file type with <code>file</code>. Renaming an unsupported format does not convert it into a supported cover.</p>
+    <h3>Not enough capacity</h3>
+    <p>Reduce the secret payload size, compress it before embedding, or choose a larger suitable cover. The built-in <code>info</code> command is the first check.</p>
+    <h3>Wrong passphrase</h3>
+    <p>Verify the passphrase used during the authorized lab. Do not assume that a failed extraction proves the file is empty.</p>
+    <h3>Existing output file</h3>
+    <p>Use a new output name or <code>-f</code> when overwriting is intentional.</p>
+    <h3>Payload name was not embedded</h3>
+    <p>If <code>-N</code> was used, provide <code>-xf</code> during extraction so steghide knows where to write the recovered data.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Steghide vs Other Steganography Tools</div>
+    <ul>
+      <li><strong>Steghide:</strong> focused CLI embedding/extraction for JPEG, BMP, WAV and AU.</li>
+      <li><strong>ExifTool:</strong> metadata inspection and modification rather than steganographic extraction.</li>
+      <li><strong>Binwalk:</strong> firmware/file-structure analysis and embedded-file discovery.</li>
+      <li><strong>zsteg:</strong> useful for analyzing LSB and other steganographic techniques in images.</li>
+      <li><strong>strings/file/xxd:</strong> supporting forensic inspection tools, not replacements for steghide-compatible extraction.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Official Documentation Basis</div>
+    <p>The command library follows the steghide manual and Kali documentation. The documented core commands are <code>embed</code>, <code>extract</code>, <code>info</code>, <code>encinfo</code>, <code>version</code>, <code>license</code> and <code>help</code>. The manual also documents <code>-cf</code>, <code>-ef</code>, <code>-sf</code>, <code>-xf</code>, <code>-p</code>, <code>-e</code>, <code>-z</code>, <code>-Z</code>, <code>-K</code>, <code>-N</code>, <code>-f</code>, <code>-q</code> and <code>-v</code>. citeturn0search0turn0search3</p>
+    <div class="code-block"><code>steghide --help
+steghide encinfo
+steghide info cover.jpg
+steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg
+steghide extract -sf stego.jpg</code><button class="copy-btn" onclick="copyText('steghide --help
+steghide encinfo
+steghide info cover.jpg
+steghide embed -cf cover.jpg -ef secret.txt -sf stego.jpg
+steghide extract -sf stego.jpg',this)">COPY</button></div>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED STEGANOGRAPHY / FORENSICS ONLY.</strong> Use steghide with files you own, authorized forensic samples, CTFs or controlled security labs.
+      <br><br><strong>Safe Learning:</strong>
+      <br>✅ Your own images/audio and test payloads
+      <br>✅ Authorized TryHackMe / Hack The Box / VulnHub labs
+      <br>✅ CTF and digital-forensics exercises
+      <br>✅ Defensive malware/forensics analysis
+      <br><br><strong>Remember:</strong>
+      <br>❌ Do not use hidden-data techniques to facilitate unauthorized activity
+      <br>❌ Do not alter original forensic evidence
+      <br>❌ Do not treat steghide failure as proof that no hidden data exists
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · STEGHIDE // HIDE. EXTRACT. VERIFY.</div>
+</div>
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

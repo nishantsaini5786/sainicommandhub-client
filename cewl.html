@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>CeWL — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-beginner{background:rgba(0,255,65,.12);color:var(--neon-green);border:1px solid rgba(0,255,65,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command.dangerous{border-color:rgba(255,0,64,.3);background:rgba(255,0,64,.04)}
+.command.dangerous::before{background:linear-gradient(180deg,var(--neon-red),var(--accent));opacity:1}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.danger-badge{font-family:var(--font-mono);font-size:.58rem;padding:3px 10px;border-radius:12px;background:rgba(255,0,64,.15);border:1px solid rgba(255,0,64,.4);color:var(--neon-red);letter-spacing:.5px;animation:dangerBlink 1.5s ease-in-out infinite}
+@keyframes dangerBlink{0%,100%{opacity:1}50%{opacity:.6}}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+// PROTECTED
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🕸️</div>
+      <div class="hero-info">
+        <div class="hero-name">CEWL</div>
+        <div class="hero-cat">Password / Auth · Custom Wordlist Generator</div>
+        <div class="hero-badges">
+          <span class="badge badge-beginner">Beginner</span>
+          <span class="badge badge-count">20+ Commands</span>
+          <span class="badge badge-tag">Wordlist</span>
+          <span class="badge badge-tag">Spider</span>
+          <span class="badge badge-tag">OSINT</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">CeWL (Custom Word List generator)</strong> is a Ruby application that spiders a target website and creates a custom wordlist of unique words found on its pages. This wordlist is then used for <strong>password cracking</strong> — because people often use words from their own website, company name, or personal interests as passwords. CeWL is a must-have for any password audit or red team engagement.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is CeWL? (Deep Theory)</div>
+    <p>Traditional password cracking uses generic wordlists like rockyou.txt. But these fail if the target's password is <strong>specific to their life or business</strong> — like the company name, CEO's name, or product name.</p>
+    <p>CeWL solves this by <strong>scraping the target's website</strong> for meaningful words. Then it uses those words (plus variations) as a custom wordlist.</p>
+
+    <h3>How CeWL Works</h3>
+    <ol>
+      <li>Given a URL, CeWL crawls the entire website (up to configured depth)</li>
+      <li>It extracts all visible text from HTML pages, PDFs, and metadata</li>
+      <li>Filters out short words, numbers, and common stop-words</li>
+      <li>Saves unique words to an output file</li>
+      <li>Optionally generates email addresses from discovered names</li>
+    </ol>
+
+    <h3>What CeWL Can Extract</h3>
+    <ul>
+      <li><strong>Page content</strong> — visible text on HTML pages</li>
+      <li><strong>Meta tags</strong> — keywords, description, author</li>
+      <li><strong>PDF files</strong> — with <code>--pdf</code> flag</li>
+      <li><strong>Email addresses</strong> — with <code>-e</code> flag</li>
+      <li><strong>Word lengths</strong> — filter by minimum word length</li>
+      <li><strong>Word counts</strong> — filter by frequency</li>
+    </ul>
+
+    <h3>Why CeWL is Powerful</h3>
+    <ul>
+      <li>Passwords like <code>Company2024!</code> or <code>ProductName@123</code> won't be in rockyou.txt</li>
+      <li>CeWL generates these from the target's own site</li>
+      <li>Combined with rules (hashcat, john), it's extremely effective</li>
+      <li>Used in every serious password audit</li>
+    </ul>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Real-world example:</strong> A company uses "TechCorp" everywhere. CeWL scrapes their site and gets words like "TechCorp", "Innovate", "Solutions2024". Combined with hashcat rules, it cracks 40% more passwords than rockyou.txt alone.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. Password Audit</h3>
+    <p>Company hires a pentester. CeWL scrapes their site, generates wordlist, audits employee passwords. Finds that 30% use company-specific passwords.</p>
+
+    <h3>2. Red Team Engagements</h3>
+    <p>Before targeting an organization, build custom wordlist from their site. Use for password spraying and credential attacks.</p>
+
+    <h3>3. Bug Bounty</h3>
+    <p>When you find a WordPress login, use CeWL to generate passwords specific to the target's content. Often cracks admin panel.</p>
+
+    <h3>4. WiFi Password Cracking</h3>
+    <p>Capture WPA handshake, generate custom wordlist with CeWL from target's site/company name. Crack faster.</p>
+
+    <h3>5. OSINT Reconnaissance</h3>
+    <p>Scrape target site to gather keywords about company, products, employees — useful for social engineering.</p>
+
+    <h3>6. CTF Challenges</h3>
+    <p>Password CTFs often use theme-based passwords. CeWL extracts the theme from challenge pages.</p>
+
+    <h3>7. Social Engineering Prep</h3>
+    <p>Generate lists of company-specific terms to craft phishing emails that appear authentic.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux (Pre-installed)</h3>
+    <div class="code-block"><code>cewl --help</code><button class="copy-btn" onclick="copyText('cewl --help',this)">COPY</button></div>
+
+    <h3>Install on Debian / Ubuntu</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y cewl</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y cewl',this)">COPY</button></div>
+
+    <h3>Install via RubyGems</h3>
+    <div class="code-block"><code>sudo gem install cewl</code><button class="copy-btn" onclick="copyText('sudo gem install cewl',this)">COPY</button></div>
+
+    <h3>From Source (GitHub)</h3>
+    <div class="code-block"><code>git clone https://github.com/digininja/CeWL.git
+cd CeWL
+bundle install
+sudo cp cewl /usr/local/bin/</code><button class="copy-btn" onclick="copyText('git clone https://github.com/digininja/CeWL.git && cd CeWL && bundle install && sudo cp cewl /usr/local/bin/',this)">COPY</button></div>
+
+    <h3>Verify</h3>
+    <div class="code-block"><code>cewl --version</code><button class="copy-btn" onclick="copyText('cewl --version',this)">COPY</button></div>
+    <div class="command-output">CeWL 5.5.2 (Grouping) Robin Wood (robin@digi.ninja)</div>
+
+    <div class="info-box">
+      <div class="info-icon">💎</div>
+      <div class="info-text">
+        <strong>Requirement:</strong> Ruby 2.5+ installed. Check with <code>ruby -v</code>. Kali has it pre-installed.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Basic Wordlist Generation</div>
+      <div class="command-purpose">Scrape site and save all unique words to output file.</div>
+      <div class="code-block"><code>cewl https://example.com -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com -w wordlist.txt',this)">COPY</button></div>
+      <div class="command-output">CeWL 5.5.2 (Grouping) Robin Wood
+Spidering: https://example.com
+Finished in 12.3 seconds
+Wordlist written to wordlist.txt (847 unique words)</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Show Words on Screen (No File)</div>
+      <div class="code-block"><code>cewl https://example.com</code><button class="copy-btn" onclick="copyText('cewl https://example.com',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Specify Crawl Depth</div>
+      <div class="command-purpose">Follow links N levels deep. Default is 2.</div>
+      <div class="code-block"><code>cewl https://example.com -d 3 -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com -d 3 -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Minimum Word Length</div>
+      <div class="command-purpose">Only include words with 8+ characters.</div>
+      <div class="code-block"><code>cewl https://example.com -m 8 -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com -m 8 -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Lowercase All Words</div>
+      <div class="command-block"><code>cewl https://example.com --lowercase -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --lowercase -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. Include Meta Data</div>
+      <div class="command-purpose">Include meta keywords, description, author tags.</div>
+      <div class="code-block"><code>cewl https://example.com -a -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com -a -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. Include Email Addresses</div>
+      <div class="command-purpose">Harvest emails found on the site.</div>
+      <div class="code-block"><code>cewl https://example.com -e -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com -e -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. Specify User Agent</div>
+      <div class="command-block"><code>cewl https://example.com -u "Mozilla/5.0 (X11; Linux)" -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com -u \"Mozilla/5.0 (X11; Linux)\" -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. Random User Agent</div>
+      <div class="command-block"><code>cewl https://example.com --random-user-agent -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --random-user-agent -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Delay Between Requests</div>
+      <div class="command-purpose">Slow down to avoid detection/rate-limiting.</div>
+      <div class="code-block"><code>cewl https://example.com --delay 2 -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --delay 2 -w wordlist.txt',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Advanced Commands</div>
+
+    <div class="command">
+      <div class="command-title">11. Include PDF Files</div>
+      <div class="command-purpose">Extract words from PDFs found on the site.</div>
+      <div class="code-block"><code>cewl https://example.com --pdf -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --pdf -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Include Document Metadata</div>
+      <div class="command-block"><code>cewl https://example.com --meta -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --meta -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. Include Author Names</div>
+      <div class="command-block"><code>cewl https://example.com --author -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --author -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Include Page Title</div>
+      <div class="command-block"><code>cewl https://example.com --title -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --title -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. Include Meta Description</div>
+      <div class="command-block"><code>cewl https://example.com --desc -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --desc -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Include Meta Keywords</div>
+      <div class="command-block"><code>cewl https://example.com --meta_keywords -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --meta_keywords -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. Extract Emails to Separate File</div>
+      <div class="command-block"><code>cewl https://example.com -e --email_file emails.txt -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com -e --email_file emails.txt -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. HTTP Authentication</div>
+      <div class="command-purpose">For sites behind Basic auth.</div>
+      <div class="code-block"><code>cewl https://example.com --auth_type basic --auth_user admin --auth_pass password -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --auth_type basic --auth_user admin --auth_pass password -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">19. Custom Cookie</div>
+      <div class="command-block"><code>cewl https://example.com --cookie "session=abc123" -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --cookie \"session=abc123\" -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Custom Headers</div>
+      <div class="command-block"><code>cewl https://example.com --header "X-Custom: value" -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --header \"X-Custom: value\" -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">21. Use Proxy</div>
+      <div class="command-block"><code>cewl https://example.com --proxy_host 127.0.0.1 --proxy_port 8080 -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --proxy_host 127.0.0.1 --proxy_port 8080 -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Skip SSL Verification</div>
+      <div class="command-purpose">For sites with self-signed certificates.</div>
+      <div class="code-block"><code>cewl https://example.com --no-verify-ssl -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --no-verify-ssl -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Count Occurrences</div>
+      <div class="command-purpose">Generate wordlist with word count (useful for stats).</div>
+      <div class="code-block"><code>cewl https://example.com --count -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --count -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Custom User Agent File</div>
+      <div class="command-block"><code>cewl https://example.com --user_agent_file agents.txt -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --user_agent_file agents.txt -w wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. Save Debug Output</div>
+      <div class="command-block"><code>cewl https://example.com --debug -w wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://example.com --debug -w wordlist.txt',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Using CeWL Output — Password Cracking</div>
+
+    <div class="command">
+      <div class="command-title">26. Crack with John the Ripper</div>
+      <div class="command-purpose">Use CeWL-generated wordlist with John.</div>
+      <div class="code-block"><code>john --wordlist=cewl-wordlist.txt hashes.txt</code><button class="copy-btn" onclick="copyText('john --wordlist=cewl-wordlist.txt hashes.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. Crack with Hashcat</div>
+      <div class="code-block"><code>hashcat -m 0 -a 0 hashes.txt cewl-wordlist.txt</code><button class="copy-btn" onclick="copyText('hashcat -m 0 -a 0 hashes.txt cewl-wordlist.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. Combine with RockYou</div>
+      <div class="command-purpose">Merge CeWL list with rockyou for maximum coverage.</div>
+      <div class="code-block"><code>cat cewl-wordlist.txt /usr/share/wordlists/rockyou.txt | sort -u > combined.txt</code><button class="copy-btn" onclick="copyText('cat cewl-wordlist.txt /usr/share/wordlists/rockyou.txt | sort -u > combined.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">29. Add Hashcat Rules</div>
+      <div class="command-purpose">Expand CeWL list with rules (append numbers, capitalize, etc.).</div>
+      <div class="code-block"><code>hashcat -m 0 -a 0 hashes.txt cewl-wordlist.txt -r /usr/share/hashcat/rules/best64.rule</code><button class="copy-btn" onclick="copyText('hashcat -m 0 -a 0 hashes.txt cewl-wordlist.txt -r /usr/share/hashcat/rules/best64.rule',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">30. Crack WPA Handshake</div>
+      <div class="command-purpose">Use CeWL list with aircrack-ng for WiFi passwords.</div>
+      <div class="code-block"><code>aircrack-ng -w cewl-wordlist.txt capture.cap</code><button class="copy-btn" onclick="copyText('aircrack-ng -w cewl-wordlist.txt capture.cap',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Complete Workflow — Password Audit</div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Identify Target</div>
+        <div class="wf-desc">Choose target company's public website (e.g., <code>company.com</code>).</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Scrape Site with CeWL</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>cewl https://company.com -d 3 -m 5 -a -e --with-numbers -w company-wordlist.txt</code><button class="copy-btn" onclick="copyText('cewl https://company.com -d 3 -m 5 -a -e --with-numbers -w company-wordlist.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Review Wordlist</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>wc -l company-wordlist.txt && head -20 company-wordlist.txt</code><button class="copy-btn" onclick="copyText('wc -l company-wordlist.txt && head -20 company-wordlist.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Merge with RockYou</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>cat company-wordlist.txt /usr/share/wordlists/rockyou.txt | sort -u > final-wordlist.txt</code><button class="copy-btn" onclick="copyText('cat company-wordlist.txt /usr/share/wordlists/rockyou.txt | sort -u > final-wordlist.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Apply Rules (Transformations)</div>
+        <div class="wf-desc">Use hashcat rules to generate variants: <code>Company</code> → <code>Company123</code>, <code>C0mpany!</code><br><div class="code-block" style="margin-top:10px"><code>hashcat --stdout company-wordlist.txt -r /usr/share/hashcat/rules/best64.rule > expanded.txt</code><button class="copy-btn" onclick="copyText('hashcat --stdout company-wordlist.txt -r /usr/share/hashcat/rules/best64.rule > expanded.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Crack Hashes</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>hashcat -m 1000 -a 0 hashes.txt expanded.txt</code><button class="copy-btn" onclick="copyText('hashcat -m 1000 -a 0 hashes.txt expanded.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 7: Analyze Results</div>
+        <div class="wf-desc">Document which passwords were cracked and identify patterns.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 8: Report Findings</div>
+        <div class="wf-desc">Report: "X% of employee passwords were company-specific terms found on the website."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>-w</code></td><td>Output wordlist file</td></tr>
+          <tr><td><code>-d</code></td><td>Depth of crawl (default 2)</td></tr>
+          <tr><td><code>-m</code></td><td>Minimum word length (default 3)</td></tr>
+          <tr><td><code>-e</code></td><td>Include email addresses</td></tr>
+          <tr><td><code>-a</code></td><td>Include meta data</td></tr>
+          <tr><td><code>-c</code></td><td>Show word count</td></tr>
+          <tr><td><code>-v</code></td><td>Verbose output</td></tr>
+          <tr><td><code>--lowercase</code></td><td>Convert all to lowercase</td></tr>
+          <tr><td><code>--with-numbers</code></td><td>Include words with digits</td></tr>
+          <tr><td><code>--pdf</code></td><td>Parse PDF files</td></tr>
+          <tr><td><code>--meta</code></td><td>Parse metadata</td></tr>
+          <tr><td><code>--author</code></td><td>Extract author names</td></tr>
+          <tr><td><code>--title</code></td><td>Extract page titles</td></tr>
+          <tr><td><code>--desc</code></td><td>Extract meta description</td></tr>
+          <tr><td><code>--email_file</code></td><td>Save emails to file</td></tr>
+          <tr><td><code>--delay</code></td><td>Delay between requests</td></tr>
+          <tr><td><code>-u</code></td><td>Custom User-Agent</td></tr>
+          <tr><td><code>--random-user-agent</code></td><td>Random User-Agent</td></tr>
+          <tr><td><code>--cookie</code></td><td>Send cookie</td></tr>
+          <tr><td><code>--header</code></td><td>Custom header</td></tr>
+          <tr><td><code>--proxy_host</code></td><td>Proxy host</td></tr>
+          <tr><td><code>--proxy_port</code></td><td>Proxy port</td></tr>
+          <tr><td><code>--auth_type</code></td><td>HTTP auth type</td></tr>
+          <tr><td><code>--auth_user</code></td><td>HTTP auth user</td></tr>
+          <tr><td><code>--auth_pass</code></td><td>HTTP auth password</td></tr>
+          <tr><td><code>--no-verify-ssl</code></td><td>Skip SSL verification</td></tr>
+          <tr><td><code>--count</code></td><td>Count word occurrences</td></tr>
+          <tr><td><code>--debug</code></td><td>Debug output</td></tr>
+          <tr><td><code>--help</code></td><td>Show help</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">CeWL vs Other Wordlist Tools</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CeWL</strong></td><td>Web scraping for words</td><td>Site-specific wordlists</td></tr>
+          <tr><td><strong>Crunch</strong></td><td>Character combinations</td><td>Brute-force masks</td></tr>
+          <tr><td><strong>Hashcat</strong></td><td>Hash cracking + rules</td><td>GPU cracking, mutations</td></tr>
+          <tr><td><strong>John the Ripper</strong></td><td>Hash cracking</td><td>CPU cracking, formats</td></tr>
+          <tr><td><strong>Mentalist</strong></td><td>Wordlist GUI generator</td><td>Rule-based generation</td></tr>
+          <tr><td><strong>RSMangler</strong></td><td>Wordlist transformation</td><td>Mutation of base words</td></tr>
+          <tr><td><strong>Common-Name-Script</strong></td><td>HR name harvesting</td><td>Employee name lists</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"No words found"</h3>
+    <ul>
+      <li>Site might be JavaScript-rendered (SPA) — CeWL can't execute JS</li>
+      <li>Try fetching a static version or sitemap.xml</li>
+      <li>Check if site blocks scrapers (Cloudflare, etc.)</li>
+      <li>Reduce minimum word length: <code>-m 3</code></li>
+    </ul>
+
+    <h3>"Connection refused / timeout"</h3>
+    <ul>
+      <li>Check target is reachable: <code>curl -I https://example.com</code></li>
+      <li>Increase timeout</li>
+      <li>Use <code>--no-verify-ssl</code> if SSL issue</li>
+    </ul>
+
+    <h3>"403 Forbidden from Cloudflare"</h3>
+    <ul>
+      <li>Use custom User-Agent: <code>-u "Mozilla/5.0 (X11; Linux)"</code></li>
+      <li>Try <code>--random-user-agent</code></li>
+      <li>Add delay: <code>--delay 3</code></li>
+      <li>Use proxy: <code>--proxy_host</code></li>
+    </ul>
+
+    <h3>"Wordlist is too large"</h3>
+    <ul>
+      <li>Filter by length: <code>-m 8</code></li>
+      <li>Filter by count: <code>-c</code> then sort by frequency</li>
+      <li>Reduce depth: <code>-d 1</code></li>
+    </ul>
+
+    <h3>"PDFs not being parsed"</h3>
+    <ul>
+      <li>Install <code>pdftotext</code>: <code>sudo apt install poppler-utils</code></li>
+      <li>Use <code>--pdf</code> flag</li>
+      <li>Check if PDFs are actually linked on site</li>
+    </ul>
+
+    <h3>"CeWL is very slow"</h3>
+    <ul>
+      <li>Reduce depth: <code>-d 1</code></li>
+      <li>Remove <code>--delay</code></li>
+      <li>Skip PDFs and metadata if not needed</li>
+      <li>Target smaller subset of site</li>
+    </ul>
+
+    <h3>"Memory error on large sites"</h3>
+    <ul>
+      <li>Limit depth: <code>-d 1</code></li>
+      <li>Run against specific sections</li>
+      <li>Split site into subdomains</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> CeWL scrapes websites and generates password lists. Only use:
+      <br>• On your own websites
+      <br>• In authorized penetration tests (signed contract)
+      <br>• In bug bounty programs (within scope)
+      <br>• For security awareness / training
+      <br>
+      <br>Scraping sites you don't own or have permission to test, and using generated wordlists for unauthorized password attacks, is <strong>illegal</strong> under the CFAA, Computer Misuse Act, and similar laws. Always get written authorization.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>SAINICOMMANDHUB — Master The Command. Master The System.</title>
+<meta name="description" content="Kali Linux Commands & Cybersecurity Tools — All In One Place">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--neon-green:#00ff41;--neon-cyan:#00e5ff;--neon-red:#ff0040;--neon-purple:#b800ff;--bg-primary:#050508;--bg-glass:rgba(15,15,35,0.6);--text-primary:#e0e0e0;--text-secondary:#8888aa;--text-dim:#555577;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--container-padding:clamp(16px,4vw,40px)}
+html{scroll-behavior:smooth;overflow-x:hidden;-webkit-text-size-adjust:100%}
+body{background-color:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);overflow-x:hidden;min-height:100vh;line-height:1.6;position:relative;width:100%}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg-primary)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--neon-green),var(--neon-cyan));border-radius:4px}
+::selection{background:rgba(0,255,65,0.3);color:#fff}
+a{text-decoration:none;color:inherit}
+img,svg,canvas{max-width:100%;height:auto;display:block}
+.cyber-grid{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(0,255,65,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,65,0.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:perspective(500px) rotateX(0deg) translateY(0)}100%{transform:perspective(500px) rotateX(0deg) translateY(60px)}}
+.scanlines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);opacity:0.3}
+.scanline-moving{position:fixed;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,transparent,var(--neon-green),transparent);opacity:0.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#matrix-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.04}
+.vignette{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.6) 100%)}
+.noise-overlay{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")}
+#loader{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg-primary);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font-mono);transition:opacity 0.8s ease,visibility 0.8s ease;padding:20px}
+#loader.hidden{opacity:0;visibility:hidden}
+.loader-content{width:100%;max-width:600px}
+.loader-title{font-family:var(--font-display);font-size:clamp(0.9rem,2.5vw,1.5rem);font-weight:700;color:var(--neon-green);margin-bottom:25px;letter-spacing:2px;text-shadow:0 0 20px rgba(0,255,65,0.5);word-break:break-word;line-height:1.4}
+.loader-bar-container{width:100%;height:6px;background:rgba(0,255,65,0.1);border-radius:3px;overflow:hidden;margin-bottom:18px}
+.loader-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--neon-green),var(--neon-cyan));border-radius:3px;transition:width 0.3s ease;box-shadow:0 0 15px var(--neon-green)}
+.loader-status{font-size:clamp(0.7rem,1.8vw,0.85rem);color:var(--text-secondary);margin-bottom:8px;min-height:1.5em;word-break:break-word}
+.loader-percentage{font-size:clamp(0.75rem,1.8vw,0.9rem);color:var(--neon-cyan);text-align:right}
+.loader-access{margin-top:25px;font-size:clamp(0.9rem,2.2vw,1.1rem);color:var(--neon-green);font-weight:600;letter-spacing:2px;opacity:0;transition:opacity 0.5s ease;text-align:center}
+.loader-access.show{opacity:1;animation:accessPulse 0.8s ease}
+@keyframes accessPulse{0%{transform:scale(0.9);text-shadow:0 0 0 transparent}50%{transform:scale(1.05);text-shadow:0 0 30px var(--neon-green)}100%{transform:scale(1);text-shadow:0 0 15px var(--neon-green)}}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:16px var(--container-padding);display:flex;align-items:center;justify-content:space-between;transition:all 0.4s ease;background:transparent;gap:16px}
+.navbar.scrolled{background:rgba(5,5,8,0.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,255,65,0.1);padding:10px var(--container-padding)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(0.75rem,1.8vw,1rem);font-weight:700;color:var(--neon-green);letter-spacing:1.5px;text-shadow:0 0 20px rgba(0,255,65,0.4);white-space:nowrap;flex-shrink:0}
+.nav-brand-icon{width:clamp(28px,5vw,36px);height:clamp(28px,5vw,36px);border:2px solid var(--neon-green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:clamp(0.7rem,1.5vw,0.95rem);flex-shrink:0;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(0,255,65,0.3)}50%{box-shadow:0 0 20px rgba(0,255,65,0.6)}}
+.nav-links{display:flex;align-items:center;gap:clamp(16px,2.5vw,32px);list-style:none}
+.nav-links a{font-family:var(--font-mono);font-size:clamp(0.68rem,1vw,0.8rem);color:var(--text-secondary);letter-spacing:1.2px;text-transform:uppercase;position:relative;transition:color 0.3s ease;padding:6px 0;white-space:nowrap}
+.nav-links a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--neon-green);transition:width 0.3s ease;box-shadow:0 0 8px var(--neon-green)}
+.nav-links a:hover{color:var(--neon-green)}
+.nav-links a:hover::after{width:100%}
+.nav-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.btn-login,.btn-register{font-family:var(--font-mono);font-size:clamp(0.65rem,1vw,0.75rem);letter-spacing:1.2px;text-transform:uppercase;padding:9px 18px;border-radius:6px;cursor:pointer;transition:all 0.3s ease;white-space:nowrap;text-decoration:none;display:inline-block}
+.btn-login{background:transparent;border:1px solid var(--neon-cyan);color:var(--neon-cyan)}
+.btn-login:hover{background:rgba(0,229,255,0.1);box-shadow:0 0 20px rgba(0,229,255,0.3)}
+.btn-register{background:linear-gradient(135deg,rgba(0,255,65,0.15),rgba(0,229,255,0.15));border:1px solid var(--neon-green);color:var(--neon-green)}
+.btn-register:hover{background:rgba(0,255,65,0.2);box-shadow:0 0 25px rgba(0,255,65,0.4)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;z-index:1001;flex-shrink:0;background:transparent;border:none}
+.hamburger span{display:block;width:24px;height:2px;background:var(--neon-green);transition:all 0.3s ease;border-radius:2px}
+.hamburger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.mobile-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:998;opacity:0;transition:opacity 0.3s ease}
+.mobile-overlay.active{opacity:1}
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:clamp(100px,12vh,140px) var(--container-padding) clamp(60px,8vh,80px);z-index:3}
+.hero-container{max-width:1300px;width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(30px,5vw,60px);align-items:center}
+.hero-left{animation:fadeInLeft 1s ease forwards;min-width:0}
+@keyframes fadeInLeft{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:clamp(0.6rem,1.2vw,0.7rem);color:var(--neon-green);letter-spacing:1.8px;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(0,255,65,0.3);border-radius:20px;margin-bottom:22px;background:rgba(0,255,65,0.05);animation:badgeGlow 2s ease-in-out infinite;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@keyframes badgeGlow{0%,100%{box-shadow:0 0 5px rgba(0,255,65,0.1)}50%{box-shadow:0 0 20px rgba(0,255,65,0.3)}}
+.hero-badge .dot{width:6px;height:6px;background:var(--neon-green);border-radius:50%;animation:dotPulse 1.5s ease-in-out infinite;flex-shrink:0}
+@keyframes dotPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,255,65,0.6)}50%{opacity:0.5;box-shadow:0 0 0 6px rgba(0,255,65,0)}}
+.hero-title{font-family:var(--font-display);font-size:clamp(1.6rem,4.5vw,3.8rem);font-weight:900;line-height:1.15;letter-spacing:clamp(1px,0.3vw,2px);margin-bottom:18px;word-break:break-word}
+.hero-title .line1{display:block;color:var(--neon-green);text-shadow:0 0 30px rgba(0,255,65,0.5),0 0 60px rgba(0,255,65,0.2)}
+.hero-title .line2{display:block;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-green),var(--neon-cyan));background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gradientShift 4s linear infinite}
+@keyframes gradientShift{0%{background-position:0% center}100%{background-position:200% center}}
+.hero-subtitle{font-family:var(--font-mono);font-size:clamp(0.75rem,1.3vw,0.95rem);color:var(--text-secondary);margin-bottom:14px;letter-spacing:0.4px;line-height:1.7}
+.hero-tagline{font-family:var(--font-display);font-size:clamp(0.65rem,1vw,0.8rem);color:var(--neon-cyan);letter-spacing:clamp(1.5px,0.4vw,3px);text-transform:uppercase;margin-bottom:30px;opacity:0.85}
+.hero-buttons{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:35px}
+.btn-primary,.btn-secondary,.btn-auth{font-family:var(--font-mono);font-size:clamp(0.68rem,1vw,0.78rem);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:14px 24px;border-radius:8px;cursor:pointer;transition:all 0.3s ease;white-space:nowrap;position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn-primary{border:none;background:linear-gradient(135deg,var(--neon-green),var(--neon-cyan));color:#050508;box-shadow:0 0 20px rgba(0,255,65,0.3)}
+.btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);transition:left 0.5s ease}
+.btn-primary:hover::before{left:100%}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 0 40px rgba(0,255,65,0.5),0 10px 30px rgba(0,0,0,0.3)}
+.btn-secondary{border:1px solid var(--neon-cyan);background:transparent;color:var(--neon-cyan)}
+.btn-secondary:hover{background:rgba(0,229,255,0.1);box-shadow:0 0 30px rgba(0,229,255,0.3);transform:translateY(-3px)}
+.btn-auth{border:1px solid var(--neon-purple);background:transparent;color:var(--neon-purple)}
+.btn-auth:hover{background:rgba(184,0,255,0.1);box-shadow:0 0 30px rgba(184,0,255,0.3);transform:translateY(-3px)}
+.hero-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,2vw,28px);max-width:500px}
+.hero-stat{text-align:left;min-width:0}
+.hero-stat-number{font-family:var(--font-display);font-size:clamp(1.1rem,2.2vw,1.6rem);font-weight:800;color:var(--neon-green);text-shadow:0 0 15px rgba(0,255,65,0.4);line-height:1.2}
+.hero-stat-label{font-family:var(--font-mono);font-size:clamp(0.55rem,0.9vw,0.65rem);color:var(--text-dim);letter-spacing:1.2px;text-transform:uppercase;margin-top:4px}
+.hero-right{animation:fadeInRight 1s ease 0.3s forwards;opacity:0;min-width:0}
+@keyframes fadeInRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+.terminal-window{background:rgba(8,8,18,0.9);border:1px solid rgba(0,255,65,0.25);border-radius:12px;overflow:hidden;box-shadow:0 0 40px rgba(0,255,65,0.1),0 20px 60px rgba(0,0,0,0.5);backdrop-filter:blur(10px);position:relative;width:100%}
+.terminal-window::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--neon-green),transparent);opacity:0.5}
+.terminal-header{display:flex;align-items:center;gap:8px;padding:clamp(10px,1.5vw,14px) clamp(12px,2vw,18px);background:rgba(0,0,0,0.4);border-bottom:1px solid rgba(0,255,65,0.1)}
+.terminal-dot{width:clamp(8px,1.5vw,12px);height:clamp(8px,1.5vw,12px);border-radius:50%;flex-shrink:0}
+.terminal-dot.red{background:#ff5f56}
+.terminal-dot.yellow{background:#ffbd2e}
+.terminal-dot.green{background:#27c93f}
+.terminal-title{font-family:var(--font-mono);font-size:clamp(0.6rem,1vw,0.7rem);color:var(--text-dim);margin-left:8px;letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.terminal-body{padding:clamp(14px,2vw,22px);font-family:var(--font-mono);font-size:clamp(0.68rem,1.2vw,0.82rem);line-height:1.9;min-height:clamp(240px,30vh,320px);overflow:hidden}
+.terminal-line{display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;flex-wrap:wrap;word-break:break-all}
+.terminal-prompt{color:var(--neon-green);font-weight:600;user-select:none;flex-shrink:0}
+.terminal-command{color:var(--neon-cyan);word-break:break-all}
+.terminal-output{color:var(--text-secondary);padding-left:16px;word-break:break-all}
+.terminal-cursor{display:inline-block;width:8px;height:14px;background:var(--neon-green);animation:blink 1s step-end infinite;vertical-align:middle;margin-left:3px;box-shadow:0 0 8px var(--neon-green);flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.section{position:relative;padding:clamp(60px,10vh,100px) var(--container-padding);z-index:3}
+.section-header{text-align:center;margin-bottom:clamp(40px,6vh,70px);padding:0 clamp(0px,2vw,20px)}
+.section-label{font-family:var(--font-mono);font-size:clamp(0.62rem,1vw,0.72rem);color:var(--neon-green);letter-spacing:clamp(2px,0.5vw,4px);text-transform:uppercase;margin-bottom:14px;display:inline-block;position:relative;padding:0 40px}
+.section-label::before,.section-label::after{content:'';position:absolute;top:50%;width:clamp(15px,3vw,30px);height:1px;background:var(--neon-green);opacity:0.5}
+.section-label::before{right:calc(100% - 30px)}
+.section-label::after{left:calc(100% - 30px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1.2rem,3vw,2.4rem);font-weight:700;letter-spacing:clamp(1px,0.2vw,2px);color:#fff;margin-bottom:14px;line-height:1.3;word-break:break-word}
+.section-title .highlight{color:var(--neon-green);text-shadow:0 0 20px rgba(0,255,65,0.4)}
+.section-desc{font-family:var(--font-mono);font-size:clamp(0.72rem,1.2vw,0.85rem);color:var(--text-secondary);max-width:620px;margin:0 auto;line-height:1.8;padding:0 10px}
+.section-inner{max-width:1300px;margin:0 auto;width:100%}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:clamp(16px,2vw,24px)}
+.info-card{background:var(--bg-glass);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:clamp(20px,3vw,30px);transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);position:relative;overflow:hidden;backdrop-filter:blur(10px);opacity:0;transform:translateY(30px);min-width:0}
+.info-card.revealed{opacity:1;transform:translateY(0)}
+.info-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon-green),transparent);opacity:0;transition:opacity 0.4s ease}
+.info-card:hover::before{opacity:1}
+.info-card:hover{border-color:rgba(0,255,65,0.3);box-shadow:0 0 30px rgba(0,255,65,0.1),0 20px 40px rgba(0,0,0,0.3);transform:translateY(-5px)}
+.info-card-icon{width:clamp(42px,6vw,48px);height:clamp(42px,6vw,48px);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:clamp(1.1rem,2vw,1.3rem);margin-bottom:18px;background:rgba(0,255,65,0.08);border:1px solid rgba(0,255,65,0.2);transition:all 0.3s ease;flex-shrink:0}
+.info-card:hover .info-card-icon{background:rgba(0,255,65,0.15);box-shadow:0 0 20px rgba(0,255,65,0.2);transform:scale(1.05)}
+.info-card-title{font-family:var(--font-display);font-size:clamp(0.85rem,1.3vw,0.95rem);font-weight:600;color:#fff;margin-bottom:10px;letter-spacing:0.8px;line-height:1.3}
+.info-card-desc{font-size:clamp(0.78rem,1.1vw,0.85rem);color:var(--text-secondary);line-height:1.7}
+.categories-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:clamp(14px,1.8vw,20px)}
+.category-card{background:var(--bg-glass);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:clamp(22px,3vw,28px) clamp(18px,2.5vw,24px);cursor:pointer;transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);position:relative;overflow:hidden;backdrop-filter:blur(10px);opacity:0;transform:translateY(30px);min-width:0}
+.category-card.revealed{opacity:1;transform:translateY(0)}
+.category-card::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--neon-green),var(--neon-cyan));transform:scaleX(0);transform-origin:left;transition:transform 0.4s ease}
+.category-card:hover::after{transform:scaleX(1)}
+.category-card:hover{border-color:rgba(0,255,65,0.3);box-shadow:0 0 40px rgba(0,255,65,0.08);transform:translateY(-5px)}
+.category-icon{font-size:clamp(1.4rem,2.5vw,1.8rem);margin-bottom:14px;display:block;transition:transform 0.3s ease;line-height:1}
+.category-card:hover .category-icon{transform:scale(1.1)}
+.category-name{font-family:var(--font-display);font-size:clamp(0.78rem,1.2vw,0.9rem);font-weight:600;color:#fff;letter-spacing:0.8px;margin-bottom:8px;line-height:1.3;padding-right:40px}
+.category-tools{font-family:var(--font-mono);font-size:clamp(0.62rem,0.95vw,0.72rem);color:var(--text-dim);letter-spacing:0.5px;line-height:1.5;word-break:break-word}
+.category-count{position:absolute;top:clamp(15px,2vw,20px);right:clamp(15px,2vw,20px);font-family:var(--font-display);font-size:clamp(1rem,1.8vw,1.2rem);font-weight:800;color:rgba(0,255,65,0.15);transition:color 0.3s ease;line-height:1}
+.category-card:hover .category-count{color:rgba(0,255,65,0.4)}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:clamp(16px,2vw,24px)}
+.feature-card{background:var(--bg-glass);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:clamp(24px,3vw,32px);transition:all 0.4s ease;position:relative;overflow:hidden;backdrop-filter:blur(10px);opacity:0;transform:translateY(30px);min-width:0}
+.feature-card.revealed{opacity:1;transform:translateY(0)}
+.feature-card:hover{border-color:rgba(0,229,255,0.3);box-shadow:0 0 30px rgba(0,229,255,0.08);transform:translateY(-5px)}
+.feature-number{font-family:var(--font-display);font-size:clamp(2rem,4vw,2.5rem);font-weight:900;color:rgba(0,255,65,0.08);position:absolute;top:12px;right:18px;line-height:1;pointer-events:none}
+.feature-icon{font-size:clamp(1.3rem,2.2vw,1.5rem);margin-bottom:16px;line-height:1;display:block}
+.feature-title{font-family:var(--font-display);font-size:clamp(0.85rem,1.3vw,0.95rem);font-weight:600;color:#fff;margin-bottom:12px;letter-spacing:0.8px;line-height:1.3;padding-right:30px}
+.feature-desc{font-size:clamp(0.78rem,1.1vw,0.85rem);color:var(--text-secondary);line-height:1.7}
+.tools-preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(16px,2vw,24px)}
+.tool-preview-card{background:var(--bg-glass);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:clamp(22px,3vw,28px);transition:all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);position:relative;overflow:hidden;backdrop-filter:blur(10px);cursor:pointer;opacity:0;transform:translateY(30px);min-width:0}
+.tool-preview-card.revealed{opacity:1;transform:translateY(0)}
+.tool-preview-card:hover{border-color:rgba(0,255,65,0.4);box-shadow:0 0 40px rgba(0,255,65,0.12),0 20px 50px rgba(0,0,0,0.3);transform:translateY(-6px) scale(1.01)}
+.tool-preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.tool-preview-name{font-family:var(--font-display);font-size:clamp(0.9rem,1.5vw,1rem);font-weight:700;color:var(--neon-green);letter-spacing:1.2px;word-break:break-word}
+.tool-preview-badge{font-family:var(--font-mono);font-size:clamp(0.55rem,0.85vw,0.62rem);color:var(--text-dim);letter-spacing:0.8px;text-transform:uppercase;padding:4px 9px;border:1px solid rgba(255,255,255,0.08);border-radius:20px;background:rgba(0,0,0,0.3);white-space:nowrap;flex-shrink:0}
+.tool-preview-desc{font-size:clamp(0.78rem,1.1vw,0.85rem);color:var(--text-secondary);line-height:1.6;margin-bottom:16px}
+.tool-preview-command{font-family:var(--font-mono);font-size:clamp(0.68rem,1vw,0.75rem);color:var(--neon-cyan);background:rgba(0,0,0,0.4);padding:10px 12px;border-radius:6px;border-left:2px solid var(--neon-green);overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.tool-preview-command::-webkit-scrollbar{height:4px}
+.tool-preview-command::-webkit-scrollbar-thumb{background:rgba(0,255,65,0.3);border-radius:2px}
+.cta-section{text-align:center;padding:clamp(60px,10vh,100px) var(--container-padding);position:relative;z-index:3}
+.cta-box{max-width:800px;margin:0 auto;background:linear-gradient(135deg,rgba(0,255,65,0.05),rgba(0,229,255,0.05));border:1px solid rgba(0,255,65,0.15);border-radius:20px;padding:clamp(35px,6vw,60px) clamp(20px,4vw,40px);position:relative;overflow:hidden;backdrop-filter:blur(20px)}
+.cta-box::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(0,255,65,0.03),transparent,rgba(0,229,255,0.03),transparent);animation:rotate 15s linear infinite}
+@keyframes rotate{100%{transform:rotate(360deg)}}
+.cta-box>*{position:relative;z-index:1}
+.cta-title{font-family:var(--font-display);font-size:clamp(1.1rem,2.8vw,2.1rem);font-weight:800;color:#fff;letter-spacing:clamp(1px,0.2vw,2px);margin-bottom:15px;line-height:1.3;word-break:break-word}
+.cta-title .highlight{color:var(--neon-green);text-shadow:0 0 20px rgba(0,255,65,0.4)}
+.cta-desc{font-family:var(--font-mono);font-size:clamp(0.72rem,1.2vw,0.85rem);color:var(--text-secondary);margin-bottom:28px;line-height:1.8}
+.cta-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.footer{position:relative;z-index:3;padding:clamp(40px,6vh,60px) var(--container-padding) 25px;border-top:1px solid rgba(0,255,65,0.08);background:rgba(5,5,8,0.8)}
+.footer-inner{max-width:1300px;margin:0 auto;width:100%}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:clamp(25px,4vw,50px);margin-bottom:clamp(30px,5vh,50px)}
+.footer-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(0.85rem,1.3vw,1rem);font-weight:700;color:var(--neon-green);letter-spacing:1.5px;margin-bottom:15px;flex-wrap:wrap}
+.footer-brand-icon{width:clamp(26px,4vw,32px);height:clamp(26px,4vw,32px);border:2px solid var(--neon-green);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:clamp(0.7rem,1.2vw,0.8rem);flex-shrink:0}
+.footer-tagline{font-family:var(--font-mono);font-size:clamp(0.68rem,1vw,0.75rem);color:var(--text-dim);letter-spacing:0.5px;line-height:1.7}
+.footer-heading{font-family:var(--font-display);font-size:clamp(0.68rem,1vw,0.75rem);font-weight:600;color:#fff;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:16px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:9px}
+.footer-links a{font-family:var(--font-mono);font-size:clamp(0.68rem,1vw,0.75rem);color:var(--text-secondary);transition:all 0.3s ease;letter-spacing:0.4px;cursor:pointer}
+.footer-links a:hover{color:var(--neon-green);padding-left:5px}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:22px;border-top:1px solid rgba(255,255,255,0.04);flex-wrap:wrap;gap:12px}
+.footer-copy{font-family:var(--font-mono);font-size:clamp(0.62rem,0.9vw,0.7rem);color:var(--text-dim);letter-spacing:0.4px}
+.footer-disclaimer{font-family:var(--font-mono);font-size:clamp(0.58rem,0.85vw,0.65rem);color:var(--text-dim);letter-spacing:0.4px;opacity:0.7}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease}
+.reveal.revealed{opacity:1;transform:translateY(0)}
+@media(min-width:1400px){.hero-container{gap:80px}}
+@media(max-width:1200px){.nav-links{gap:20px}.nav-links a{font-size:0.7rem}}
+@media(max-width:1024px){.hero-container{grid-template-columns:1fr;gap:50px}.hero-left{text-align:center;display:flex;flex-direction:column;align-items:center}.hero-buttons{justify-content:center;width:100%}.hero-stats{max-width:600px;width:100%;margin:0 auto}.hero-stat{text-align:center}.footer-top{grid-template-columns:1fr 1fr;gap:35px}.nav-links{gap:18px}.nav-links a{font-size:0.68rem;letter-spacing:1px}}
+@media(max-width:900px){.nav-links{gap:14px}.nav-links a{font-size:0.62rem;letter-spacing:0.8px}.btn-login,.btn-register{padding:8px 14px;font-size:0.62rem}}
+@media(max-width:768px){.navbar{padding:14px var(--container-padding)}.navbar.scrolled{padding:10px var(--container-padding)}.nav-brand{font-size:0.8rem;letter-spacing:1px}.nav-links{position:fixed;top:0;right:-100%;width:min(85%,320px);height:100vh;height:100dvh;background:rgba(5,5,15,0.98);backdrop-filter:blur(30px);flex-direction:column;justify-content:center;gap:28px;transition:right 0.4s cubic-bezier(0.4,0,0.2,1);border-left:1px solid rgba(0,255,65,0.15);z-index:999;padding:60px 30px;align-items:flex-start}.nav-links.active{right:0}.nav-links a{font-size:0.95rem;letter-spacing:2px;padding:8px 0;width:100%}.nav-links a::after{bottom:4px}.nav-actions{display:none}.hamburger{display:flex}.mobile-overlay{display:block}.hero{padding:100px var(--container-padding) 60px}.hero-badge{font-size:0.62rem;letter-spacing:1.5px;padding:5px 12px}.hero-title{font-size:clamp(1.5rem,7vw,2.2rem)}.hero-stats{grid-template-columns:repeat(2,1fr);gap:18px;max-width:320px}.hero-stat-number{font-size:1.3rem}.terminal-body{font-size:0.7rem;padding:14px;min-height:220px}.cta-box{padding:35px 22px}.footer{padding:40px var(--container-padding) 20px}.footer-top{grid-template-columns:1fr 1fr;gap:30px}.footer-bottom{flex-direction:column;text-align:center;gap:10px}.section-label{padding:0 30px;letter-spacing:2.5px}.section-label::before,.section-label::after{width:18px}.section-label::before{right:calc(100% - 22px)}.section-label::after{left:calc(100% - 22px)}}
+@media(max-width:480px){.hero-buttons{flex-direction:column;width:100%}.btn-primary,.btn-secondary,.btn-auth{width:100%;padding:13px 20px;font-size:0.7rem}.hero-stats{gap:14px}.hero-stat-number{font-size:1.15rem}.hero-stat-label{font-size:0.55rem;letter-spacing:1px}.info-grid,.categories-grid,.features-grid,.tools-preview-grid{grid-template-columns:1fr;gap:14px}.cta-buttons{flex-direction:column;width:100%}.cta-buttons .btn-primary,.cta-buttons .btn-secondary{width:100%}.footer-top{grid-template-columns:1fr;gap:25px}.tool-preview-header{flex-direction:column;align-items:flex-start;gap:8px}.category-name{padding-right:45px}}
+@media(max-width:360px){:root{--container-padding:14px}.nav-brand{font-size:0.7rem;letter-spacing:0.5px}.nav-brand-icon{width:26px;height:26px;font-size:0.65rem}.hero-title{font-size:1.35rem}.hero-badge{font-size:0.55rem;letter-spacing:1px;padding:4px 10px}.hero-stats{grid-template-columns:1fr 1fr;gap:12px}.hero-stat-number{font-size:1.05rem}.hero-stat-label{font-size:0.5rem}.section-title{font-size:1.1rem}.terminal-body{font-size:0.62rem;padding:12px}}
+@media(max-height:500px) and (orientation:landscape){.hero{min-height:auto;padding:90px var(--container-padding) 40px}.nav-links{justify-content:flex-start;padding-top:80px;overflow-y:auto}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-content">
+    <div class="loader-title">INITIALIZING SAINICOMMANDHUB...</div>
+    <div class="loader-bar-container"><div class="loader-bar" id="loaderBar"></div></div>
+    <div class="loader-status" id="loaderStatus">&gt; LOADING CYBERSECURITY DATABASE...</div>
+    <div class="loader-percentage" id="loaderPercentage">0%</div>
+    <div class="loader-access" id="loaderAccess">ACCESS GRANTED</div>
+  </div>
+</div>
+
+<canvas id="matrix-canvas"></canvas>
+<div class="cyber-grid"></div>
+<canvas id="particles-canvas"></canvas>
+<div class="scanlines"></div>
+<div class="scanline-moving"></div>
+<div class="noise-overlay"></div>
+<div class="vignette"></div>
+
+<div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileNav()"></div>
+
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-brand">
+    <div class="nav-brand-icon">⚡</div>
+    SAINICOMMANDHUB
+  </a>
+
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#home" onclick="closeMobileNav()">Home</a></li>
+    <li><a href="#about" onclick="closeMobileNav()">About Kali</a></li>
+    <li><a href="#categories" onclick="closeMobileNav()">Categories</a></li>
+    <li><a href="#tools" onclick="closeMobileNav()">Tools</a></li>
+    <li><a href="#features" onclick="closeMobileNav()">Features</a></li>
+  </ul>
+
+  <div class="nav-actions">
+    <a href="login.html" class="btn-login">Login</a>
+    <a href="register.html" class="btn-register">Register</a>
+  </div>
+
+  <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-container">
+    <div class="hero-left">
+      <div class="hero-badge"><span class="dot"></span>KALI LINUX COMMAND HUB</div>
+      <h1 class="hero-title">
+        <span class="line1">SAINICOMMANDHUB</span>
+        <span class="line2">MASTER THE COMMAND</span>
+      </h1>
+      <p class="hero-subtitle">
+        Kali Linux Commands &amp; Cybersecurity Tools — All In One Place.<br>
+        Your complete command reference for authorized penetration testing,<br>
+        CTFs, and cybersecurity education.
+      </p>
+      <p class="hero-tagline">MASTER THE COMMAND. MASTER THE SYSTEM.</p>
+      <div class="hero-buttons">
+        <button class="btn-primary" onclick="scrollToSection('tools')">⚡ ENTER COMMAND HUB</button>
+        <button class="btn-secondary" onclick="scrollToSection('categories')">🧰 EXPLORE TOOLS</button>
+        <a href="login.html" class="btn-auth">🔐 LOGIN / REGISTER</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-number" data-count="63" data-suffix="+">0+</div><div class="hero-stat-label">Tools</div></div>
+        <div class="hero-stat"><div class="hero-stat-number" data-count="300" data-suffix="+">0+</div><div class="hero-stat-label">Commands</div></div>
+        <div class="hero-stat"><div class="hero-stat-number" data-count="12" data-suffix="+">0+</div><div class="hero-stat-label">Categories</div></div>
+        <div class="hero-stat"><div class="hero-stat-number" data-count="500" data-suffix="+">0+</div><div class="hero-stat-label">Examples</div></div>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-dot red"></div>
+          <div class="terminal-dot yellow"></div>
+          <div class="terminal-dot green"></div>
+          <div class="terminal-title">saini@commandhub: ~</div>
+        </div>
+        <div class="terminal-body" id="terminalBody"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="about">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-label">Knowledge Base</span>
+      <h2 class="section-title">WHAT IS <span class="highlight">KALI LINUX</span>?</h2>
+      <p class="section-desc">Kali Linux is a Debian-based Linux distribution designed for digital forensics, penetration testing, and ethical hacking. It comes pre-installed with hundreds of security tools used by cybersecurity professionals worldwide.</p>
+    </div>
+    <div class="info-grid">
+      <div class="info-card"><div class="info-card-icon">🐉</div><div class="info-card-title">Penetration Testing</div><div class="info-card-desc">Simulate real-world attacks to identify vulnerabilities in systems, networks, and applications before malicious actors can exploit them.</div></div>
+      <div class="info-card"><div class="info-card-icon">🔍</div><div class="info-card-title">Digital Forensics</div><div class="info-card-desc">Investigate digital evidence, recover deleted data, and analyze system artifacts to reconstruct security incidents.</div></div>
+      <div class="info-card"><div class="info-card-icon">🛡️</div><div class="info-card-title">Vulnerability Assessment</div><div class="info-card-desc">Systematically scan and evaluate systems for known weaknesses, misconfigurations, and security gaps.</div></div>
+      <div class="info-card"><div class="info-card-icon">🌐</div><div class="info-card-title">Web Security Testing</div><div class="info-card-desc">Analyze web applications for OWASP Top 10 vulnerabilities including SQL injection, XSS, CSRF.</div></div>
+      <div class="info-card"><div class="info-card-icon">📡</div><div class="info-card-title">Network Security</div><div class="info-card-desc">Monitor network traffic, detect intrusions, analyze protocols, and test network defenses.</div></div>
+      <div class="info-card"><div class="info-card-icon">🔐</div><div class="info-card-title">Password Auditing</div><div class="info-card-desc">Test password strength, crack hashes, and evaluate authentication mechanisms.</div></div>
+      <div class="info-card"><div class="info-card-icon">📶</div><div class="info-card-title">Wireless Security</div><div class="info-card-desc">Assess Wi-Fi network security, capture handshakes, test WPA/WPA2 encryption.</div></div>
+      <div class="info-card"><div class="info-card-icon">🔧</div><div class="info-card-title">Reverse Engineering</div><div class="info-card-desc">Analyze compiled binaries, disassemble malware, and understand software at the assembly level.</div></div>
+      <div class="info-card"><div class="info-card-icon">💥</div><div class="info-card-title">Exploit Development</div><div class="info-card-desc">Research and develop proof-of-concept exploits for discovered vulnerabilities in controlled environments.</div></div>
+      <div class="info-card"><div class="info-card-icon">🕵️</div><div class="info-card-title">OSINT Gathering</div><div class="info-card-desc">Collect and analyze publicly available information for reconnaissance and threat intelligence.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="categories">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-label">Tool Arsenal</span>
+      <h2 class="section-title">TOOL <span class="highlight">CATEGORIES</span></h2>
+      <p class="section-desc">Explore 60+ Kali Linux tools organized by category. Each tool includes detailed commands, syntax, examples, and practical use cases.</p>
+    </div>
+    <div class="categories-grid" id="categoriesGrid"></div>
+  </div>
+</section>
+
+<section class="section" id="tools">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-label">Featured Tools</span>
+      <h2 class="section-title">POPULAR <span class="highlight">COMMANDS</span></h2>
+      <p class="section-desc">Quick access to the most used tools in cybersecurity. Each command includes detailed explanations and copy-ready syntax.</p>
+    </div>
+    <div class="tools-preview-grid" id="toolsGrid"></div>
+    <div style="text-align:center;margin-top:45px">
+      <a href="login.html" class="btn-primary">🔓 UNLOCK ALL 60+ TOOLS</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <span class="section-label">Platform Features</span>
+      <h2 class="section-title">BUILT FOR <span class="highlight">CYBERSECURITY</span></h2>
+      <p class="section-desc">Everything you need to learn, practice, and master Kali Linux commands in one professional platform.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card"><div class="feature-number">01</div><div class="feature-icon">⚡</div><div class="feature-title">Instant Search</div><div class="feature-desc">Find any tool or command instantly with our powerful search system.</div></div>
+      <div class="feature-card"><div class="feature-number">02</div><div class="feature-icon">📋</div><div class="feature-title">Copy-Ready Commands</div><div class="feature-desc">Every command has a one-click copy button with explanations and examples.</div></div>
+      <div class="feature-card"><div class="feature-number">03</div><div class="feature-icon">⭐</div><div class="feature-title">Personal Favorites</div><div class="feature-desc">Save frequently used tools to your personal favorites list.</div></div>
+      <div class="feature-card"><div class="feature-number">04</div><div class="feature-icon">📊</div><div class="feature-title">Learning Dashboard</div><div class="feature-desc">Track your progress and manage your cybersecurity learning journey.</div></div>
+      <div class="feature-card"><div class="feature-number">05</div><div class="feature-icon">🛡️</div><div class="feature-title">Safety First</div><div class="feature-desc">Every potentially dangerous command includes authorized-use warnings.</div></div>
+      <div class="feature-card"><div class="feature-number">06</div><div class="feature-icon">📱</div><div class="feature-title">Fully Responsive</div><div class="feature-desc">Access your command hub from any device — desktop, laptop, tablet, or smartphone.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-box reveal">
+    <h2 class="cta-title">READY TO <span class="highlight">MASTER THE COMMAND</span>?</h2>
+    <p class="cta-desc">Join SAINICOMMANDHUB and get instant access to 60+ Kali Linux tools,<br>300+ commands, detailed explanations, and a personalized dashboard.</p>
+    <div class="cta-buttons">
+      <a href="register.html" class="btn-primary">🚀 CREATE FREE ACCOUNT</a>
+      <a href="login.html" class="btn-secondary">🔑 SIGN IN</a>
+    </div>
+    <p style="font-family:var(--font-mono);font-size:0.68rem;color:var(--text-dim);margin-top:18px">⚠ For authorized security testing and cybersecurity education only.</p>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand"><div class="footer-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+        <div class="footer-tagline">MASTER THE COMMAND. MASTER THE SYSTEM.<br><br>Your complete Kali Linux command reference<br>for authorized security testing and education.</div>
+      </div>
+      <div>
+        <div class="footer-heading">Platform</div>
+        <ul class="footer-links">
+          <li><a href="#tools">All Tools</a></li>
+          <li><a href="#categories">Categories</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="login.html">Dashboard</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Resources</div>
+        <ul class="footer-links">
+          <li><a href="#about">What is Kali Linux</a></li>
+          <li><a href="login.html">Command Database</a></li>
+          <li><a href="login.html">Favorites</a></li>
+          <li><a href="login.html">Profile</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Account</div>
+        <ul class="footer-links">
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><a href="login.html">Dashboard</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">&copy; 2024 SAINICOMMANDHUB. All rights reserved.</div>
+      <div class="footer-disclaimer">⚠ Built for Cybersecurity Learning &amp; Authorized Security Testing</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const loaderMessages=['> LOADING CYBERSECURITY DATABASE...','> LOADING TOOL COMMANDS...','> ESTABLISHING SECURE CONNECTION...','> VERIFYING SYSTEM INTEGRITY...','> ACCESS GRANTED'];
+let loaderProgress=0;
+const loaderBar=document.getElementById('loaderBar');
+const loaderStatus=document.getElementById('loaderStatus');
+const loaderPercentage=document.getElementById('loaderPercentage');
+const loaderAccess=document.getElementById('loaderAccess');
+const loader=document.getElementById('loader');
+function updateLoader(){
+  loaderProgress+=Math.random()*18+5;
+  if(loaderProgress>100)loaderProgress=100;
+  loaderBar.style.width=loaderProgress+'%';
+  loaderPercentage.textContent=Math.floor(loaderProgress)+'%';
+  const msgIndex=Math.min(Math.floor(loaderProgress/25),loaderMessages.length-1);
+  loaderStatus.textContent=loaderMessages[msgIndex];
+  if(loaderProgress<100){setTimeout(updateLoader,150+Math.random()*200)}
+  else{loaderStatus.textContent='> ACCESS GRANTED';loaderAccess.classList.add('show');setTimeout(()=>{loader.classList.add('hidden');startAllAnimations()},1200)}
+}
+setTimeout(updateLoader,400);
+
+function initMatrix(){
+  const canvas=document.getElementById('matrix-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+  resize();
+  const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*';
+  const fontSize=14;let columns=Math.floor(canvas.width/fontSize);let drops=Array(columns).fill(1);
+  function draw(){ctx.fillStyle='rgba(5,5,8,0.05)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#00ff41';ctx.font=fontSize+'px JetBrains Mono, monospace';for(let i=0;i<drops.length;i++){const text=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(text,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;drops[i]++}}
+  setInterval(draw,55);
+  window.addEventListener('resize',()=>{resize();columns=Math.floor(canvas.width/fontSize);drops=Array(columns).fill(1)});
+}
+
+function initParticles(){
+  const canvas=document.getElementById('particles-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');let particles=[];
+  const isMobile=window.innerWidth<768;const particleCount=isMobile?25:55;
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+  resize();
+  for(let i=0;i<particleCount;i++){particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,size:Math.random()*1.5+0.5,opacity:Math.random()*0.4+0.1,color:Math.random()>0.5?'0, 255, 65':'0, 229, 255'})}
+  const connectionDist=isMobile?100:150;
+  function drawParticles(){ctx.clearRect(0,0,canvas.width,canvas.height);for(let i=0;i<particles.length;i++){for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x;const dy=particles[i].y-particles[j].y;const distance=Math.sqrt(dx*dx+dy*dy);if(distance<connectionDist){ctx.beginPath();ctx.strokeStyle=`rgba(0, 255, 65, ${0.06*(1-distance/connectionDist)})`;ctx.lineWidth=0.5;ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.stroke()}}}particles.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=`rgba(${p.color}, ${p.opacity})`;ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>canvas.width)p.vx*=-1;if(p.y<0||p.y>canvas.height)p.vy*=-1});requestAnimationFrame(drawParticles)}
+  drawParticles();window.addEventListener('resize',resize);
+}
+
+const terminalLines=[
+  {prompt:'$ ',command:'whoami',output:'robot'},
+  {prompt:'$ ',command:'uname -a',output:'Kali GNU/Linux 6.1.0-kali5-amd64'},
+  {prompt:'$ ',command:'nmap --version',output:'Nmap version 7.94'},
+  {prompt:'$ ',command:'echo "Welcome to SAINICOMMANDHUB"',output:'Welcome to SAINICOMMANDHUB'},
+  {prompt:'$ ',command:'ls /tools',output:'nmap  wireshark  burp  sqlmap  hydra'},
+  {prompt:'$ ',command:'cat /etc/motd',output:'MASTER THE COMMAND. MASTER THE SYSTEM.'}
+];
+
+async function typeTerminal(){
+  const terminalBody=document.getElementById('terminalBody');if(!terminalBody)return;
+  terminalBody.innerHTML='';
+  for(let i=0;i<terminalLines.length;i++){
+    const line=terminalLines[i];
+    const lineDiv=document.createElement('div');lineDiv.className='terminal-line';
+    lineDiv.innerHTML=`<span class="terminal-prompt">${line.prompt}</span><span class="terminal-command"></span><span class="terminal-cursor"></span>`;
+    terminalBody.appendChild(lineDiv);
+    const commandSpan=lineDiv.querySelector('.terminal-command');const cursor=lineDiv.querySelector('.terminal-cursor');
+    for(let j=0;j<line.command.length;j++){commandSpan.textContent+=line.command[j];await sleep(30+Math.random()*40)}
+    cursor.remove();await sleep(280);
+    if(line.output){const outputDiv=document.createElement('div');outputDiv.className='terminal-line';outputDiv.innerHTML=`<span class="terminal-output">${line.output}</span>`;terminalBody.appendChild(outputDiv);await sleep(380)}
+    await sleep(450);
+  }
+  const finalLine=document.createElement('div');finalLine.className='terminal-line';
+  finalLine.innerHTML=`<span class="terminal-prompt">$ </span><span class="terminal-cursor"></span>`;
+  terminalBody.appendChild(finalLine);
+  await sleep(8000);typeTerminal();
+}
+function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+
+const categories=[
+  {name:'Information Gathering',icon:'🔍',count:9,tools:'Nmap, Amass, theHarvester...'},
+  {name:'Web Security',icon:'🌐',count:9,tools:'Burp Suite, Nikto, SQLmap...'},
+  {name:'Network Tools',icon:'📡',count:6,tools:'Wireshark, Tcpdump, Netcat...'},
+  {name:'Password / Auth',icon:'🔐',count:6,tools:'Hydra, John, Hashcat...'},
+  {name:'Exploitation',icon:'💥',count:3,tools:'Metasploit, Searchsploit...'},
+  {name:'Wireless Security',icon:'📶',count:5,tools:'Aircrack-ng, Wifite, Kismet...'},
+  {name:'OSINT',icon:'🕵️',count:5,tools:'Maltego, SpiderFoot, Sherlock...'},
+  {name:'Forensics',icon:'🔬',count:4,tools:'Autopsy, Binwalk, Volatility...'},
+  {name:'Reverse Engineering',icon:'🔧',count:4,tools:'Ghidra, Radare2, GDB...'},
+  {name:'Sniffing / Spoofing',icon:'🎭',count:4,tools:'Responder, Bettercap...'},
+  {name:'Vulnerability Analysis',icon:'🛡️',count:5,tools:'OpenVAS, Nessus, Nikto...'},
+  {name:'Reporting',icon:'📊',count:3,tools:'Dradis, Faraday, Pipal...'}
+];
+
+function renderCategories(){
+  const grid=document.getElementById('categoriesGrid');if(!grid)return;
+  grid.innerHTML=categories.map((cat,i)=>`
+    <div class="category-card reveal" style="transition-delay:${i*0.04}s" onclick="window.location.href='login.html'">
+      <div class="category-count">${cat.count}</div>
+      <span class="category-icon">${cat.icon}</span>
+      <div class="category-name">${cat.name}</div>
+      <div class="category-tools">${cat.tools}</div>
+    </div>
+  `).join('');
+}
+
+const featuredTools=[
+  {name:'NMAP',desc:'Network Discovery & Security Auditing',command:'nmap -sV -sC <target>',badge:'RECON'},
+  {name:'WIRESHARK',desc:'Network Protocol Analyzer',command:'wireshark -i eth0',badge:'SNIFF'},
+  {name:'FEROXBUSTER',desc:'Web Content Discovery',command:'feroxbuster -u http://target',badge:'WEB'},
+  {name:'BURP SUITE',desc:'Web Security Testing Platform',command:'burpsuite',badge:'WEB'},
+  {name:'METASPLOIT',desc:'Penetration Testing Framework',command:'msfconsole',badge:'EXPLOIT'},
+  {name:'SQLMAP',desc:'SQL Injection Automation',command:'sqlmap -u "http://target/?id=1"',badge:'WEB'},
+  {name:'HYDRA',desc:'Password Authentication Testing',command:'hydra -l admin -P pass.txt ssh://target',badge:'AUTH'},
+  {name:'GOBUSTER',desc:'Directory/DNS Enumeration',command:'gobuster dir -u http://target -w wordlist',badge:'WEB'}
+];
+
+function renderTools(){
+  const grid=document.getElementById('toolsGrid');if(!grid)return;
+  grid.innerHTML=featuredTools.map((tool,i)=>`
+    <div class="tool-preview-card reveal" style="transition-delay:${i*0.04}s" onclick="window.location.href='login.html'">
+      <div class="tool-preview-header">
+        <div class="tool-preview-name">${tool.name}</div>
+        <div class="tool-preview-badge">${tool.badge}</div>
+      </div>
+      <div class="tool-preview-desc">${tool.desc}</div>
+      <div class="tool-preview-command">$ ${tool.command}</div>
+    </div>
+  `).join('');
+}
+
+function initScrollReveal(){
+  const revealElements=document.querySelectorAll('.reveal, .info-card, .category-card, .feature-card, .tool-preview-card');
+  if(!('IntersectionObserver' in window)){revealElements.forEach(el=>el.classList.add('revealed'));return}
+  const observer=new IntersectionObserver((entries)=>{entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('revealed');observer.unobserve(entry.target)}})},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+  revealElements.forEach(el=>observer.observe(el));
+}
+
+function animateCounters(){
+  const counters=document.querySelectorAll('[data-count]');
+  counters.forEach(counter=>{
+    const target=parseInt(counter.getAttribute('data-count'));
+    const suffix=counter.getAttribute('data-suffix')||'';
+    const duration=1800;const startTime=performance.now();
+    function updateCounter(currentTime){
+      const elapsed=currentTime-startTime;const progress=Math.min(elapsed/duration,1);
+      const eased=1-Math.pow(1-progress,3);const current=Math.floor(eased*target);
+      counter.textContent=current+suffix;
+      if(progress<1)requestAnimationFrame(updateCounter);
+      else counter.textContent=target+suffix;
+    }
+    requestAnimationFrame(updateCounter);
+  });
+}
+
+function initNavbarScroll(){
+  const navbar=document.getElementById('navbar');if(!navbar)return;
+  window.addEventListener('scroll',()=>{if(window.scrollY>50)navbar.classList.add('scrolled');else navbar.classList.remove('scrolled')},{passive:true});
+}
+
+function toggleMobileNav(){
+  const navLinks=document.getElementById('navLinks');const hamburger=document.getElementById('hamburger');const overlay=document.getElementById('mobileOverlay');
+  const isOpen=navLinks.classList.contains('active');
+  if(isOpen){closeMobileNav()}
+  else{navLinks.classList.add('active');hamburger.classList.add('active');overlay.classList.add('active');document.body.style.overflow='hidden'}
+}
+
+function closeMobileNav(){
+  const navLinks=document.getElementById('navLinks');const hamburger=document.getElementById('hamburger');const overlay=document.getElementById('mobileOverlay');
+  navLinks.classList.remove('active');hamburger.classList.remove('active');overlay.classList.remove('active');document.body.style.overflow='';
+}
+
+function scrollToSection(id){
+  const el=document.getElementById(id);
+  if(el){const navHeight=70;const elementPosition=el.getBoundingClientRect().top+window.pageYOffset;window.scrollTo({top:elementPosition-navHeight,behavior:'smooth'})}
+}
+
+function startAllAnimations(){typeTerminal();animateCounters()}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initMatrix();initParticles();renderCategories();renderTools();initNavbarScroll();
+  setTimeout(()=>{initScrollReveal()},100);
+});
+
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeMobileNav()});
+
+let resizeTimer;
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{if(window.innerWidth>768)closeMobileNav()},150)});
+</script>
+</body>
+</html>

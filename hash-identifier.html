@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Hash-Identifier — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-beginner{background:rgba(0,255,65,.12);color:var(--neon-green);border:1px solid rgba(0,255,65,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🔍</div>
+      <div class="hero-info">
+        <div class="hero-name">HASH-IDENTIFIER</div>
+        <div class="hero-cat">Cryptography · Hash Type Detection & Password Cracking Prep</div>
+        <div class="hero-badges">
+          <span class="badge badge-beginner">Beginner</span>
+          <span class="badge badge-count">40+ Techniques</span>
+          <span class="badge badge-tag">Python</span>
+          <span class="badge badge-tag">Passive</span>
+          <span class="badge badge-tag">Crypto</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Hash-Identifier</strong> is your <strong>first step in password cracking</strong>. Given a hash string, it identifies the algorithm (MD5, SHA1, SHA256, bcrypt, etc.) using pattern matching, length analysis, and entropy calculation. It's <strong>completely passive</strong> — no brute-force, no network traffic, just pattern recognition. Hash-Identifier is essential for every penetration tester and CTF player.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Hash-Identifier? (Deep Theory)</div>
+    <p><strong>Hash-Identifier</strong> is a Python tool that analyzes hash strings and determines their type. Once you know the hash type, you can choose the right cracking tool (hashcat, john, online services, etc.).</p>
+
+    <h3>How It Works Internally</h3>
+    <ul>
+      <li><strong>Length Analysis</strong> — Different algorithms produce different output lengths (MD5 = 32 chars, SHA1 = 40, SHA256 = 64, etc.)</li>
+      <li><strong>Character Analysis</strong> — Some hashes are hex-only, some include special chars (bcrypt uses $2a$)</li>
+      <li><strong>Pattern Matching</strong> — Recognizes prefixes/suffixes ($1$, $2a$, $apr1$, etc.)</li>
+      <li><strong>Entropy & Format</strong> — Calculates randomness and checks for known formats</li>
+    </ul>
+
+    <h3>Why Hash-Identifier is Essential</h3>
+    <ul>
+      <li><strong>Saves Time</strong> — Don't waste hours testing the wrong cracking tool</li>
+      <li><strong>Multiple Possibilities</strong> — One hash length can match multiple algorithms; identifier ranks them by probability</li>
+      <li><strong>Prepares Your Attack</strong> — Know the algorithm → Choose the right wordlist, rules, and hardware</li>
+      <li><strong>CTF Essential</strong> — First tool in any CTF password cracking challenge</li>
+      <li><strong>Penetration Testing</strong> — When you find password hashes, identify them first</li>
+    </ul>
+
+    <h3>Common Hash Types & Formats</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Hash Type</th><th>Length</th><th>Example</th><th>Cracker</th></tr></thead>
+        <tbody>
+          <tr><td>MD5</td><td>32 hex</td><td>5d41402abc4b2a76b9719d911017c592</td><td>hashcat/john</td></tr>
+          <tr><td>SHA1</td><td>40 hex</td><td>aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d</td><td>hashcat/john</td></tr>
+          <tr><td>SHA256</td><td>64 hex</td><td>2c26b46911185131006ba39f6b056b06bd9b827253a67</td><td>hashcat/john</td></tr>
+          <tr><td>SHA512</td><td>128 hex</td><td>cf83e1357eefb8bdf1542850d66d8007d620e4050b5715</td><td>hashcat/john</td></tr>
+          <tr><td>bcrypt</td><td>60 chars</td><td>$2a$12$R9h/cIPz0gi.URNNGNL1m.jPDuR1s.dIa0K5s0QvKDPxJlDHQCt66</td><td>hashcat/john</td></tr>
+          <tr><td>MD5 (Unix)</td><td>Variable</td><td>$1$salt$hash</td><td>hashcat/john</td></tr>
+          <tr><td>SHA-512 (Unix)</td><td>Variable</td><td>$6$salt$hash</td><td>hashcat/john</td></tr>
+          <tr><td>NTLM</td><td>32 hex</td><td>8846f7eaee8fb117ad06bdd830b7586c</td><td>hashcat</td></tr>
+          <tr><td>LM Hash</td><td>32 hex</td><td>aad3b435b51404eeaad3b435b51404ee</td><td>hashcat</td></tr>
+          <tr><td>WPA2</td><td>Variable</td><td>$WPA2$hash</td><td>hashcat</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Pro Tip:</strong> Same length ≠ same hash. A 32-char string could be MD5, NTLM, or even base64. Hash-Identifier ranks possibilities by probability.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. CTF Challenges</h3>
+    <p>Find a hash, identify it, crack it. Hash-Identifier is your first step in every password challenge.</p>
+
+    <h3>2. Penetration Testing</h3>
+    <p>After dumping hashes from a system (SAM, /etc/shadow, database), identify what you're working with before cracking.</p>
+
+    <h3>3. Bug Bounty Hunting</h3>
+    <p>Find hashed credentials in leaked databases or source code; identify to assess cracking feasibility.</p>
+
+    <h3>4. Forensics & Incident Response</h3>
+    <p>Analyze hashes found in logs, memory dumps, or digital evidence.</p>
+
+    <h3>5. Password Reset Workflows</h3>
+    <p>Analyze reset tokens and hashes to understand the algorithm and find weaknesses.</p>
+
+    <h3>6. Cloud & Database Forensics</h3>
+    <p>Identify password hashes in cloud backups, database exports, or API responses.</p>
+
+    <h3>7. Malware Analysis</h3>
+    <p>Reverse-engineer malware and identify hashed strings, credentials, or encryption keys.</p>
+
+    <h3>8. API Security Testing</h3>
+    <p>Analyze hash formats in API responses to understand authentication mechanisms.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux (Pre-installed)</h3>
+    <div class="code-block"><code>hash-identifier</code><button class="copy-btn" onclick="copyText('hash-identifier',this)">COPY</button></div>
+
+    <h3>Install on Linux/macOS</h3>
+    <div class="code-block"><code>sudo apt install -y hash-identifier</code><button class="copy-btn" onclick="copyText('sudo apt install -y hash-identifier',this)">COPY</button></div>
+
+    <h3>Install via Git</h3>
+    <div class="code-block"><code>git clone https://github.com/blackploit/hash-identifier.git
+cd hash-identifier
+python3 hash-identifier.py</code><button class="copy-btn" onclick="copyText('git clone https://github.com/blackploit/hash-identifier.git && cd hash-identifier && python3 hash-identifier.py',this)">COPY</button></div>
+
+    <h3>Install via pip</h3>
+    <div class="code-block"><code>pip install hash-identifier</code><button class="copy-btn" onclick="copyText('pip install hash-identifier',this)">COPY</button></div>
+
+    <h3>Make Executable (Optional)</h3>
+    <div class="code-block"><code>chmod +x hash-identifier.py
+sudo cp hash-identifier.py /usr/local/bin/hash-identifier</code><button class="copy-btn" onclick="copyText('chmod +x hash-identifier.py && sudo cp hash-identifier.py /usr/local/bin/hash-identifier',this)">COPY</button></div>
+
+    <div class="info-box">
+      <div class="info-icon">📚</div>
+      <div class="info-text">
+        <strong>Verify Installation:</strong> <code>hash-identifier</code> should launch interactive mode. If error, use <code>python3 hash-identifier.py</code> directly.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Usage & Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Interactive Mode</div>
+      <div class="command-purpose">Launch the tool and enter hashes one by one.</div>
+      <div class="code-block"><code>hash-identifier</code><button class="copy-btn" onclick="copyText('hash-identifier',this)">COPY</button></div>
+      <div class="command-output">--File 'hash-identifier.py' imported successfully
+   _  _  _____  _____  _  _     ___  ___  _____  _  _  _____  _____ 
+  | || ||_   _||  _  || \| |   |_ _||_ _||  _  || \| ||_   _||  ___|
+  | || |  | |  | |_| ||  ` |    | |  | | | |_| ||  ` |  | |  | |_   
+  |_||_|  | |  |  _  || . ` |    | |  | | |  _  || . ` |  | |  |  _|  
+   _||_   | |  | | | || |\ |   _| |_ | | | | | || |\ |  | |  | |___
+  |_|\_|  |_|  |_| |_|\_| \_|  |___||___||_| |_|\_| \_|  |_|  |_____| 
+
+[*] Hash-Identifier v1.3
+[*] http://md5.gromweb.com/?md5=
+
+[*] Enter the hash you want to identify
+[*] q :quit, ? :help
+
+> </div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Identify MD5 Hash</div>
+      <div class="command-purpose">Paste an MD5 hash and let identifier analyze it.</div>
+      <div class="code-block"><code>5d41402abc4b2a76b9719d911017c592</code><button class="copy-btn" onclick="copyText('5d41402abc4b2a76b9719d911017c592',this)">COPY</button></div>
+      <div class="command-output">Possible Hashs:
+[+] MD5
+[+] NTLM
+[+] Cisco IOS MD5</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Identify SHA1 Hash</div>
+      <div class="code-block"><code>aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d</code><button class="copy-btn" onclick="copyText('aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d',this)">COPY</button></div>
+      <div class="command-output">Possible Hashs:
+[+] SHA1
+[+] MySQL5
+[+] Cisco IOS SHA1</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Identify bcrypt Hash</div>
+      <div class="code-block"><code>$2a$12$R9h/cIPz0gi.URNNGNL1m.jPDuR1s.dIa0K5s0QvKDPxJlDHQCt66</code><button class="copy-btn" onclick="copyText('$2a$12$R9h/cIPz0gi.URNNGNL1m.jPDuR1s.dIa0K5s0QvKDPxJlDHQCt66',this)">COPY</button></div>
+      <div class="command-output">Possible Hashs:
+[+] Blowfish(OpenBSD)</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Identify MD5 (Unix Shadow)</div>
+      <div class="command-block"><code>$1$salt$n4NPZQ0g5S/9KW7Rgs73C/</code><button class="copy-btn" onclick="copyText('$1$salt$n4NPZQ0g5S/9KW7Rgs73C/',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. Identify SHA-512 (Unix Shadow)</div>
+      <div class="code-block"><code>$6$salt$hash/example</code><button class="copy-btn" onclick="copyText('$6$salt$hash/example',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. Identify SHA256 Hash</div>
+      <div class="code-block"><code>2c26b46911185131006ba39f6b056b06bd9b827253a67</code><button class="copy-btn" onclick="copyText('2c26b46911185131006ba39f6b056b06bd9b827253a67',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. Identify NTLM Hash</div>
+      <div class="command-purpose">Windows password hashes.</div>
+      <div class="code-block"><code>8846f7eaee8fb117ad06bdd830b7586c</code><button class="copy-btn" onclick="copyText('8846f7eaee8fb117ad06bdd830b7586c',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. Identify LM Hash</div>
+      <div class="command-purpose">Legacy Windows hashes (DES-based).</div>
+      <div class="code-block"><code>aad3b435b51404eeaad3b435b51404ee</code><button class="copy-btn" onclick="copyText('aad3b435b51404eeaad3b435b51404ee',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Multiple Hashes (Paste & Exit)</div>
+      <div class="command-purpose">Identify many hashes in interactive mode.</div>
+      <div class="code-block"><code>hash1
+hash2
+hash3
+q</code><button class="copy-btn" onclick="copyText('hash1\nhash2\nhash3\nq',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">11. Help Command</div>
+      <div class="code-block"><code>?</code><button class="copy-btn" onclick="copyText('?',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Get Hash Info</div>
+      <div class="command-purpose">Show additional info about identified hash.</div>
+      <div class="code-block"><code>hash-identifier
+[enter hash]
+[system will show matching algorithms and info]</code><button class="copy-btn" onclick="copyText('hash-identifier',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Advanced Techniques & Analysis</div>
+
+    <div class="command">
+      <div class="command-title">13. Analyze Hash Length Pattern</div>
+      <div class="command-purpose">Quick identification by length alone.</div>
+      <div class="code-block"><code>32 chars hex = MD5/NTLM
+40 chars hex = SHA1
+64 chars hex = SHA256
+128 chars hex = SHA512</code><button class="copy-btn" onclick="copyText('32 chars hex = MD5/NTLM\n40 chars hex = SHA1\n64 chars hex = SHA256\n128 chars hex = SHA512',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Identify by Prefix/Format</div>
+      <div class="command-purpose">Many hashes have distinctive prefixes.</div>
+      <div class="code-block"><code>$2a$ or $2b$ = bcrypt
+$1$ = MD5 (Unix)
+$5$ = SHA256 (Unix)
+$6$ = SHA512 (Unix)
+$apr1$ = Apache MD5
+$argon2$ = Argon2</code><button class="copy-btn" onclick="copyText('$2a$ or $2b$ = bcrypt\n$1$ = MD5 (Unix)\n$5$ = SHA256 (Unix)\n$6$ = SHA512 (Unix)\n$apr1$ = Apache MD5\n$argon2$ = Argon2',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. Manual Analysis Tools</div>
+      <div class="command-purpose">Combine hash-identifier with manual checks.</div>
+      <div class="code-block"><code>echo -n "test" | md5sum  # Generate MD5 for comparison
+echo -n "test" | sha1sum # Generate SHA1
+echo -n "test" | sha256sum # Generate SHA256</code><button class="copy-btn" onclick="copyText('echo -n \"test\" | md5sum  # Generate MD5 for comparison\necho -n \"test\" | sha1sum # Generate SHA1\necho -n \"test\" | sha256sum # Generate SHA256',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Check Against Known Values</div>
+      <div class="command-purpose">Test if hash is "hello" (common test value).</div>
+      <div class="code-block"><code>MD5("hello") = 5d41402abc4b2a76b9719d911017c592
+SHA1("hello") = aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d
+SHA256("hello") = 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824</code><button class="copy-btn" onclick="copyText('MD5(\"hello\") = 5d41402abc4b2a76b9719d911017c592\nSHA1(\"hello\") = aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d\nSHA256(\"hello\") = 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. Salted Hash Identification</div>
+      <div class="command-purpose">Identify if hash includes salt (often mixed in).</div>
+      <div class="code-block"><code"$2a$12$R9h/cIPz0gi.URNNGNL1m.jPDuR1s.dIa0K5s0QvKDPxJlDHQCt66
+[22 chars salt + 31 chars hash = bcrypt format]</code><button class="copy-btn" onclick="copyText('$2a$12$R9h/cIPz0gi.URNNGNL1m.jPDuR1s.dIa0K5s0QvKDPxJlDHQCt66',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Identify Hash Rounds (Work Factor)</div>
+      <div class="command-purpose">bcrypt/argon2 hashes include cost factors.</div>
+      <div class="code-block"><code>$2a$12$ = bcrypt with 12 rounds (2^12 = 4096 iterations)
+$2b$04$ = bcrypt with 4 rounds (faster but weaker)
+Higher rounds = harder to crack</code><button class="copy-btn" onclick="copyText('$2a$12$ = bcrypt with 12 rounds (2^12 = 4096 iterations)\n$2b$04$ = bcrypt with 4 rounds (faster but weaker)\nHigher rounds = harder to crack',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">19. Identify Keyed Hashes (HMAC)</div>
+      <div class="command-purpose">HMAC-MD5, HMAC-SHA1 used in tokens/APIs.</div>
+      <div class="code-block"><code>Format: HMAC(algorithm, message, key)
+Example: HMAC-MD5("message", "secret_key")
+Identified by: Context and known algorithm patterns</code><button class="copy-btn" onclick="copyText('Format: HMAC(algorithm, message, key)\nExample: HMAC-MD5(\"message\", \"secret_key\")\nIdentified by: Context and known algorithm patterns',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Identify WordPress/PHP Hashes</div>
+      <div class="command-purpose">WordPress uses MD5 or phpass (portable PHP).</div>
+      <div class="code-block"><code>$P$B... = WordPress phpass hash
+wp_signon() uses phpass for security
+Cracker-friendly targets</code><button class="copy-btn" onclick="copyText('$P$B... = WordPress phpass hash\nwp_signon() uses phpass for security\nCracker-friendly targets',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">21. Identify Apache Hashes</div>
+      <div class="code-block"><code>$apr1$ = Apache MD5
+$2y$ = Apache bcrypt
+htpasswd -c .htpasswd user (creates these)</code><button class="copy-btn" onclick="copyText('$apr1$ = Apache MD5\n$2y$ = Apache bcrypt\nhtpasswd -c .htpasswd user (creates these)',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Check Character Set (Hex vs Binary)</div>
+      <div class="command-purpose">Hex hashes use 0-9, a-f only.</div>
+      <div class="code-block"><code>Hex-only = Standard hash (MD5, SHA1, SHA256, etc.)
+With $, numbers = Salted format (bcrypt, Unix shadow)
+Uppercase = Might be base64 or different encoding</code><button class="copy-btn" onclick="copyText('Hex-only = Standard hash (MD5, SHA1, SHA256, etc.)\nWith $, numbers = Salted format (bcrypt, Unix shadow)\nUppercase = Might be base64 or different encoding',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Identify Scrypt/Argon2 Hashes</div>
+      <div class="command-purpose">Modern password hashing (memory-hard).</div>
+      <div class="code-block"><code>$scrypt$params$salt$hash = scrypt format
+$argon2i$ or $argon2d$ = Argon2 format
+Very hard to crack (memory requirements)</code><button class="copy-btn" onclick="copyText('$scrypt$params$salt$hash = scrypt format\n$argon2i$ or $argon2d$ = Argon2 format\nVery hard to crack (memory requirements)',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Quick Online Lookup</div>
+      <div class="command-purpose">Some hashes are rainbow-table hits.</div>
+      <div class="code-block"><code>Google: [hash] md5
+MD5 Online: https://md5.gromweb.com/?md5=[hash]
+CrackStation: https://crackstation.net/
+Caution: Privacy risk if value is sensitive</code><button class="copy-btn" onclick="copyText('Google: [hash] md5\nMD5 Online: https://md5.gromweb.com/?md5=[hash]\nCrackStation: https://crackstation.net/\nCaution: Privacy risk if value is sensitive',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. Use hashcat -m Flag Reference</div>
+      <div class="command-purpose">Map identified hash to hashcat mode number.</div>
+      <div class="code-block"><code>hashcat -m 0 = MD5
+hashcat -m 100 = SHA1
+hashcat -m 1400 = SHA256
+hashcat -m 3200 = bcrypt
+hashcat -m 1800 = SHA512
+hashcat -h | grep -i algorithm</code><button class="copy-btn" onclick="copyText('hashcat -m 0 = MD5\nhashcat -m 100 = SHA1\nhashcat -m 1400 = SHA256\nhashcat -m 3200 = bcrypt\nhashcat -m 1800 = SHA512\nhashcat -h | grep -i algorithm',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Hash Types Deep Dive</div>
+
+    <div class="command">
+      <div class="command-title">26. MD5 - Fast But Broken</div>
+      <div class="command-purpose">32 hex chars. Cryptographically broken, collision-prone.</div>
+      <div class="code-block"><code>Length: 32 hex characters
+Speed: Very fast to crack
+Risk: Weak (legacy systems only)
+Example: 5d41402abc4b2a76b9719d911017c592
+Crack with: hashcat -m 0, john, online services</code><button class="copy-btn" onclick="copyText('Length: 32 hex characters\nSpeed: Very fast to crack\nRisk: Weak (legacy systems only)\nExample: 5d41402abc4b2a76b9719d911017c592\nCrack with: hashcat -m 0, john, online services',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. SHA1 - Deprecated</div>
+      <div class="command-purpose">40 hex chars. Also broken, collision found in 2017.</div>
+      <div class="code-block"><code>Length: 40 hex characters
+Speed: Fast to crack
+Risk: Weak (don't use for new systems)
+Example: aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d
+Crack with: hashcat -m 100, john</code><button class="copy-btn" onclick="copyText('Length: 40 hex characters\nSpeed: Fast to crack\nRisk: Weak (don\'t use for new systems)\nExample: aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d\nCrack with: hashcat -m 100, john',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. SHA256 - Industry Standard</div>
+      <div class="command-purpose">64 hex chars. Cryptographically secure (for now).</div>
+      <div class="code-block"><code>Length: 64 hex characters
+Speed: Moderate (GPU acceleration needed at scale)
+Risk: Currently secure (no known collisions)
+Example: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824
+Crack with: hashcat -m 1400, john (slow)</code><button class="copy-btn" onclick="copyText('Length: 64 hex characters\nSpeed: Moderate (GPU acceleration needed at scale)\nRisk: Currently secure (no known collisions)\nExample: 2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824\nCrack with: hashcat -m 1400, john (slow)',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">29. bcrypt - Industry Gold Standard</div>
+      <div class="command-purpose">60 chars with $2a$ prefix. Salted & adaptive cost.</div>
+      <div class="code-block"><code>Length: 60 characters (22 char salt + hash)
+Format: $2a$12$salt$hash or $2b$ or $2y$
+Speed: Intentionally slow (work factor)
+Risk: Very hard to crack (still secure)
+Cost: $2a$12$ = 2^12 iterations (adaptive)
+Crack with: hashcat -m 3200, john (very slow)</code><button class="copy-btn" onclick="copyText('Length: 60 characters (22 char salt + hash)\nFormat: $2a$12$salt$hash or $2b$ or $2y$\nSpeed: Intentionally slow (work factor)\nRisk: Very hard to crack (still secure)\nCost: $2a$12$ = 2^12 iterations (adaptive)\nCrack with: hashcat -m 3200, john (very slow)',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">30. NTLM - Windows Legacy</div>
+      <div class="command-purpose">32 hex chars. Windows password hashes.</div>
+      <div class="code-block"><code>Length: 32 hex characters (looks like MD5)
+Format: Unicode uppercase, DES-based
+Speed: Fast but specialized tools needed
+Risk: Moderate (pass-the-hash attacks work)
+Found in: Windows SAM, LSASS dumps
+Crack with: hashcat -m 1000, john</code><button class="copy-btn" onclick="copyText('Length: 32 hex characters (looks like MD5)\nFormat: Unicode uppercase, DES-based\nSpeed: Fast but specialized tools needed\nRisk: Moderate (pass-the-hash attacks work)\nFound in: Windows SAM, LSASS dumps\nCrack with: hashcat -m 1000, john',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">31. LM Hash - Ancient</div>
+      <div class="command-purpose">32 hex chars. DES-based, VERY weak.</div>
+      <div class="code-block"><code>Length: 32 hex characters
+Format: aad3b435b51404eeaad3b435b51404ee (empty password default)
+Speed: Can be cracked in hours with rainbow tables
+Risk: Critically weak (don't use)
+Found in: Very old Windows systems
+Crack with: Rainbow tables, hashcat -m 3000</code><button class="copy-btn" onclick="copyText('Length: 32 hex characters\nFormat: aad3b435b51404eeaad3b435b51404ee (empty password default)\nSpeed: Can be cracked in hours with rainbow tables\nRisk: Critically weak (don\'t use)\nFound in: Very old Windows systems\nCrack with: Rainbow tables, hashcat -m 3000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">32. Argon2 - Future Proof</div>
+      <div class="command-purpose">Memory-hard, adaptive, very slow to crack.</div>
+      <div class="code-block"><code>Format: $argon2i$ or $argon2d$
+Speed: VERY slow (memory requirements)
+Risk: Extremely hard to crack (future-proof)
+Memory: Uses significant RAM during hashing
+Crack with: hashcat -m 2500 (with GPU limits), john
+Best for: New applications</code><button class="copy-btn" onclick="copyText('Format: $argon2i$ or $argon2d$\nSpeed: VERY slow (memory requirements)\nRisk: Extremely hard to crack (future-proof)\nMemory: Uses significant RAM during hashing\nCrack with: hashcat -m 2500 (with GPU limits), john\nBest for: New applications',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">33. SHA512 (Unix Shadow)</div>
+      <div class="command-purpose">128 hex chars. Also $6$ prefix format.</div>
+      <div class="code-block"><code>Length: 128 hex characters (or $6$ format)
+Format: $6$salt$hash
+Speed: Slow (more rounds than SHA256)
+Risk: Currently secure
+Found in: /etc/shadow files
+Crack with: hashcat -m 1800, john</code><button class="copy-btn" onclick="copyText('Length: 128 hex characters (or $6$ format)\nFormat: $6$salt$hash\nSpeed: Slow (more rounds than SHA256)\nRisk: Currently secure\nFound in: /etc/shadow files\nCrack with: hashcat -m 1800, john',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">34. MD5 (Unix Shadow) - $1$</div>
+      <div class="code-block"><code>Format: $1$salt$hash
+Speed: Moderate (multiple rounds)
+Risk: Weak (MD5 is broken)
+Found in: Older Linux systems
+Crack with: hashcat -m 500, john</code><button class="copy-btn" onclick="copyText('Format: $1$salt$hash\nSpeed: Moderate (multiple rounds)\nRisk: Weak (MD5 is broken)\nFound in: Older Linux systems\nCrack with: hashcat -m 500, john',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">35. SHA256 (Unix Shadow) - $5$</div>
+      <div class="code-block"><code>Format: $5$salt$hash
+Speed: Moderate to slow
+Risk: Secure
+Found in: Modern Linux systems
+Crack with: hashcat -m 7400, john</code><button class="copy-btn" onclick="copyText('Format: $5$salt$hash\nSpeed: Moderate to slow\nRisk: Secure\nFound in: Modern Linux systems\nCrack with: hashcat -m 7400, john',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Workflows</div>
+
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Workflow 1: CTF Password Cracking</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>hash-identifier
+[enter hash]
+[identify type]
+hashcat -m [mode] [hash_file] [wordlist]</code><button class="copy-btn" onclick="copyText('hash-identifier\n[enter hash]\n[identify type]\nhashcat -m [mode] [hash_file] [wordlist]',this)">COPY</button></div>Standard CTF workflow: identify → crack.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 2: SAM File Exploitation</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code">secretsdump.py -sam SAM -system SYSTEM local
+hash-identifier
+[identify NTLM hashes]
+hashcat -m 1000 hashes.txt wordlist.txt</code><button class="copy-btn" onclick="copyText('secretsdump.py -sam SAM -system SYSTEM local\nhash-identifier\n[identify NTLM hashes]\nhashcat -m 1000 hashes.txt wordlist.txt',this)">COPY</button></div>Windows penetration test: dump SAM → identify → crack NTLM.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 3: Shadow File Cracking</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>unshadow /etc/passwd /etc/shadow > shadow.txt
+hash-identifier
+[enter hash from shadow]
+john shadow.txt --wordlist=wordlist.txt</code><button class="copy-btn" onclick="copyText('unshadow /etc/passwd /etc/shadow > shadow.txt\nhash-identifier\n[enter hash from shadow]\njohn shadow.txt --wordlist=wordlist.txt',this)">COPY</button></div>Linux privilege escalation: unshadow → identify → crack.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 4: Database Hash Extraction</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code">mysql -u root -p[password] -e "SELECT user, password FROM mysql.user;"
+hash-identifier
+[identify MySQL/bcrypt/MD5 hashes]
+hashcat -m [appropriate_mode] hashes.txt</code><button class="copy-btn" onclick="copyText('mysql -u root -p[password] -e \"SELECT user, password FROM mysql.user;\"\nhash-identifier\n[identify MySQL/bcrypt/MD5 hashes]\nhashcat -m [appropriate_mode] hashes.txt',this)">COPY</button></div>Database penetration: extract → identify → crack.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 5: API Token Analysis</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code">curl -v https://api.target.com/auth
+[capture Authorization header]
+hash-identifier
+[identify JWT, HMAC, or session hashes]
+Analyze or crack based on type</code><button class="copy-btn" onclick="copyText('curl -v https://api.target.com/auth\n[capture Authorization header]\nhash-identifier\n[identify JWT, HMAC, or session hashes]\nAnalyze or crack based on type',this)">COPY</button></div>API security: intercept → identify → analyze token format.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 6: Batch File Processing</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code">cat extracted_hashes.txt | while read hash; do
+  echo "Analyzing: $hash"
+  echo "$hash" | hash-identifier
+done</code><button class="copy-btn" onclick="copyText('cat extracted_hashes.txt | while read hash; do\n  echo \"Analyzing: $hash\"\n  echo \"$hash\" | hash-identifier\ndone',this)">COPY</button></div>Batch analysis: loop through file and identify all hashes.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 7: Forensics Evidence Analysis</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code">file_carving_tool extracted_data.bin
+[recover potential hashes]
+hash-identifier
+[classify by type for cracking priority]</code><button class="copy-btn" onclick="copyText('file_carving_tool extracted_data.bin\n[recover potential hashes]\nhash-identifier\n[classify by type for cracking priority]',this)">COPY</button></div>Digital forensics: carve → identify → prioritize for cracking.</div>
+      </div>
+
+      <div class="wf-step">
+        <div class="wf-title">Workflow 8: Malware Analysis</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code">strings malware_binary | grep -E '[a-f0-9]{32,128}'
+hash-identifier
+[identify embedded hashes in malware]
+Determine if C2 domains, config keys, or password hashes</code><button class="copy-btn" onclick="copyText('strings malware_binary | grep -E \'[a-f0-9]{32,128}\'\nhash-identifier\n[identify embedded hashes in malware]\nDetermine if C2 domains, config keys, or password hashes',this)">COPY</button></div>Malware reverse engineering: extract strings → identify hashes.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Hash-Identifier vs Other Tools Comparison</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th><th>Interactive</th><th>Output</th><th>Accuracy</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Hash-Identifier</strong></td><td>Hash type detection</td><td>✅ Yes</td><td>List of possibilities</td><td>⭐⭐⭐⭐</td></tr>
+          <tr><td><strong>hashcat --identify</strong></td><td>Hash type + cracking</td><td>❌ CLI only</td><td>Mode number</td><td>⭐⭐⭐⭐⭐</td></tr>
+          <tr><td><strong>john --show</strong></td><td>Hash type + cracking</td><td>✅ Interactive</td><td>Cracked password</td><td>⭐⭐⭐⭐</td></tr>
+          <tr><td><strong>Online Tools</strong></td><td>Quick lookup</td><td>✅ Web-based</td><td>Results/rainbow tables</td><td>⭐⭐⭐ (privacy risk)</td></tr>
+          <tr><td><strong>Regular Expression</strong></td><td>Manual analysis</td><td>❌ Manual</td><td>Pattern match</td><td>⭐⭐⭐ (incomplete)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags & Quick Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Command</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>hash-identifier</code></td><td>Launch interactive mode</td></tr>
+          <tr><td><code>?</code></td><td>Show help menu</td></tr>
+          <tr><td><code>q</code></td><td>Quit interactive mode</td></tr>
+          <tr><td><code>python3 hash-identifier.py</code></td><td>Alternative launch</td></tr>
+          <tr><td><code>echo [hash] | python3 script.py</code></td><td>Pipe input (non-interactive)</td></tr>
+          <tr><td><code>hashcat --identify [hash]</code></td><td>Identify with hashcat</td></tr>
+          <tr><td><code>john --list=formats</code></td><td>List all john formats</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting & Tips</div>
+
+    <h3>Hash-Identifier Shows Multiple Matches</h3>
+    <ul>
+      <li>Length ambiguity (32 chars = MD5, NTLM, or others)</li>
+      <li>Look at context (Windows = likely NTLM; Linux = likely MD5 or SHA)</li>
+      <li>First match is usually most probable</li>
+    </ul>
+
+    <h3>Hash Not Recognized</h3>
+    <ul>
+      <li>Check hash format (might be base64, not hex)</li>
+      <li>Remove any $ prefixes and analyze the core hash</li>
+      <li>Verify character set (should be hex, alphanumeric, or specific format)</li>
+      <li>Length might be off (copy-paste errors)</li>
+    </ul>
+
+    <h3>Too Generic Results</h3>
+    <ul>
+      <li>Use hashcat --identify for more precise detection</li>
+      <li>Cross-reference with source (Windows SAM = NTLM, /etc/shadow = Unix format)</li>
+      <li>Look for distinctive prefixes ($2a$, $1$, $6$, etc.)</li>
+    </ul>
+
+    <h3>Non-Interactive Mode Needed</h3>
+    <ul>
+      <li>Pipe input: <code>echo "hash" | python3 hash-identifier.py</code></li>
+      <li>Or use hashcat's identify feature for scripting</li>
+    </ul>
+
+    <h3>Command Not Found</h3>
+    <ul>
+      <li>Install: <code>sudo apt install hash-identifier</code></li>
+      <li>Or: <code>git clone https://github.com/blackploit/hash-identifier.git</code></li>
+      <li>Run with: <code>python3 hash-identifier.py</code></li>
+    </ul>
+
+    <h3>Unicode/Encoding Issues</h3>
+    <ul>
+      <li>Hash-identifier expects ASCII/hex</li>
+      <li>If hash is base64, decode first: <code>echo "base64hash" | base64 -d | xxd</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Pro Tips & Best Practices</div>
+
+    <h3>Always Identify First</h3>
+    <p>Never guess the hash type. Identifying wrong = wasted hours on wrong cracker/wordlist.</p>
+
+    <h3>Combine with Hashcat --identify</h3>
+    <p>For more precise identification: <code>hashcat --identify hash.txt</code></p>
+
+    <h3>Consider Context</h3>
+    <p>Where was the hash found? Windows SAM = NTLM. Linux /etc/shadow = MD5, SHA256, or SHA512. Database = depends on DB type.</p>
+
+    <h3>Look at Rounds/Cost Factor</h3>
+    <p>Higher bcrypt cost = longer crack time. $2a$12$ is harder than $2a$04$.</p>
+
+    <h3>Use Mode Numbers in Hashcat</h3>
+    <p>After identification, map to hashcat -m number for optimal performance.</p>
+
+    <h3>Combine Tools for Batch Analysis</h3>
+    <p>Loop through extracted hashes and identify all before prioritizing cracking.</p>
+
+    <h3>Privacy First</h3>
+    <p>Don't send sensitive hashes to online tools. Use local hash-identifier or hashcat.</p>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Hash identification itself is passive and legal. However, cracking passwords is <strong>illegal</strong> without authorization:
+      <br>• On your own systems ✅ OK
+      <br>• In authorized penetration tests (signed contract) ✅ OK
+      <br>• In CTF competitions ✅ OK
+      <br>• On any other system ❌ ILLEGAL
+      <br>
+      <br>Even identifying found hashes can be illegal depending on context. Always:
+      <br>• Get written authorization before any password cracking
+      <br>• Respect privacy and confidentiality
+      <br>• Use responsibly in professional security work
+      <br>
+      <br>Unauthorized password cracking violates the CFAA (US), Computer Misuse Act (UK), and similar laws worldwide.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

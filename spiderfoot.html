@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>SpiderFoot — OSINT Automation Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-advanced{background:rgba(255,0,64,.12);color:var(--neon-red);border:1px solid rgba(255,0,64,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">🔐</div>SAINICOMMANDHUB</div>
+</nav>
+
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🕷</div>
+      <div class="hero-info">
+        <div class="hero-name">SPIDERFOOT</div>
+        <div class="hero-cat">OSINT AUTOMATION / RECONNAISSANCE / THREAT INTELLIGENCE</div>
+        <div class="hero-badges">
+          <span class="badge badge-advanced">INTERMEDIATE</span>
+          <span class="badge badge-count">65+ COMMANDS</span>
+          <span class="badge badge-tag">OSINT FRAMEWORK</span>
+        </div>
+      </div>
+    </div>
+    <p><strong style="color:var(--secondary)">SpiderFoot</strong> is an open-source intelligence automation framework that combines many collection modules and turns their findings into structured event data. It can be operated through a web interface or from the command line, making it useful for authorized reconnaissance, exposure assessment and investigation workflows.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is SpiderFoot? (Deep Theory)</div>
+    <p>SpiderFoot is best understood as an <strong>OSINT orchestration engine</strong>. Instead of manually running dozens of separate reconnaissance tools, you provide a target and select a use case, module set or event types. SpiderFoot then coordinates modules and stores the resulting data for analysis.</p>
+    <h3>Core Concepts</h3>
+    <ul>
+      <li><strong>Target:</strong> the starting point such as a domain, IP address, email address or other supported identifier.</li>
+      <li><strong>Modules:</strong> individual collectors and processors responsible for particular data sources or techniques.</li>
+      <li><strong>Event types:</strong> normalized data categories produced or consumed by modules.</li>
+      <li><strong>Use cases:</strong> automatic module selection such as <code>all</code>, <code>footprint</code>, <code>investigate</code> and <code>passive</code>.</li>
+      <li><strong>Correlation:</strong> relationships between collected elements that can reveal useful investigative connections.</li>
+      <li><strong>Output:</strong> CLI results can be displayed as tabular data or exported as CSV/JSON.</li>
+    </ul>
+    <h3>The Mental Model</h3>
+    <p><code>TARGET → MODULES → EVENTS → CORRELATION → ANALYSIS → REPORT</code></p>
+    <div class="info-box"><div class="info-icon">💡</div><div class="info-text"><strong>Important:</strong> SpiderFoot automates collection; it does not automatically prove that every discovered item belongs to the target. Validate important findings against authoritative sources and understand each module's data source.</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Web UI & Installation</div>
+    <h3>Launch the local web interface</h3>
+    <div class="code-block"><code>python3 sf.py -l 127.0.0.1:5001</code><button class="copy-btn" onclick="copyText('python3 sf.py -l 127.0.0.1:5001',this)">COPY</button></div>
+    <p>Then open the local SpiderFoot web interface in your browser. Keeping the server bound to <code>127.0.0.1</code> is a sensible default for a personal lab.</p>
+    <h3>Repository workflow</h3>
+    <div class="code-block"><code>git clone https://github.com/smicallef/spiderfoot.git</code><button class="copy-btn" onclick="copyText('git clone https://github.com/smicallef/spiderfoot.git',this)">COPY</button></div>
+    <div class="code-block"><code>cd spiderfoot</code><button class="copy-btn" onclick="copyText('cd spiderfoot',this)">COPY</button></div>
+    <div class="code-block"><code>python3 -m pip install -r requirements.txt</code><button class="copy-btn" onclick="copyText('python3 -m pip install -r requirements.txt',this)">COPY</button></div>
+    <div class="code-block"><code>python3 sf.py -l 127.0.0.1:5001</code><button class="copy-btn" onclick="copyText('python3 sf.py -l 127.0.0.1:5001',this)">COPY</button></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">SpiderFoot Command Library — 65 Commands</div>
+    <p>These examples are based on the current SpiderFoot CLI interface. Replace example targets with assets you own or have explicit permission to investigate.</p>
+    <div class="command">
+<div class="command-title">1. Show Help</div>
+<div class="command-purpose">Display SpiderFoot CLI help.</div>
+<div class="code-block"><code>python3 sf.py -h</code><button class="copy-btn" onclick="copyText('python3 sf.py -h',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">2. Start Web UI</div>
+<div class="command-purpose">Start the local SpiderFoot web server.</div>
+<div class="code-block"><code>python3 sf.py -l 127.0.0.1:5001</code><button class="copy-btn" onclick="copyText('python3 sf.py -l 127.0.0.1:5001',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">3. Start on a Custom Port</div>
+<div class="command-purpose">Listen on a different local port.</div>
+<div class="code-block"><code>python3 sf.py -l 127.0.0.1:8080</code><button class="copy-btn" onclick="copyText('python3 sf.py -l 127.0.0.1:8080',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">4. Enable Debug</div>
+<div class="command-purpose">Enable debug output while troubleshooting.</div>
+<div class="code-block"><code>python3 sf.py -d -l 127.0.0.1:5001</code><button class="copy-btn" onclick="copyText('python3 sf.py -d -l 127.0.0.1:5001',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">5. Show Version</div>
+<div class="command-purpose">Display the installed SpiderFoot version.</div>
+<div class="code-block"><code>python3 sf.py -V</code><button class="copy-btn" onclick="copyText('python3 sf.py -V',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">6. List Modules</div>
+<div class="command-purpose">List available SpiderFoot modules.</div>
+<div class="code-block"><code>python3 sf.py -M</code><button class="copy-btn" onclick="copyText('python3 sf.py -M',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">7. List Event Types</div>
+<div class="command-purpose">List available event/data element types.</div>
+<div class="code-block"><code>python3 sf.py -T</code><button class="copy-btn" onclick="copyText('python3 sf.py -T',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">8. Basic Domain Scan</div>
+<div class="command-purpose">Run a CLI scan against an authorized domain.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">9. Passive Use Case</div>
+<div class="command-purpose">Select modules automatically for passive OSINT.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">10. Footprint Use Case</div>
+<div class="command-purpose">Select modules for footprinting an authorized target.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u footprint</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u footprint',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">11. Investigate Use Case</div>
+<div class="command-purpose">Select modules for an investigation workflow.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u investigate</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u investigate',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">12. All Use Case</div>
+<div class="command-purpose">Use the broad automatic module selection.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u all</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u all',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">13. Select Modules</div>
+<div class="command-purpose">Run only specified modules.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -m sfp_dnsresolve,sfp_ssl</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -m sfp_dnsresolve,sfp_ssl',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">14. Select Event Types</div>
+<div class="command-purpose">Ask SpiderFoot to collect specified event types.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -t DOMAIN_NAME,IP_ADDRESS</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -t DOMAIN_NAME,IP_ADDRESS',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">15. Strict Mode</div>
+<div class="command-purpose">Only use modules that can directly consume the requested event types.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -t DOMAIN_NAME -x</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -t DOMAIN_NAME -x',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">16. Tab Output</div>
+<div class="command-purpose">Use the default tabular CLI output explicitly.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o tab</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o tab',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">17. CSV Output</div>
+<div class="command-purpose">Export scan data as CSV.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o csv</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o csv',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">18. JSON Output</div>
+<div class="command-purpose">Export scan data as JSON.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o json</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o json',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">19. Include Source Data</div>
+<div class="command-purpose">Include source data in tab/CSV output.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o csv -r</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o csv -r',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">20. Remove Headers</div>
+<div class="command-purpose">Print data without field headers in tab/CSV output.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o csv -H</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o csv -H',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">21. Strip Newlines</div>
+<div class="command-purpose">Remove embedded newlines from displayed data.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -n</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -n',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">22. Limit Display Length</div>
+<div class="command-purpose">Limit displayed field length.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -S 500</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -S 500',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">23. Custom CSV Delimiter</div>
+<div class="command-purpose">Use a custom delimiter for CSV output.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o csv -D &#39;;&#39;</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o csv -D \';\'',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">24. Filter Requested Types</div>
+<div class="command-purpose">Filter out event types not requested with -t.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -t DOMAIN_NAME,IP_ADDRESS -f</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -t DOMAIN_NAME,IP_ADDRESS -f',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">25. Show Only Selected Types</div>
+<div class="command-purpose">Display only selected event types.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -F DOMAIN_NAME,IP_ADDRESS</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -F DOMAIN_NAME,IP_ADDRESS',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">26. Disable Logging</div>
+<div class="command-purpose">Suppress SpiderFoot logging output.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -q</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -q',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">27. Set Max Threads</div>
+<div class="command-purpose">Control the number of concurrent modules.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -max-threads 10</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -max-threads 10',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">28. Run a DNS Module</div>
+<div class="command-purpose">Resolve domain information using a selected DNS module.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -m sfp_dnsresolve</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -m sfp_dnsresolve',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">29. DNS + SSL Modules</div>
+<div class="command-purpose">Combine DNS and SSL collection modules.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -m sfp_dnsresolve,sfp_ssl</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -m sfp_dnsresolve,sfp_ssl',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">30. WHOIS-Oriented Scan</div>
+<div class="command-purpose">Use a WHOIS module when available in your installed version.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -m sfp_whois</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -m sfp_whois',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">31. Web Content Module</div>
+<div class="command-purpose">Use a web-content module for an authorized domain.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -m sfp_webcontent</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -m sfp_webcontent',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">32. Multiple Targets</div>
+<div class="command-purpose">SpiderFoot CLI accepts one target per scan; repeat scans for separate targets.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">33. IP Target</div>
+<div class="command-purpose">Investigate an authorized IP address.</div>
+<div class="code-block"><code>python3 sf.py -s 192.0.2.10 -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s 192.0.2.10 -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">34. Email Target</div>
+<div class="command-purpose">Investigate an email address you are authorized to research.</div>
+<div class="code-block"><code>python3 sf.py -s analyst@example.com -u investigate</code><button class="copy-btn" onclick="copyText('python3 sf.py -s analyst@example.com -u investigate',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">35. Username Target</div>
+<div class="command-purpose">Use an authorized username as an OSINT starting point.</div>
+<div class="code-block"><code>python3 sf.py -s exampleuser -u investigate</code><button class="copy-btn" onclick="copyText('python3 sf.py -s exampleuser -u investigate',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">36. URL Target</div>
+<div class="command-purpose">Use an authorized URL as a target when supported by the selected modules.</div>
+<div class="code-block"><code>python3 sf.py -s https://example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s https://example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">37. List Module Options</div>
+<div class="command-purpose">Use the installed module listing to discover module names and descriptions.</div>
+<div class="code-block"><code>python3 sf.py -M</code><button class="copy-btn" onclick="copyText('python3 sf.py -M',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">38. List Event Types</div>
+<div class="command-purpose">Inspect event names before building a type-focused scan.</div>
+<div class="code-block"><code>python3 sf.py -T</code><button class="copy-btn" onclick="copyText('python3 sf.py -T',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">39. Custom DNS Resolver</div>
+<div class="command-purpose">Override the default DNS resolver in global configuration.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">40. Custom User-Agent</div>
+<div class="command-purpose">Configure the HTTP User-Agent through SpiderFoot configuration.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">41. HTTP Fetch Timeout</div>
+<div class="command-purpose">Adjust HTTP fetch timeout in configuration.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">42. SOCKS/Tor Configuration</div>
+<div class="command-purpose">Configure a supported SOCKS/Tor route in SpiderFoot settings.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">43. Watch Scan Output</div>
+<div class="command-purpose">Run a CLI scan and monitor its output in the terminal.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">44. CSV for Analysis</div>
+<div class="command-purpose">Create CSV output suitable for spreadsheet/data processing.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o csv</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o csv',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">45. JSON for Automation</div>
+<div class="command-purpose">Create machine-readable JSON output for scripts.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o json</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o json',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">46. JSON + Type Filter</div>
+<div class="command-purpose">Combine JSON output with selected event-type display.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o json -F DOMAIN_NAME,IP_ADDRESS</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o json -F DOMAIN_NAME,IP_ADDRESS',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">47. Strict Type Collection</div>
+<div class="command-purpose">Collect only events directly consumable by matching modules.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -t DOMAIN_NAME -x</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -t DOMAIN_NAME -x',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">48. Passive DNS Workflow</div>
+<div class="command-purpose">Start with passive collection before active verification.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">49. Footprint Workflow</div>
+<div class="command-purpose">Use footprint mode for broader authorized reconnaissance.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u footprint</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u footprint',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">50. Investigation Workflow</div>
+<div class="command-purpose">Use investigation mode for a focused OSINT investigation.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u investigate</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u investigate',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">51. Enumerate Modules First</div>
+<div class="command-purpose">Inspect available modules before selecting a custom set.</div>
+<div class="code-block"><code>python3 sf.py -M</code><button class="copy-btn" onclick="copyText('python3 sf.py -M',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">52. Enumerate Event Types First</div>
+<div class="command-purpose">Inspect event types before selecting a custom type list.</div>
+<div class="code-block"><code>python3 sf.py -T</code><button class="copy-btn" onclick="copyText('python3 sf.py -T',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">53. Local Web Server</div>
+<div class="command-purpose">Bind the UI only to localhost for a local lab.</div>
+<div class="code-block"><code>python3 sf.py -l 127.0.0.1:5001</code><button class="copy-btn" onclick="copyText('python3 sf.py -l 127.0.0.1:5001',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">54. LAN Web Server</div>
+<div class="command-purpose">Bind the UI to a lab interface only when remote access is intended.</div>
+<div class="code-block"><code>python3 sf.py -l 192.168.1.50:5001</code><button class="copy-btn" onclick="copyText('python3 sf.py -l 192.168.1.50:5001',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">55. Debug Web Server</div>
+<div class="command-purpose">Combine local UI startup with debug logging.</div>
+<div class="code-block"><code>python3 sf.py -d -l 127.0.0.1:5001</code><button class="copy-btn" onclick="copyText('python3 sf.py -d -l 127.0.0.1:5001',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">56. Scan With Two Modules</div>
+<div class="command-purpose">Run a small controlled module set.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -m sfp_dnsresolve,sfp_ssl</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -m sfp_dnsresolve,sfp_ssl',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">57. Scan By Multiple Types</div>
+<div class="command-purpose">Collect multiple event types in a focused scan.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -t DOMAIN_NAME,IP_ADDRESS,INTERNET_NAME</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -t DOMAIN_NAME,IP_ADDRESS,INTERNET_NAME',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">58. Export Compact CSV</div>
+<div class="command-purpose">Produce CSV without headers for downstream processing.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o csv -H</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o csv -H',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">59. CSV With Source</div>
+<div class="command-purpose">Keep source data alongside discovered elements.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o csv -r</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o csv -r',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">60. Long-Value Inspection</div>
+<div class="command-purpose">Increase the displayed field length for investigation.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -S 2000</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -S 2000',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">61. Quiet Automation</div>
+<div class="command-purpose">Suppress logging when clean output is needed for a pipeline.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o json -q</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o json -q',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">62. Thread Tuning</div>
+<div class="command-purpose">Increase concurrency carefully on a controlled scan.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -max-threads 5</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -max-threads 5',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">63. Correlation by Scan ID</div>
+<div class="command-purpose">Run correlation rules against an existing scan ID.</div>
+<div class="code-block"><code>python3 sf.py -C SCAN_ID</code><button class="copy-btn" onclick="copyText('python3 sf.py -C SCAN_ID',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">64. CLI Scan Template</div>
+<div class="command-purpose">A reusable starting template for authorized domain OSINT.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -u passive -o json</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -u passive -o json',this)">COPY</button></div>
+</div><div class="command">
+<div class="command-title">65. Full Focused Template</div>
+<div class="command-purpose">Combine target, event types, filtering and JSON output.</div>
+<div class="code-block"><code>python3 sf.py -s example.com -t DOMAIN_NAME,IP_ADDRESS -f -o json</code><button class="copy-btn" onclick="copyText('python3 sf.py -s example.com -t DOMAIN_NAME,IP_ADDRESS -f -o json',this)">COPY</button></div>
+</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Recommended OSINT Workflow</div>
+    <h3>1. Start Small</h3>
+    <p>Begin with a passive scan against a domain you control. This helps you understand the event model before enabling a large module set.</p>
+    <h3>2. Inspect Modules</h3>
+    <p>Use <code>-M</code> to see what is actually installed in your version. Module names and availability can change between releases.</p>
+    <h3>3. Choose the Collection Strategy</h3>
+    <p>Use a predefined use case for convenience, or explicitly select modules/event types when you need reproducibility.</p>
+    <h3>4. Export the Data</h3>
+    <p>JSON is convenient for automation; CSV is convenient for spreadsheets and analyst workflows.</p>
+    <h3>5. Validate</h3>
+    <p>Cross-check important domains, IPs, DNS records, usernames and other indicators. A SpiderFoot result is a lead, not automatically a confirmed attribution.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Important CLI Options</div>
+    <div class="table-wrap"><table>
+      <tr><th>Option</th><th>Purpose</th></tr>
+      <tr><td><code>-s TARGET</code></td><td>Target for a scan.</td></tr>
+      <tr><td><code>-u CASE</code></td><td>Automatic module selection: all, footprint, investigate or passive.</td></tr>
+      <tr><td><code>-m MODULES</code></td><td>Explicit comma-separated module selection.</td></tr>
+      <tr><td><code>-t TYPES</code></td><td>Request specific event/data types.</td></tr>
+      <tr><td><code>-x</code></td><td>Strict mode for directly compatible modules/event types.</td></tr>
+      <tr><td><code>-o tab|csv|json</code></td><td>Choose CLI output format.</td></tr>
+      <tr><td><code>-F</code></td><td>Display selected event types.</td></tr>
+      <tr><td><code>-f</code></td><td>Filter output to requested event types.</td></tr>
+      <tr><td><code>-M</code></td><td>List available modules.</td></tr>
+      <tr><td><code>-T</code></td><td>List available event types.</td></tr>
+      <tr><td><code>-d</code></td><td>Enable debugging.</td></tr>
+      <tr><td><code>-max-threads</code></td><td>Set maximum concurrent modules.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>Web UI does not open</h3>
+    <p>Check that the process is listening on the expected address and port. Try a different local port if another service is already using 5001.</p>
+    <h3>Module not found</h3>
+    <p>Run <code>python3 sf.py -M</code> and use the exact module names available in your installation.</p>
+    <h3>Unexpected or empty results</h3>
+    <p>Check the target type, selected modules, API-key requirements and whether the external data source is reachable. Some modules depend on third-party services.</p>
+    <h3>Scan is slow</h3>
+    <p>Reduce the module set or lower concurrency. Large OSINT scans can involve many external requests and data sources.</p>
+    <h3>Permission / dependency errors</h3>
+    <p>Run SpiderFoot from its project directory and verify the Python dependencies with the project's requirements file. Avoid blindly installing packages from untrusted sources.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">SpiderFoot vs Other OSINT Tools</div>
+    <ul>
+      <li><strong>SpiderFoot:</strong> broad automated OSINT orchestration and event correlation.</li>
+      <li><strong>Sherlock:</strong> primarily username/account discovery across many sites.</li>
+      <li><strong>Socialscan:</strong> availability checks for usernames and email addresses.</li>
+      <li><strong>Shodan:</strong> Internet-exposed service and device intelligence.</li>
+      <li><strong>theHarvester:</strong> focused collection of public-facing names, emails, hosts and related information.</li>
+    </ul>
+    <p>A practical workflow can use several tools, but every finding should be validated and the collection scope should remain authorized.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Official Documentation Basis</div>
+    <p>This page's CLI structure is based on the current SpiderFoot source documentation, including target selection, module/event-type selection, use cases, output formats, strict mode, module listing, event-type listing, debug mode and concurrency settings.</p>
+    <div class="code-block"><code>python3 sf.py -h
+python3 sf.py -M
+python3 sf.py -T
+python3 sf.py -s example.com -u passive
+python3 sf.py -s example.com -o json</code><button class="copy-btn" onclick="copyText('python3 sf.py -h\npython3 sf.py -M\npython3 sf.py -T\npython3 sf.py -s example.com -u passive\npython3 sf.py -s example.com -o json',this)">COPY</button></div>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED OSINT ONLY.</strong> Use SpiderFoot only for assets, identities and organizations you own or have explicit permission to investigate.
+      <br><br><strong>Safe Learning:</strong>
+      <br>✅ Your own domains, IPs and accounts
+      <br>✅ Authorized TryHackMe / Hack The Box / VulnHub labs
+      <br>✅ CTFs and controlled security assessments
+      <br>✅ Defensive exposure assessments
+      <br><br><strong>Remember:</strong>
+      <br>❌ Do not use collected personal information for harassment or targeting
+      <br>❌ Do not bypass access controls or rate limits
+      <br>❌ Do not treat OSINT findings as proof without verification
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · SPIDERFOOT // COLLECT. CORRELATE. VALIDATE.</div>
+</div>
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

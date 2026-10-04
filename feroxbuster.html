@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Feroxbuster — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-beginner{background:rgba(0,255,65,.12);color:var(--neon-green);border:1px solid rgba(0,255,65,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command.dangerous{border-color:rgba(255,0,64,.3);background:rgba(255,0,64,.04)}
+.command.dangerous::before{background:linear-gradient(180deg,var(--neon-red),var(--accent));opacity:1}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.danger-badge{font-family:var(--font-mono);font-size:.58rem;padding:3px 10px;border-radius:12px;background:rgba(255,0,64,.15);border:1px solid rgba(255,0,64,.4);color:var(--neon-red);letter-spacing:.5px;animation:dangerBlink 1.5s ease-in-out infinite}
+@keyframes dangerBlink{0%,100%{opacity:1}50%{opacity:.6}}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+// PROTECTED
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">⚡</div>
+      <div class="hero-info">
+        <div class="hero-name">FEROXBUSTER</div>
+        <div class="hero-cat">Web Security · Fast Recursive Content Discovery</div>
+        <div class="hero-badges">
+          <span class="badge badge-beginner">Beginner</span>
+          <span class="badge badge-count">30+ Commands</span>
+          <span class="badge badge-tag">Rust</span>
+          <span class="badge badge-tag">Recursive</span>
+          <span class="badge badge-tag">Fast</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Feroxbuster</strong> is a fast, simple, recursive content discovery tool written in <strong>Rust</strong>. It brute-forces directories and files on web servers to find hidden endpoints, admin panels, backup files, and more. Feroxbuster's killer feature is <strong>automatic recursion</strong> — when it finds a directory, it automatically scans inside it without manual intervention. It's the modern replacement for Dirbuster and Gobuster.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Feroxbuster? (Deep Theory)</div>
+    <p>Web servers often have hidden files and directories not linked anywhere on the site:</p>
+    <ul>
+      <li><code>/admin/</code> — admin panel</li>
+      <li><code>/api/v1/</code> — API endpoints</li>
+      <li><code>/backup.zip</code> — site backup</li>
+      <li><code>/.env</code> — environment variables with secrets</li>
+      <li><code>/config.php.bak</code> — config backup</li>
+      <li><code>/.git/</code> — exposed source repository</li>
+      <li><code>/phpinfo.php</code> — PHP info leak</li>
+    </ul>
+    <p>Feroxbuster brute-forces these paths using wordlists. What makes it different from other tools:</p>
+
+    <h3>Key Differences from Other Tools</h3>
+    <ul>
+      <li><strong>Automatic Recursion</strong> — Finds <code>/admin/</code>, then automatically scans inside it</li>
+      <li><strong>Written in Rust</strong> — Extremely fast, memory-safe</li>
+      <li><strong>Smart Filtering</strong> — Auto-detects and skips wildcard responses</li>
+      <li><strong>Multi-Extension</strong> — Tests multiple file extensions simultaneously</li>
+      <li><strong>Parallel Scanning</strong> — Multiple concurrent requests</li>
+      <li><strong>Clean Output</strong> — Color-coded, easy to read</li>
+      <li><strong>Resume Support</strong> — Save state and continue later</li>
+      <li><strong>Auto-Tuning</strong> — Dynamically adjusts threads based on errors</li>
+    </ul>
+
+    <h3>How Feroxbuster Works Internally</h3>
+    <ol>
+      <li>Loads wordlist(s) and extensions</li>
+      <li>Launches N concurrent requests (default 50)</li>
+      <li>Analyzes response codes and content lengths</li>
+      <li>Skips "wildcard" responses (custom 404s)</li>
+      <li>On finding a directory (200/301/302), queues it for recursion</li>
+      <li>Recursion continues up to N levels (default unlimited)</li>
+      <li>Auto-tunes concurrency based on server responses</li>
+      <li>Reports findings in real-time with color coding</li>
+    </ol>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Why it's fast:</strong> Rust + async I/O + smart filtering. Feroxbuster can do 200+ requests/sec while other tools do 20-30/sec. For a 100,000-word scan, this saves hours.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. Bug Bounty Recon</h3>
+    <p>After finding live subdomains, Feroxbuster discovers hidden endpoints on each host. Often finds admin panels, API versions, and debug routes.</p>
+
+    <h3>2. Penetration Testing</h3>
+    <p>Discover application structure before manual testing. Map every accessible endpoint and file.</p>
+
+    <h3>3. Finding Sensitive Files</h3>
+    <p>Locate <code>.git/</code>, <code>.env</code>, <code>backup.zip</code>, <code>db.sql</code>, <code>config.php.bak</code> — often critical findings.</p>
+
+    <h3>4. API Endpoint Discovery</h3>
+    <p>Find undocumented API versions (<code>/api/v1/</code>, <code>/api/v2/</code>, <code>/api/admin/</code>).</p>
+
+    <h3>5. CTF Challenges</h3>
+    <p>Web CTFs hide flags in directories. Feroxbuster finds them via wordlist + extensions.</p>
+
+    <h3>6. Attack Surface Mapping</h3>
+    <p>Map every accessible path before automated scanning.</p>
+
+    <h3>7. Continuous Monitoring</h3>
+    <p>Run Feroxbuster periodically to detect new endpoints appearing (DevOps mistakes).</p>
+
+    <h3>8. Fuzzing Alternative</h3>
+    <p>When you need a fast brute-force but ffuf is too complex, Feroxbuster's defaults work well.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y feroxbuster</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y feroxbuster',this)">COPY</button></div>
+
+    <h3>Install via Cargo (Rust)</h3>
+    <div class="code-block"><code>cargo install feroxbuster</code><button class="copy-btn" onclick="copyText('cargo install feroxbuster',this)">COPY</button></div>
+
+    <h3>One-Liner Install Script</h3>
+    <div class="code-block"><code>curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash</code><button class="copy-btn" onclick="copyText('curl -sL https://raw.githubusercontent.com/epi052/feroxbuster/main/install-nix.sh | bash',this)">COPY</button></div>
+
+    <h3>From GitHub Releases</h3>
+    <div class="code-block"><code>wget https://github.com/epi052/feroxbuster/releases/latest/download/x86_64-linux-feroxbuster.tar.gz
+tar xzf x86_64-linux-feroxbuster.tar.gz
+sudo mv feroxbuster /usr/local/bin/</code><button class="copy-btn" onclick="copyText('wget https://github.com/epi052/feroxbuster/releases/latest/download/x86_64-linux-feroxbuster.tar.gz && tar xzf x86_64-linux-feroxbuster.tar.gz && sudo mv feroxbuster /usr/local/bin/',this)">COPY</button></div>
+
+    <h3>Verify</h3>
+    <div class="code-block"><code>feroxbuster --version</code><button class="copy-btn" onclick="copyText('feroxbuster --version',this)">COPY</button></div>
+    <div class="command-output">feroxbuster 2.10.4</div>
+
+    <div class="info-box">
+      <div class="info-icon">📚</div>
+      <div class="info-text">
+        <strong>Wordlists:</strong> Install SecLists for best results: <code>sudo apt install seclists</code>. Feroxbuster uses built-in wordlist if none specified.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Basic Scan</div>
+      <div class="command-purpose">Scan a URL with default wordlist — recursion is ON by default!</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com',this)">COPY</button></div>
+      <div class="command-output">200      GET       15l       25w      345c http://target.com/
+200      GET       10l       20w      234c http://target.com/index.html
+301      GET        7l       13w      234c http://target.com/admin => http://target.com/admin/
+200      GET        5l       10w      123c http://target.com/admin/login.php
+200      GET        3l        5w       89c http://target.com/api/v1/users
+403      GET       10l       20w      300c http://target.com/.htaccess</div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Use Custom Wordlist</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Test Specific Extensions</div>
+      <div class="command-purpose">Find files with these extensions.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -x php,html,js,txt,bak,zip</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -x php,html,js,txt,bak,zip',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Limit Recursion Depth</div>
+      <div class="command-purpose">Only scan N levels deep.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -d 3</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -d 3',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Disable Recursion</div>
+      <div class="command-purpose">Only scan top-level, don't recurse into found directories.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -n</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -n',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. Increase Threads</div>
+      <div class="command-purpose">Faster scan but more aggressive.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -t 100</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -t 100',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">7. Scan Multiple URLs</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -u http://target2.com</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -u http://target2.com',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. URLs from File</div>
+      <div class="command-block"><code>feroxbuster --stdin < urls.txt</code><button class="copy-btn" onclick="copyText('feroxbuster --stdin < urls.txt',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Filtering & Response Handling</div>
+
+    <div class="command">
+      <div class="command-title">9. Filter by Status Code</div>
+      <div class="command-purpose">Hide specific status codes.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -C 404,500</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -C 404,500',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Status Codes to Filter (Default)</div>
+      <div class="command-purpose">Default hides 404. Use -C to add more.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com --status-codes 200,301,302,401,403</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --status-codes 200,301,302,401,403',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">11. Filter by Content Length</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -S 1234</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -S 1234',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Filter by Line Count</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -L 5</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -L 5',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. Filter by Word Count</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -W 10</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -W 10',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">14. Filter by Regex (URL)</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com --filter-url "logout"</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --filter-url \"logout\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. Auto-Tune Scanning</div>
+      <div class="command-purpose">Auto-reduce threads on errors (rate limit, timeouts).</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com --auto-tune</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --auto-tune',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Auto-Tune with Interactive Controls</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com --auto-tune --interactive</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --auto-tune --interactive',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">HTTP Configuration</div>
+
+    <div class="command">
+      <div class="command-title">17. Custom User-Agent</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -A "Mozilla/5.0 (X11; Linux x86_64)"</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -A \"Mozilla/5.0 (X11; Linux x86_64)\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Random User-Agent</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com --random-agent</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --random-agent',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">19. Custom Headers</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -H "Authorization: Bearer token123" -H "X-Custom: value"</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -H \"Authorization: Bearer token123\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Cookies</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -b "session=abc123; user=admin"</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -b \"session=abc123; user=admin\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">21. HTTP Basic Auth</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -U admin -P password</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -U admin -P password',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Use Proxy (Burp)</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -p http://127.0.0.1:8080</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -p http://127.0.0.1:8080',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Ignore SSL Errors</div>
+      <div class="command-block"><code>feroxbuster -u https://target.com -k</code><button class="copy-btn" onclick="copyText('feroxbuster -u https://target.com -k',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Timeout Control</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -T 10</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -T 10',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. Delay Between Requests</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com --rate-limit 50</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --rate-limit 50',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Output & Reporting</div>
+
+    <div class="command">
+      <div class="command-title">26. Save Output to File</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -o output.txt</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -o output.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. JSON Output</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com --json -o output.json</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --json -o output.json',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. Quiet Mode</div>
+      <div class="command-purpose">Minimal output — good for piping.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -q</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -q',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">29. Verbose Mode</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -v</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -v',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">30. No Color Output</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com --no-state</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --no-state',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">31. Extract URLs Only</div>
+      <div class="command-purpose">Just print found URLs (one per line).</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -q | grep -oE 'https?://[^ ]+'</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -q | grep -oE \\'https?://[^ ]+\\'',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Advanced Techniques</div>
+
+    <div class="command">
+      <div class="command-title">32. Multiple Wordlists</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -w list1.txt -w list2.txt -w list3.txt</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -w list1.txt -w list2.txt',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">33. Brute Force Extensions</div>
+      <div class="command-purpose">Also discover extensions themselves (e.g., .php vs .php7).</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -x php,php7,php5,phtml</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -x php,php7,php5,phtml',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">34. Match Specific Response</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com --filter-regex "Welcome to nginx"</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --filter-regex \"Welcome to nginx\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">35. Scan with Host Header Injection</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com -H "Host: internal.target.com"</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -H \"Host: internal.target.com\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">36. Scan Behind Auth</div>
+      <div class="command-purpose">Include session cookie for authenticated scan.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -b "PHPSESSID=abc123def456"</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -b \"PHPSESSID=abc123def456\"',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">37. Resume Previous Scan</div>
+      <div class="command-purpose">Continue where you left off.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com --resume-from state.json</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --resume-from state.json',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">38. Save State Automatically</div>
+      <div class="command-block"><code>feroxbuster -u http://target.com --save-state state.json</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --save-state state.json',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">39. Limit Total Requests</div>
+      <div class="command-purpose">Stop after N requests (avoid overload).</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com --limit-bars 5000</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com --limit-bars 5000',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">40. Ignore 403 Forbidden</div>
+      <div class="command-purpose">Some servers return 403 for all paths — filter them.</div>
+      <div class="code-block"><code>feroxbuster -u http://target.com -C 403</code><button class="copy-btn" onclick="copyText('feroxbuster -u http://target.com -C 403',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Complete Workflow — Bug Bounty Recon</div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Enumerate Subdomains</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>subfinder -d target.com -o subs.txt</code><button class="copy-btn" onclick="copyText('subfinder -d target.com -o subs.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Filter Live Hosts</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>cat subs.txt | httpx -silent -o live.txt</code><button class="copy-btn" onclick="copyText('cat subs.txt | httpx -silent -o live.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Run Feroxbuster</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>feroxbuster --stdin < live.txt -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt -x php,html,js,txt,bak,zip -d 4 -t 100 -o ferox-results.txt</code><button class="copy-btn" onclick="copyText('feroxbuster --stdin < live.txt -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt -x php,html,js,txt,bak,zip -d 4 -t 100 -o ferox-results.txt',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Filter Interesting Findings</div>
+        <div class="wf-desc">Look for: /admin, /api, /.git, /.env, /backup, /config</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Save JSON for Tooling</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>feroxbuster --stdin < live.txt --json -o ferox.json</code><button class="copy-btn" onclick="copyText('feroxbuster --stdin < live.txt --json -o ferox.json',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Manual Testing</div>
+        <div class="wf-desc">Open discovered URLs in browser/Burp. Test for IDOR, auth bypass, info leak.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 7: Chain with Other Tools</div>
+        <div class="wf-desc">Feed URLs to Nuclei, XSStrike, SQLmap, or Burp Intruder.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Feroxbuster vs Other Tools — Deep Comparison</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Feroxbuster</th><th>Gobuster</th><th>ffuf</th><th>Dirsearch</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Language</strong></td><td>Rust</td><td>Go</td><td>Go</td><td>Python</td></tr>
+          <tr><td><strong>Speed</strong></td><td>⚡⚡⚡⚡⚡</td><td>⚡⚡⚡⚡</td><td>⚡⚡⚡⚡⚡</td><td>⚡⚡</td></tr>
+          <tr><td><strong>Auto-Recursion</strong></td><td>✅ Default</td><td>❌ Manual</td><td>❌ Manual</td><td>✅ Config</td></tr>
+          <tr><td><strong>Multi-Extension</strong></td><td>✅ Native</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td><strong>Auto-Tune</strong></td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr><td><strong>Resume Scan</strong></td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+          <tr><td><strong>Output JSON</strong></td><td>✅</td><td>❌</td><td>✅</td><td>✅</td></tr>
+          <tr><td><strong>Wildcard Detect</strong></td><td>✅ Auto</td><td>✅</td><td>✅</td><td>✅ Auto</td></tr>
+          <tr><td><strong>Filter by Size</strong></td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+          <tr><td><strong>Extract Links</strong></td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>When to Use Each</h3>
+    <ul>
+      <li><strong>Feroxbuster</strong> — Best default choice. Fast, recursive, smart.</li>
+      <li><strong>Gobuster</strong> — When you need specific modes (DNS, vhost).</li>
+      <li><strong>ffuf</strong> — When you need maximum flexibility (custom fuzzing).</li>
+      <li><strong>Dirsearch</strong> — When you prefer Python and want GUI-like output.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Flags Reference</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>-u</code></td><td>Target URL</td></tr>
+          <tr><td><code>-w</code></td><td>Wordlist</td></tr>
+          <tr><td><code>-x</code></td><td>Extensions to test</td></tr>
+          <tr><td><code>-d</code></td><td>Recursion depth</td></tr>
+          <tr><td><code>-n</code></td><td>No recursion</td></tr>
+          <tr><td><code>-t</code></td><td>Threads (default 50)</td></tr>
+          <tr><td><code>-T</code></td><td>Timeout (seconds)</td></tr>
+          <tr><td><code>-o</code></td><td>Output file</td></tr>
+          <tr><td><code>-q</code></td><td>Quiet mode</td></tr>
+          <tr><td><code>-v</code></td><td>Verbose</td></tr>
+          <tr><td><code>-k</code></td><td>Ignore SSL errors</td></tr>
+          <tr><td><code>-A</code></td><td>User-Agent</td></tr>
+          <tr><td><code>-H</code></td><td>Custom header</td></tr>
+          <tr><td><code>-b</code></td><td>Cookie</td></tr>
+          <tr><td><code>-U</code></td><td>HTTP basic auth user</td></tr>
+          <tr><td><code>-P</code></td><td>HTTP basic auth password</td></tr>
+          <tr><td><code>-p</code></td><td>Proxy URL</td></tr>
+          <tr><td><code>-C</code></td><td>Status codes to filter</td></tr>
+          <tr><td><code>-S</code></td><td>Content length to filter</td></tr>
+          <tr><td><code>-L</code></td><td>Line count to filter</td></tr>
+          <tr><td><code>-W</code></td><td>Word count to filter</td></tr>
+          <tr><td><code>-X</code></td><td>HTTP method (GET/POST)</td></tr>
+          <tr><td><code>--auto-tune</code></td><td>Auto-adjust threads</td></tr>
+          <tr><td><code>--interactive</code></td><td>Interactive commands (keys)</td></tr>
+          <tr><td><code>--json</code></td><td>JSON output</td></tr>
+          <tr><td><code>--stdin</code></td><td>Read URLs from stdin</td></tr>
+          <tr><td><code>--save-state</code></td><td>Save scan state</td></tr>
+          <tr><td><code>--resume-from</code></td><td>Resume from state file</td></tr>
+          <tr><td><code>--rate-limit</code></td><td>Max requests/sec</td></tr>
+          <tr><td><code>--random-agent</code></td><td>Random User-Agent</td></tr>
+          <tr><td><code>--no-state</code></td><td>Disable state saving</td></tr>
+          <tr><td><code>--filter-regex</code></td><td>Filter by regex</td></tr>
+          <tr><td><code>--filter-url</code></td><td>Filter by URL substring</td></tr>
+          <tr><td><code>--status-codes</code></td><td>Allowed status codes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Interactive Controls</div>
+    <p>Feroxbuster supports keyboard shortcuts while scanning (<code>--interactive</code>):</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Key</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><code>[ENTER]</code></td><td>Show current stats</td></tr>
+          <tr><td><code>[s]</code></td><td>Pause/Resume scan</td></tr>
+          <tr><td><code>[f]</code></td><td>Add filter (interactive)</td></tr>
+          <tr><td><code>[+]</code></td><td>Increase threads</td></tr>
+          <tr><td><code>[-]</code></td><td>Decrease threads</td></tr>
+          <tr><td><code>[q]</code></td><td>Quit scan</td></tr>
+          <tr><td><code>[h]</code></td><td>Show help</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"Too many 200 responses with same length"</h3>
+    <ul>
+      <li>Wildcard response — server returns 200 for any path</li>
+      <li>Feroxbuster auto-detects and skips by default</li>
+      <li>Manually filter: <code>-S 1234</code> (response length)</li>
+      <li>Use <code>--filter-regex "Not Found"</code></li>
+    </ul>
+
+    <h3>"Scan is very slow"</h3>
+    <ul>
+      <li>Increase threads: <code>-t 200</code></li>
+      <li>Reduce extensions: <code>-x php</code></li>
+      <li>Use smaller wordlist</li>
+      <li>Reduce recursion depth: <code>-d 2</code></li>
+      <li>Disable recursion: <code>-n</code></li>
+    </ul>
+
+    <h3>"Rate limited / 429 responses"</h3>
+    <ul>
+      <li>Reduce threads: <code>-t 10</code></li>
+      <li>Add rate limit: <code>--rate-limit 20</code></li>
+      <li>Use <code>--auto-tune</code></li>
+      <li>Use proxy rotation</li>
+    </ul>
+
+    <h3>"WAF blocking requests"</h3>
+    <ul>
+      <li>Reduce threads: <code>-t 5</code></li>
+      <li>Random User-Agent: <code>--random-agent</code></li>
+      <li>Slower rate: <code>--rate-limit 10</code></li>
+      <li>Try HTTP/1.1 explicitly</li>
+    </ul>
+
+    <h3>"Recursion never stops"</h3>
+    <ul>
+      <li>Site has infinite recursive paths — set depth: <code>-d 3</code></li>
+      <li>Add filter for common patterns</li>
+      <li>Use <code>-C 404,500</code> to skip dead ends</li>
+    </ul>
+
+    <h3>"SSL certificate errors"</h3>
+    <ul>
+      <li>Use <code>-k</code> to ignore SSL errors</li>
+      <li>Update system CA certificates</li>
+      <li>Check target's SSL config</li>
+    </ul>
+
+    <h3>"Command not found"</h3>
+    <ul>
+      <li>Install: <code>sudo apt install feroxbuster</code></li>
+      <li>Or <code>cargo install feroxbuster</code></li>
+      <li>Check PATH: <code>which feroxbuster</code></li>
+    </ul>
+
+    <h3>"Memory usage is high"</h3>
+    <ul>
+      <li>Reduce threads</li>
+      <li>Use smaller wordlist</li>
+      <li>Limit recursion depth</li>
+      <li>Disable state saving: <code>--no-state</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Pro Tips</div>
+    <ul>
+      <li><strong>Chain with httpx:</strong> <code>cat live.txt | feroxbuster --stdin -w list.txt</code></li>
+      <li><strong>Pipe to grep:</strong> <code>feroxbuster -q | grep -i admin</code></li>
+      <li><strong>Extract URLs:</strong> <code>feroxbuster --json | jq -r '.url' | sort -u</code></li>
+      <li><strong>Auto-tune always:</strong> Add <code>--auto-tune</code> to every scan</li>
+      <li><strong>Save state for big scans:</strong> <code>--save-state scan.json</code></li>
+      <li><strong>Use Burp proxy:</strong> <code>-p http://127.0.0.1:8080</code> for manual analysis</li>
+      <li><strong>Combine wordlists:</strong> <code>cat list1.txt list2.txt > combined.txt</code></li>
+      <li><strong>Add extensions based on tech:</strong> PHP app? <code>-x php,php7,phtml,inc</code></li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Feroxbuster brute-forces web paths — thousands of requests per minute to a web server. This is <strong>illegal</strong> against systems you don't own. Only use:
+      <br>• On your own websites and applications
+      <br>• In authorized penetration tests (signed contract)
+      <br>• In bug bounty programs (within defined scope)
+      <br>• For learning on CTF platforms
+      <br>
+      <br>Unauthorized web scanning may violate the CFAA (US), Computer Misuse Act (UK), IT Act (India), and similar laws worldwide. Even a single non-authorized request can be a crime. Always get written authorization before scanning external systems.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>

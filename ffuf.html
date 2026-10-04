@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FFUF Fuzz — SAINICOMMANDHUB</title>
+<style>
+:root{
+  --bg:#030712;
+  --bg2:#07111f;
+  --panel:#081522;
+  --panel2:#0b1b2b;
+  --line:#16364c;
+  --line2:#1d526d;
+  --text:#e7f7ff;
+  --muted:#7f9daf;
+  --cyan:#00e5ff;
+  --cyan2:#19ffb4;
+  --blue:#3d8bff;
+  --pink:#ff3da8;
+  --danger:#ff5577;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;
+ background:
+ radial-gradient(circle at 15% 0%,#06364d55,transparent 28%),
+ radial-gradient(circle at 90% 10%,#152b6650,transparent 30%),
+ var(--bg);
+ color:var(--text);
+ font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+ overflow-x:hidden;
+}
+body:before{
+ content:"";
+ position:fixed;inset:0;pointer-events:none;z-index:-1;
+ background-image:
+ linear-gradient(#ffffff06 1px,transparent 1px),
+ linear-gradient(90deg,#ffffff06 1px,transparent 1px);
+ background-size:38px 38px;
+ mask-image:linear-gradient(to bottom,#000,transparent 85%);
+}
+body:after{
+ content:"";
+ position:fixed;top:0;left:0;right:0;height:2px;
+ background:linear-gradient(90deg,transparent,var(--cyan),var(--cyan2),transparent);
+ box-shadow:0 0 20px var(--cyan);
+ z-index:100;
+}
+nav{
+ position:sticky;top:0;z-index:20;
+ background:rgba(3,7,18,.78);
+ backdrop-filter:blur(18px);
+ border-bottom:1px solid var(--line);
+ padding:13px 5%;
+ display:flex;align-items:center;justify-content:space-between;
+}
+.logo{
+ font-weight:950;letter-spacing:2.5px;color:var(--cyan);
+ text-shadow:0 0 15px #00e5ff66;
+ font-family:"JetBrains Mono",monospace;
+}
+nav a{
+ color:#ccefff;text-decoration:none;
+ border:1px solid var(--line2);
+ background:#071522;
+ padding:9px 15px;border-radius:8px;
+ transition:.2s;
+}
+nav a:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 18px #00e5ff22}
+.hero{
+ position:relative;
+ padding:70px 6% 58px;
+ text-align:center;
+ border-bottom:1px solid #102c3e;
+}
+.hero:before{
+ content:"";
+ position:absolute;left:50%;top:35px;
+ width:360px;height:180px;
+ transform:translateX(-50%);
+ background:radial-gradient(ellipse,#00e5ff18,transparent 68%);
+ pointer-events:none;
+}
+.hero .icon{
+ display:inline-flex;
+ width:92px;height:92px;
+ align-items:center;justify-content:center;
+ font-size:52px;
+ border:1px solid #1a7187;
+ border-radius:24px;
+ background:linear-gradient(145deg,#071d2a,#06101b);
+ box-shadow:0 0 45px #00e5ff22,inset 0 0 25px #00e5ff0c;
+ position:relative;
+}
+h1{
+ font-family:"JetBrains Mono",monospace;
+ font-size:clamp(40px,7vw,78px);
+ letter-spacing:-3px;
+ margin:20px 0 12px;
+ background:linear-gradient(90deg,var(--cyan),#dffcff,var(--cyan2));
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+ text-shadow:0 0 35px #00e5ff18;
+}
+.hero p{max-width:850px;margin:auto;color:var(--muted);font-size:17px;line-height:1.8}
+.badges{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:28px 0 0}
+.badge{
+ padding:7px 12px;
+ border:1px solid #1a5269;
+ border-radius:6px;
+ color:#91eaff;
+ background:#071923;
+ font-family:"JetBrains Mono",monospace;
+ font-size:11px;
+ letter-spacing:.5px;
+}
+.container{width:min(1240px,92%);margin:auto}
+section{margin:42px 0}
+h2{
+ display:flex;align-items:center;gap:12px;
+ font-size:25px;
+ color:#dffbff;
+ padding:0 0 12px;
+ border:0;border-bottom:1px solid var(--line);
+ margin-bottom:18px;
+}
+h2:before{
+ content:"";
+ width:8px;height:28px;
+ background:linear-gradient(var(--cyan),var(--cyan2));
+ box-shadow:0 0 15px #00e5ff66;
+ border-radius:2px;
+}
+.info{
+ background:linear-gradient(145deg,#081622,#06101a);
+ border:1px solid var(--line);
+ border-radius:13px;
+ padding:22px;
+ line-height:1.8;
+ color:#a9c0ce;
+ box-shadow:0 15px 45px #0004;
+}
+.info b{color:#dffbff}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+ gap:14px;
+}
+.cmd-card{
+ position:relative;
+ background:linear-gradient(145deg,rgba(10,27,42,.95),rgba(5,13,22,.98));
+ border:1px solid var(--line);
+ border-radius:12px;
+ padding:17px;
+ box-shadow:0 12px 30px #0005;
+ overflow:hidden;
+ transition:.2s ease;
+}
+.cmd-card:before{
+ content:"";
+ position:absolute;top:0;left:0;width:100%;height:2px;
+ background:linear-gradient(90deg,transparent,var(--line2),transparent);
+}
+.cmd-card:hover{
+ transform:translateY(-4px);
+ border-color:#26728d;
+ box-shadow:0 15px 35px #0008,0 0 25px #00e5ff0c;
+}
+.cmd-top{display:flex;gap:10px;align-items:center}
+.cmd-top h3{margin:0;font-size:15px;font-weight:750}
+.num{
+ color:var(--cyan2);
+ font-family:"JetBrains Mono",monospace;
+ font-size:11px;
+ background:#06231f;
+ border:1px solid #145b4b;
+ border-radius:5px;
+ padding:4px 6px;
+}
+pre{
+ position:relative;margin:14px 0;
+ background:#02060b;
+ border:1px solid #112c3d;
+ border-radius:8px;
+ padding:15px 52px 15px 15px;
+ overflow:auto;
+ color:#bffaff;
+ white-space:pre-wrap;
+ word-break:break-word;
+}
+pre code{
+ font-family:"JetBrains Mono","Fira Code",monospace;
+ font-size:12.5px;
+ line-height:1.55;
+ display:block;
+}
+button.copy{
+ position:absolute;right:7px;top:7px;
+ background:#071923;
+ color:var(--cyan);
+ border:1px solid #1b596b;
+ border-radius:5px;
+ padding:5px 8px;
+ cursor:pointer;
+ font-size:10px;
+ font-family:"JetBrains Mono",monospace;
+ transition:.15s;
+}
+button.copy:hover{background:#0a2936;border-color:var(--cyan);box-shadow:0 0 12px #00e5ff22}
+.cmd-card p{color:#708b9b;line-height:1.55;margin:0;font-size:13px}
+.warning{
+ border-color:#684b20;
+ background:linear-gradient(145deg,#1b1408,#100d08);
+}
+footer{
+ text-align:center;
+ border-top:1px solid var(--line);
+ padding:35px;
+ color:#587180;
+ margin-top:70px;
+ font-family:"JetBrains Mono",monospace;
+ font-size:12px;
+}
+@media(max-width:600px){
+ .grid{grid-template-columns:1fr}
+ nav{padding:12px 4%}
+ .hero{padding-top:45px}
+ h1{letter-spacing:-2px}
+ .container{width:94%}
+}
+</style>
+</head>
+<body>
+<nav><div class="logo">SAINICOMMANDHUB</div><a href="dashboard.html">← Dashboard</a></nav>
+
+<header class="hero">
+<div class="icon">⚡</div>
+<h1>FFUF // WEB FUZZER</h1>
+<p>Fast web fuzzing reference for authorized labs and systems you own or have permission to test. Discover hidden paths, virtual hosts, parameters and other web resources efficiently.</p>
+<div class="badges">
+<span class="badge">WEB FUZZING</span>
+<span class="badge">DIRECTORY ENUMERATION</span>
+<span class="badge">VHOST DISCOVERY</span>
+<span class="badge">PARAMETER FUZZING</span>
+</div>
+</header>
+
+<main class="container">
+
+<section><h2>What is FFUF?</h2><div class="info">
+<b>FFUF (Fuzz Faster U Fool)</b> is a fast web fuzzer used to automate HTTP request testing with a wordlist. The <b>FUZZ</b> keyword marks the location where each wordlist entry is inserted. FFUF can be used in authorized security testing to enumerate directories, files, virtual hosts, parameters and API endpoints.
+</div></section>
+
+<section><h2>Core FFUF Workflow</h2><div class="info">
+<b>1.</b> Identify the target → <b>2.</b> Choose a suitable wordlist → <b>3.</b> Place <b>FUZZ</b> in the request → <b>4.</b> Run the fuzzing scan → <b>5.</b> Filter noisy responses → <b>6.</b> Inspect interesting results → <b>7.</b> Validate findings manually → <b>8.</b> Document the authorized assessment.
+</div></section>
+
+<section><h2>FFUF Command Reference</h2><div class="grid">
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">01</span><h3>01 — Basic directory fuzzing</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Fuzz URL paths using entries from a wordlist.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">02</span><h3>02 — HTTPS target</h3></div>
+<pre><code>ffuf -u https://TARGET/FUZZ -w wordlist.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Run path fuzzing against an HTTPS application.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">03</span><h3>03 — Common directory wordlist</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w /usr/share/wordlists/dirb/common.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Use a common directory enumeration wordlist.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">04</span><h3>04 — File extension fuzzing</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -e .php,.html,.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Test each word with multiple file extensions.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">05</span><h3>05 — Recursive enumeration</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -recursion</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Enable recursive discovery where supported by the scan.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">06</span><h3>06 — Set recursion depth</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -recursion -recursion-depth 2</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Limit recursive enumeration depth.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">07</span><h3>07 — Filter status codes</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -fc 404</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Hide responses with a selected HTTP status code.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">08</span><h3>08 — Match status codes</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -mc 200,204,301,302,307,401,403</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Display responses matching selected status codes.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">09</span><h3>09 — Filter response size</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -fs 1234</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Filter responses having a specific response size.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">10</span><h3>10 — Match response size</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -ms 5678</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Show only responses with the selected size.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">11</span><h3>11 — Filter word count</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -fw 42</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Filter responses containing a selected number of words.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">12</span><h3>12 — Match word count</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -mw 100</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Show responses containing the specified number of words.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">13</span><h3>13 — Filter line count</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -fl 20</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Filter responses by line count.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">14</span><h3>14 — Match line count</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -ml 50</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Display responses matching a selected line count.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">15</span><h3>15 — Filter by regex</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -fr "Access Denied"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Filter responses matching a regular expression.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">16</span><h3>16 — Match by regex</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -mr "admin"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Show responses matching a regular expression.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">17</span><h3>17 — Add custom header</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -H "X-Test: fuzz"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Send an additional HTTP header with each request.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">18</span><h3>18 — Custom User-Agent</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -H "User-Agent: FFUF-Lab"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Set a custom User-Agent for authorized testing.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">19</span><h3>19 — Cookie fuzzing</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -b "session=VALUE"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Include an authorized session cookie in requests.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">20</span><h3>20 — POST body fuzzing</h3></div>
+<pre><code>ffuf -u http://TARGET/login -w values.txt -X POST -d "username=FUZZ&amp;password=test"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Fuzz a value inside an HTTP POST body in a lab.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">21</span><h3>21 — JSON body fuzzing</h3></div>
+<pre><code>ffuf -u http://TARGET/api -w values.txt -X POST -H "Content-Type: application/json" -d '{"name":"FUZZ"}'</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Place FUZZ inside an authorized JSON API request.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">22</span><h3>22 — Parameter fuzzing</h3></div>
+<pre><code>ffuf -u "http://TARGET/page?FUZZ=test" -w params.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Discover parameter names using a parameter wordlist.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">23</span><h3>23 — Parameter value fuzzing</h3></div>
+<pre><code>ffuf -u "http://TARGET/page?id=FUZZ" -w values.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Fuzz the value of an existing parameter.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">24</span><h3>24 — Multiple FUZZ keywords</h3></div>
+<pre><code>ffuf -u "http://TARGET/FUZZ?item=FUZZ" -w wordlist.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Use the FUZZ keyword in multiple locations.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">25</span><h3>25 — Virtual host discovery</h3></div>
+<pre><code>ffuf -u http://TARGET/ -H "Host: FUZZ.TARGET" -w subdomains.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Test virtual host names in an authorized environment.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">26</span><h3>26 — Host header fuzzing</h3></div>
+<pre><code>ffuf -u http://TARGET/ -H "Host: FUZZ" -w hosts.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Fuzz the HTTP Host header.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">27</span><h3>27 — Subdomain fuzzing</h3></div>
+<pre><code>ffuf -u https://FUZZ.example.test -w subdomains.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Enumerate subdomains for a domain you are authorized to assess.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">28</span><h3>28 — Proxy traffic</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -x http://127.0.0.1:8080</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Send requests through an HTTP proxy such as a local lab proxy.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">29</span><h3>29 — Rate limit requests</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -rate 50</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Limit request rate to reduce load on the target.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">30</span><h3>30 — Threads</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -t 20</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Set the number of concurrent threads.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">31</span><h3>31 — Timeout</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -timeout 10</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Set the request timeout in seconds.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">32</span><h3>32 — Follow redirects</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -r</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Follow HTTP redirects while processing responses.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">33</span><h3>33 — Ignore wordlist comments</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Use a standard newline-separated wordlist as the fuzzing source.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">34</span><h3>34 — Silent output</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -s</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Reduce console output for cleaner results.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">35</span><h3>35 — Color output</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -c</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Enable colored terminal output when supported.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">36</span><h3>36 — Output to file</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -o results.json</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Save scan results to an output file.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">37</span><h3>37 — JSON output</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -of json -o results.json</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Export results in JSON format for later processing.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">38</span><h3>38 — CSV output</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -of csv -o results.csv</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Export findings in CSV format.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">39</span><h3>39 — HTML output</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -of html -o results.html</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Generate an HTML report of the scan results.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">40</span><h3>40 — Replay through proxy</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -replay-proxy http://127.0.0.1:8080</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Replay interesting matching requests through a proxy.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">41</span><h3>41 — Ignore TLS certificate errors</h3></div>
+<pre><code>ffuf -u https://TARGET/FUZZ -w wordlist.txt -k</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Allow testing against lab systems with untrusted TLS certificates.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">42</span><h3>42 — Use raw request</h3></div>
+<pre><code>ffuf -request request.txt -request-proto http -w wordlist.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Use a saved HTTP request as the fuzzing template.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">43</span><h3>43 — Request method</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -X PUT</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Use a custom HTTP method in an authorized API test.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">44</span><h3>44 — HTTP headers file</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -H "Accept: application/json"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Specify an Accept header for API-oriented fuzzing.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">45</span><h3>45 — Match all common success codes</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -mc all -fc 404</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Start broad and remove the common 404 baseline.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">46</span><h3>46 — Filter baseline size</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -fs 4242</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Useful when nonexistent paths return a consistent response size.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">47</span><h3>47 — Filter multiple status codes</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -fc 404,400</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Exclude multiple unwanted response codes.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">48</span><h3>48 — Match redirect responses</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -mc 301,302,307,308</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Focus on redirect responses during enumeration.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">49</span><h3>49 — Match forbidden resources</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -mc 403</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Identify paths returning HTTP 403.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">50</span><h3>50 — Match authentication responses</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w wordlist.txt -mc 401</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Find resources that require authentication.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">51</span><h3>51 — API endpoint fuzzing</h3></div>
+<pre><code>ffuf -u http://TARGET/api/FUZZ -w api-wordlist.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Enumerate API route names.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">52</span><h3>52 — API version fuzzing</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ/users -w versions.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Test authorized API version paths.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">53</span><h3>53 — Extension-focused scan</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -e .bak,.old,.zip</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Look for known file-extension variants in a lab.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">54</span><h3>54 — Directory trailing slash</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ/ -w directories.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Fuzz directory-style paths ending with a slash.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">55</span><h3>55 — Custom Host header</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -H "Host: app.example.test"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Test a known virtual host while fuzzing paths.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">56</span><h3>56 — Wordlist from stdin</h3></div>
+<pre><code>cat words.txt | ffuf -u http://TARGET/FUZZ -w -</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Provide wordlist entries through standard input.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">57</span><h3>57 — Show help</h3></div>
+<pre><code>ffuf -h</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Display available FFUF options and usage information.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">58</span><h3>58 — Version information</h3></div>
+<pre><code>ffuf -V</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Display the installed FFUF version.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">59</span><h3>59 — Encoded URL testing</h3></div>
+<pre><code>ffuf -u "http://TARGET/page?value=FUZZ" -w values.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Test URL parameter values using a controlled wordlist.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">60</span><h3>60 — Headers and path together</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -H "X-Lab: true"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Combine path fuzzing with an additional request header.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">61</span><h3>61 — POST parameter discovery</h3></div>
+<pre><code>ffuf -u http://TARGET/search -w params.txt -X POST -d "FUZZ=test"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Fuzz parameter names in a POST body.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">62</span><h3>62 — Cookie value testing</h3></div>
+<pre><code>ffuf -u http://TARGET/ -w values.txt -b "role=FUZZ"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Test cookie values in an authorized application.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">63</span><h3>63 — Filter by response words</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -fw 10</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Remove responses sharing the same word-count baseline.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">64</span><h3>64 — Filter by response lines</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -fl 15</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Remove responses sharing a common line-count baseline.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">65</span><h3>65 — Filter by response regex</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -fr "Not Found"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Suppress responses containing a known baseline phrase.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">66</span><h3>66 — Match content keyword</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -mr "Dashboard"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Highlight responses containing a useful keyword.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">67</span><h3>67 — Save HTML report</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -of html -o ffuf-report.html</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Create a human-readable HTML report.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">68</span><h3>68 — Save JSON report</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -of json -o ffuf-report.json</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Create structured JSON output for automation.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">69</span><h3>69 — Controlled slow scan</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -rate 10</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Use a low request rate for controlled lab testing.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">70</span><h3>70 — Concurrent lab scan</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -t 40</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Increase concurrency when the authorized lab can handle it.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">71</span><h3>71 — Follow redirects with filtering</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -r -fc 404</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Follow redirects while excluding common 404 responses.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">72</span><h3>72 — HTTPS with custom Host</h3></div>
+<pre><code>ffuf -u https://TARGET/FUZZ -w words.txt -H "Host: app.example.test"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Combine HTTPS path testing with a controlled Host header.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">73</span><h3>73 — API JSON header</h3></div>
+<pre><code>ffuf -u http://TARGET/api/FUZZ -w api.txt -H "Accept: application/json"</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Request JSON responses while fuzzing API paths.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">74</span><h3>74 — Combined status and size filtering</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -mc 200,301,302 -fs 4242</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Keep selected status codes while removing a known baseline size.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">75</span><h3>75 — Combined IP lab target template</h3></div>
+<pre><code>ffuf -u http://192.0.2.10/FUZZ -w words.txt -mc 200,301,302,403</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Example using a documentation-only IP range as a safe template.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">76</span><h3>76 — Extension + status filter</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -e .php,.txt,.html -fc 404</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Combine extension expansion with 404 filtering.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">77</span><h3>77 — Proxy + replay workflow</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -x http://127.0.0.1:8080 -replay-proxy http://127.0.0.1:8080</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Use a local proxy for inspection and replay of selected requests.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">78</span><h3>78 — Raw request template</h3></div>
+<pre><code>ffuf -request raw-request.txt -w words.txt</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Fuzz a request captured from an authorized test application.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">79</span><h3>79 — Clean scan output</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w words.txt -s -of json -o results.json</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>Keep terminal output quiet while writing structured results.</p></article>
+
+<article class="cmd-card"><div class="cmd-top"><span class="num">80</span><h3>80 — Full practical enumeration</h3></div>
+<pre><code>ffuf -u http://TARGET/FUZZ -w /path/to/wordlist.txt -e .php,.html,.txt -mc 200,204,301,302,307,401,403 -fc 404 -o ffuf-results.json -of json</code><button class="copy" onclick="copyCmd(this)">COPY</button></pre><p>A practical authorized web-enumeration template combining extensions, status matching, 404 filtering and JSON reporting.</p></article>
+
+</div></section>
+
+<section><h2>Important FFUF Patterns</h2><div class="info">
+<pre><code>http://TARGET/FUZZ
+https://TARGET/FUZZ
+http://TARGET/FUZZ/
+http://TARGET/FUZZ.php
+http://TARGET/page?FUZZ=test
+http://TARGET/page?id=FUZZ
+http://TARGET/api/FUZZ
+https://FUZZ.example.test
+Host: FUZZ.example.test
+POST body: username=FUZZ&amp;password=test
+JSON body: {"name":"FUZZ"}</code></pre>
+</div></section>
+
+<section><h2>Filtering Strategy</h2><div class="info">
+A useful FFUF workflow is to first establish the application's normal “not found” response, then remove that baseline using <b>-fc</b>, <b>-fs</b>, <b>-fw</b>, <b>-fl</b> or <b>-fr</b>. After filtering noise, manually validate interesting status codes, response sizes, titles and content before documenting a finding.
+</div></section>
+
+<section><h2>Authorized Use</h2><div class="info warning">
+Use FFUF only against systems, applications, domains and APIs where you have explicit permission to test. High-rate fuzzing can generate substantial traffic and may affect availability or trigger security controls. Prefer controlled request rates, appropriate wordlists and clearly defined lab/test environments. Do not use discovered credentials, tokens or private data outside the authorized scope.
+</div></section>
+
+</main>
+<footer>SAINICOMMANDHUB • FFUF WEB FUZZER • ENUMERATE. ANALYZE. SECURE.</footer>
+
+<script>
+function copyCmd(btn){
+ const code=btn.parentElement.querySelector('code').innerText;
+ navigator.clipboard.writeText(code).then(()=>{
+   const old=btn.innerText;
+   btn.innerText='COPIED';
+   setTimeout(()=>btn.innerText=old,900)
+ })
+}
+</script>
+</body>
+</html>

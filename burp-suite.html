@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Burp Suite — Complete Guide | SAINICOMMANDHUB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#b800ff;--secondary:#00e5ff;--accent:#ff0080;--neon-green:#00ff41;--neon-red:#ff0040;--neon-yellow:#ffbd2e;--bg:#08050d;--bg-card:rgba(15,8,30,.5);--text-primary:#e0e0e0;--text-secondary:#9b8fb8;--text-dim:#5d5377;--font-mono:'JetBrains Mono',monospace;--font-display:'Orbitron',sans-serif;--font-body:'Inter',sans-serif;--pad:clamp(14px,3vw,32px)}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);min-height:100vh;line-height:1.7;padding:80px var(--pad) 40px;overflow-x:hidden;position:relative}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:4px}
+::selection{background:rgba(184,0,255,.3);color:#fff}
+a{text-decoration:none;color:inherit}
+.cyber-grid{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(184,0,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.03) 1px,transparent 1px);background-size:60px 60px;animation:gridMove 20s linear infinite}
+@keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(60px)}}
+.scanline{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent);opacity:.15;z-index:1;pointer-events:none;animation:scanDown 8s linear infinite;filter:blur(1px)}
+@keyframes scanDown{0%{top:-10px}100%{top:100vh}}
+#matrix{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+.navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;padding:14px var(--pad);display:flex;align-items:center;justify-content:space-between;background:rgba(8,5,13,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(184,0,255,.15);gap:12px}
+.nav-back{font-family:var(--font-mono);font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--secondary);display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border:1px solid rgba(0,229,255,.4);border-radius:6px;transition:all .3s;background:rgba(0,229,255,.06);cursor:pointer}
+.nav-back:hover{background:rgba(0,229,255,.15);box-shadow:0 0 20px rgba(0,229,255,.3);transform:translateX(-3px)}
+.nav-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:clamp(.75rem,1.8vw,.95rem);font-weight:700;color:var(--secondary);letter-spacing:1.5px}
+.nav-brand-icon{width:30px;height:30px;border:2px solid var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;animation:brandPulse 3s ease-in-out infinite}
+@keyframes brandPulse{0%,100%{box-shadow:0 0 5px rgba(184,0,255,.4)}50%{box-shadow:0 0 20px rgba(184,0,255,.8)}}
+.container{max-width:1100px;margin:0 auto;position:relative;z-index:5;animation:fadeIn .6s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.hero{background:linear-gradient(135deg,rgba(184,0,255,.1),rgba(0,229,255,.1));border:1px solid rgba(184,0,255,.3);border-radius:18px;padding:clamp(28px,5vw,50px);margin-bottom:28px;position:relative;overflow:hidden;backdrop-filter:blur(10px)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--primary),var(--secondary),transparent)}
+.hero-top{display:flex;align-items:center;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+.hero-icon{width:100px;height:100px;border-radius:22px;background:rgba(184,0,255,.15);border:2px solid rgba(184,0,255,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;flex-shrink:0;animation:iconPulse 3s ease-in-out infinite}
+@keyframes iconPulse{0%,100%{box-shadow:0 0 20px rgba(184,0,255,.4)}50%{box-shadow:0 0 50px rgba(184,0,255,.8)}}
+.hero-info{flex:1;min-width:220px}
+.hero-name{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:900;letter-spacing:3px;margin-bottom:8px;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-cat{font-family:var(--font-mono);font-size:.8rem;color:var(--secondary);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.hero-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{padding:5px 14px;border-radius:20px;font-family:var(--font-mono);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.badge-intermediate{background:rgba(255,189,46,.12);color:#ffbd2e;border:1px solid rgba(255,189,46,.3)}
+.badge-count{background:rgba(184,0,255,.12);color:var(--primary);border:1px solid rgba(184,0,255,.3)}
+.badge-tag{background:rgba(0,229,255,.1);color:var(--secondary);border:1px solid rgba(0,229,255,.3)}
+.section{background:var(--bg-card);border:1px solid rgba(184,0,255,.15);border-radius:14px;padding:clamp(20px,3.5vw,32px);margin-bottom:22px;backdrop-filter:blur(10px)}
+.section-title{font-family:var(--font-display);font-size:clamp(1rem,2.2vw,1.2rem);font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(184,0,255,.15)}
+.section-title::before{content:'';width:4px;height:24px;background:linear-gradient(180deg,var(--primary),var(--secondary));border-radius:2px}
+.section p{color:var(--text-secondary);font-size:.92rem;line-height:1.85;margin-bottom:14px}
+.section p:last-child{margin-bottom:0}
+.section ul,.section ol{color:var(--text-secondary);font-size:.9rem;line-height:1.85;padding-left:22px;margin-bottom:14px}
+.section li{margin-bottom:8px}
+.section li strong{color:var(--secondary)}
+.section h3{font-family:var(--font-display);font-size:.95rem;color:var(--neon-green);letter-spacing:1.2px;text-transform:uppercase;margin:20px 0 12px}
+.section h3:first-child{margin-top:0}
+.code-block{position:relative;background:rgba(0,0,0,.55);border:1px solid rgba(184,0,255,.25);border-left:3px solid var(--primary);border-radius:8px;padding:14px 16px;font-family:var(--font-mono);font-size:.82rem;color:var(--neon-green);overflow-x:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.code-block code{flex:1;white-space:pre-wrap;word-break:break-all;color:var(--neon-green);line-height:1.6}
+.copy-btn{background:transparent;border:1px solid rgba(0,229,255,.4);color:var(--secondary);font-family:var(--font-mono);font-size:.65rem;padding:5px 12px;border-radius:5px;cursor:pointer;letter-spacing:.5px;transition:all .3s;flex-shrink:0;font-weight:600}
+.copy-btn:hover{background:rgba(0,229,255,.15);box-shadow:0 0 12px rgba(0,229,255,.3);transform:scale(1.05)}
+.copy-btn.copied{background:rgba(0,255,65,.15);border-color:var(--neon-green);color:var(--neon-green)}
+.command{background:rgba(15,8,30,.7);border:1px solid rgba(184,0,255,.15);border-radius:12px;padding:20px;margin-bottom:16px;transition:all .3s;position:relative;overflow:hidden}
+.command::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--primary),var(--secondary));opacity:0;transition:opacity .3s}
+.command:hover::before{opacity:1}
+.command:hover{border-color:rgba(184,0,255,.35);background:rgba(184,0,255,.05);transform:translateX(4px)}
+.command.dangerous{border-color:rgba(255,0,64,.3);background:rgba(255,0,64,.04)}
+.command.dangerous::before{background:linear-gradient(180deg,var(--neon-red),var(--accent));opacity:1}
+.command-title{font-family:var(--font-display);font-size:.9rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.danger-badge{font-family:var(--font-mono);font-size:.58rem;padding:3px 10px;border-radius:12px;background:rgba(255,0,64,.15);border:1px solid rgba(255,0,64,.4);color:var(--neon-red);letter-spacing:.5px;animation:dangerBlink 1.5s ease-in-out infinite}
+@keyframes dangerBlink{0%,100%{opacity:1}50%{opacity:.6}}
+.command-purpose{font-size:.85rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.7}
+.command-purpose strong{color:var(--secondary)}
+.command-output{font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);background:rgba(0,0,0,.4);padding:10px 14px;border-radius:6px;margin-top:8px;border-left:2px solid var(--secondary);white-space:pre-wrap;overflow-x:auto;line-height:1.6}
+.info-box{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:16px 18px;margin:16px 0;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:1.2rem;flex-shrink:0}
+.info-text{font-size:.85rem;color:var(--text-secondary);line-height:1.7}
+.info-text strong{color:var(--secondary)}
+.warning{background:rgba(255,0,64,.05);border:1px solid rgba(255,0,64,.3);border-radius:10px;padding:16px 18px;margin:20px 0;display:flex;gap:12px;align-items:flex-start}
+.warning-icon{font-size:1.3rem;color:var(--neon-red);flex-shrink:0}
+.warning-text{font-size:.85rem;color:#ffaaaa;line-height:1.7}
+.warning-text strong{color:var(--neon-red)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid rgba(184,0,255,.15)}
+table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.78rem;min-width:500px}
+th{background:rgba(184,0,255,.1);color:var(--secondary);padding:12px;text-align:left;font-weight:600;letter-spacing:.5px;border-bottom:1px solid rgba(184,0,255,.2)}
+td{padding:12px;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(184,0,255,.04);color:var(--text-primary)}
+td code{color:var(--neon-green);font-family:var(--font-mono)}
+.workflow{counter-reset:wf;margin:16px 0}
+.wf-step{position:relative;padding:16px 16px 16px 60px;background:rgba(15,8,30,.6);border:1px solid rgba(184,0,255,.15);border-radius:10px;margin-bottom:12px}
+.wf-step::before{counter-increment:wf;content:counter(wf);position:absolute;left:16px;top:16px;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:.85rem}
+.wf-title{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:var(--neon-green);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.wf-desc{font-size:.82rem;color:var(--text-secondary);line-height:1.7}
+.toast{position:fixed;bottom:24px;right:24px;background:rgba(30,5,20,.95);border:1px solid var(--neon-green);border-radius:10px;padding:12px 20px;font-family:var(--font-mono);font-size:.75rem;color:#fff;z-index:3000;box-shadow:0 0 30px rgba(0,255,65,.3);opacity:0;visibility:hidden;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;visibility:visible}
+.footer{text-align:center;padding:40px 20px;font-family:var(--font-mono);font-size:.72rem;color:var(--text-dim);position:relative;z-index:5}
+@media(max-width:640px){body{padding:76px 14px 30px}.hero-top{flex-direction:column;text-align:center;gap:16px}.hero-icon{width:80px;height:80px;font-size:2.2rem}.hero-badges{justify-content:center}.navbar{padding:12px 14px}.section{padding:20px 16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<script>
+// PROTECTED
+(function(){var t=localStorage.getItem("sch_token");var u=localStorage.getItem("sch_user");if(!t||!u){window.location.replace("login.html");return}try{JSON.parse(u);if(!t.includes(".")||t.split(".").length!==3)throw 0}catch(e){localStorage.removeItem("sch_token");localStorage.removeItem("sch_user");window.location.replace("login.html")}})();
+</script>
+<canvas id="matrix"></canvas>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="vignette"></div>
+
+<nav class="navbar">
+  <button class="nav-back" onclick="window.location.href='dashboard.html'">← DASHBOARD</button>
+  <div class="nav-brand"><div class="nav-brand-icon">⚡</div>SAINICOMMANDHUB</div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-icon">🧪</div>
+      <div class="hero-info">
+        <div class="hero-name">BURP SUITE</div>
+        <div class="hero-cat">Web Security · Web Application Testing Platform</div>
+        <div class="hero-badges">
+          <span class="badge badge-intermediate">Intermediate</span>
+          <span class="badge badge-count">30+ Commands</span>
+          <span class="badge badge-tag">Proxy</span>
+          <span class="badge badge-tag">Scanner</span>
+          <span class="badge badge-tag">Intruder</span>
+        </div>
+      </div>
+    </div>
+    <p style="color:var(--text-secondary);font-size:.95rem;line-height:1.8;margin-top:16px">
+      <strong style="color:var(--secondary)">Burp Suite</strong> is the industry-standard <strong>web application security testing platform</strong> developed by PortSwigger. It's a comprehensive toolkit with an intercepting proxy, scanner, intruder, repeater, decoder, and more. Almost every web pentester uses Burp daily. If you're serious about web security, Burp Suite is essential.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">What is Burp Suite? (Deep Theory)</div>
+    <p>When you browse a website, your browser sends HTTP requests to a server and gets responses. You normally can't see or modify these requests. Burp Suite sits <strong>between your browser and the server</strong> as a proxy — showing you every request, letting you modify it, and analyzing the responses.</p>
+
+    <h3>How Burp Works — The Proxy Concept</h3>
+    <ol>
+      <li>You configure your browser to use Burp as its proxy</li>
+      <li>Burp intercepts every HTTP/HTTPS request</li>
+      <li>You can view, modify, replay, or forward requests</li>
+      <li>You can also fuzz parameters, scan for vulnerabilities, and analyze responses</li>
+    </ol>
+
+    <h3>Burp Suite Components</h3>
+    <ul>
+      <li><strong>Proxy</strong> — Intercept and modify HTTP/HTTPS traffic</li>
+      <li><strong>Repeater</strong> — Manually modify and resend requests</li>
+      <li><strong>Intruder</strong> — Automated fuzzing and brute-forcing</li>
+      <li><strong>Scanner</strong> — Automated vulnerability scanner (Pro only)</li>
+      <li><strong>Decoder</strong> — Encode/decode data (base64, URL, hex)</li>
+      <li><strong>Comparer</strong> — Diff two requests/responses</li>
+      <li><strong>Sequencer</strong> — Analyze randomness of tokens/sessions</li>
+      <li><strong>Extender</strong> — Add custom plugins (BApp Store)</li>
+      <li><strong>Collaborator</strong> — Out-of-band testing (Pro only)</li>
+      <li><strong>DOM Invader</strong> — Client-side testing (in browser)</li>
+    </ul>
+
+    <h3>Burp Editions</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Edition</th><th>Price</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Community</strong></td><td>Free</td><td>Manual testing, students</td></tr>
+          <tr><td><strong>Professional</strong></td><td>$449/yr</td><td>Professional pentesters</td></tr>
+          <tr><td><strong>Enterprise</strong></td><td>Custom</td><td>CI/CD integration, teams</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">💡</div>
+      <div class="info-text">
+        <strong>Why it matters:</strong> Burp Suite is the browser for hackers. It makes hidden web mechanics visible and modifiable. Every serious web pentest starts with Burp.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Real-World Use Cases</div>
+
+    <h3>1. Web Application Pentesting</h3>
+    <p>Analyze every request/response of a web app. Test authentication, authorization, input validation.</p>
+
+    <h3>2. Bug Bounty Hunting</h3>
+    <p>Find IDOR, SSRF, XSS, SQLi, authentication bypass. Burp is standard for all bug bounty programs.</p>
+
+    <h3>3. API Security Testing</h3>
+    <p>Test REST/GraphQL APIs — replay requests, modify parameters, fuzz inputs.</p>
+
+    <h3>4. Mobile App Testing</h3>
+    <p>Configure mobile to route through Burp proxy — see all app traffic including API calls.</p>
+
+    <h3>5. Authentication Analysis</h3>
+    <p>Test login flows, session management, JWT tokens, OAuth implementation.</p>
+
+    <h3>6. Business Logic Testing</h3>
+    <p>Modify parameters to test logic flaws — negative values, price manipulation, workflow bypass.</p>
+
+    <h3>7. Client-Side Security</h3>
+    <p>Analyze JavaScript, DOM XSS, postMessage issues, prototype pollution.</p>
+
+    <h3>8. Compliance Testing</h3>
+    <p>OWASP Top 10, PCI DSS, SOC 2 compliance — Burp covers most requirements.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Installation</div>
+    <h3>Kali Linux (Pre-installed)</h3>
+    <div class="code-block"><code>burpsuite</code><button class="copy-btn" onclick="copyText('burpsuite',this)">COPY</button></div>
+
+    <h3>Install on Kali (if missing)</h3>
+    <div class="code-block"><code>sudo apt update && sudo apt install -y burpsuite</code><button class="copy-btn" onclick="copyText('sudo apt update && sudo apt install -y burpsuite',this)">COPY</button></div>
+
+    <h3>Download from PortSwigger (Latest)</h3>
+    <p>Get the installer from <code>portswigger.net/burp/communitydownload</code></p>
+
+    <h3>Windows/Mac/Linux Installer</h3>
+    <div class="code-block"><code>chmod +x burpsuite_community_linux_v*.sh
+./burpsuite_community_linux_v*.sh</code><button class="copy-btn" onclick="copyText('chmod +x burpsuite_community_linux_v*.sh && ./burpsuite_community_linux_v*.sh',this)">COPY</button></div>
+
+    <h3>Run Burp Suite</h3>
+    <div class="code-block"><code>java -jar burpsuite_community.jar</code><button class="copy-btn" onclick="copyText('java -jar burpsuite_community.jar',this)">COPY</button></div>
+
+    <div class="info-box">
+      <div class="info-icon">☕</div>
+      <div class="info-text">
+        <strong>Requirement:</strong> Java 17+ recommended. Check with <code>java -version</code>. Kali usually has it pre-installed.
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Basic Setup Commands</div>
+
+    <div class="command">
+      <div class="command-title">1. Launch Burp Suite</div>
+      <div class="command-purpose">Start Burp — choose "Temporary project" for testing.</div>
+      <div class="code-block"><code>burpsuite</code><button class="copy-btn" onclick="copyText('burpsuite',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">2. Configure Browser Proxy (Firefox)</div>
+      <div class="command-purpose">Route browser traffic through Burp.</div>
+      <div class="code-block"><code>Firefox Settings → Network → Manual Proxy → HTTP: 127.0.0.1:8080</code><button class="copy-btn" onclick="copyText('Firefox -> Settings -> Network -> Manual Proxy -> HTTP: 127.0.0.1  Port: 8080',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">3. Install CA Certificate</div>
+      <div class="command-purpose">Required for HTTPS interception — visit this URL in browser.</div>
+      <div class="code-block"><code>http://burp</code><button class="copy-btn" onclick="copyText('http://burp',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">4. Download CA Cert Directly</div>
+      <div class="code-block"><code>http://127.0.0.1:8080/cert</code><button class="copy-btn" onclick="copyText('http://127.0.0.1:8080/cert',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">5. Start with Custom Port</div>
+      <div class="command-block"><code>java -jar burpsuite_community.jar --port=9090</code><button class="copy-btn" onclick="copyText('java -jar burpsuite_community.jar --port=9090',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">6. Headless Mode</div>
+      <div class="command-purpose">Run Burp in headless mode for automation.</div>
+      <div class="code-block"><code>java -jar burpsuite_pro.jar --headless</code><button class="copy-btn" onclick="copyText('java -jar burpsuite_pro.jar --headless',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Using Burp Proxy</div>
+
+    <div class="command">
+      <div class="command-title">7. Enable Intercept</div>
+      <div class="command-purpose">Burp pauses every request — you decide what to do.</div>
+      <div class="code-block"><code>Proxy → Intercept → Intercept is on</code><button class="copy-btn" onclick="copyText('Proxy -> Intercept -> Intercept is on',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">8. Modify Request</div>
+      <div class="command-purpose">Change parameters, headers, or body before forwarding.</div>
+      <div class="code-block"><code>Edit request in intercept window → Forward</code><button class="copy-btn" onclick="copyText('Edit request in intercept window -> Forward',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">9. Send to Repeater</div>
+      <div class="command-purpose">Right-click request → Send to Repeater (Ctrl+R) for manual testing.</div>
+      <div class="code-block"><code>Right-click → Send to Repeater (Ctrl+R)</code><button class="copy-btn" onclick="copyText('Right-click request -> Send to Repeater (Ctrl+R)',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">10. Send to Intruder</div>
+      <div class="command-purpose">For automated fuzzing attacks.</div>
+      <div class="code-block"><code>Right-click → Send to Intruder (Ctrl+I)</code><button class="copy-btn" onclick="copyText('Right-click request -> Send to Intruder (Ctrl+I)',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">11. Send to Scanner</div>
+      <div class="command-purpose">Pro only — automated vulnerability scanning.</div>
+      <div class="code-block"><code>Right-click → Scan</code><button class="copy-btn" onclick="copyText('Right-click request -> Scan',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">12. Drop Request</div>
+      <div class="command-purpose">Discard the intercepted request.</div>
+      <div class="code-block"><code>Proxy → Intercept → Drop</code><button class="copy-btn" onclick="copyText('Proxy -> Intercept -> Drop',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">13. Forward All (Disable Intercept)</div>
+      <div class="command-block"><code>Proxy → Intercept → Intercept is off</code><button class="copy-btn" onclick="copyText('Proxy -> Intercept -> Intercept is off',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Burp Repeater — Manual Testing</div>
+
+    <div class="command">
+      <div class="command-title">14. Send Request to Repeater</div>
+      <div class="command-purpose">Ctrl+R to send a request from Proxy to Repeater.</div>
+      <div class="code-block"><code>Ctrl + R</code><button class="copy-btn" onclick="copyText('Ctrl + R',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">15. Send Request (Repeater)</div>
+      <div class="command-purpose">Send the modified request to server.</div>
+      <div class="code-block"><code>Repeater → Click "Send" button (Ctrl+Space)</code><button class="copy-btn" onclick="copyText('Repeater -> Send (Ctrl+Space)',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">16. Change Request Method</div>
+      <div class="command-block"><code>Change GET to POST, PUT, DELETE in request line</code><button class="copy-btn" onclick="copyText('Change GET to POST, PUT, DELETE in request line',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">17. Add Custom Header</div>
+      <div class="command-block"><code>Add header line: X-Forwarded-For: 127.0.0.1</code><button class="copy-btn" onclick="copyText('X-Forwarded-For: 127.0.0.1',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">18. Follow Redirects</div>
+      <div class="command-block"><code>Repeater → Options → Follow redirects</code><button class="copy-btn" onclick="copyText('Repeater -> Options -> Follow redirects',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Burp Intruder — Automated Attacks</div>
+
+    <div class="command">
+      <div class="command-title">19. Send to Intruder</div>
+      <div class="command-purpose">Ctrl+I to send request to Intruder.</div>
+      <div class="code-block"><code>Ctrl + I</code><button class="copy-btn" onclick="copyText('Ctrl + I',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">20. Mark Injection Point</div>
+      <div class="command-purpose">Highlight value to fuzz and click "Add §".</div>
+      <div class="code-block"><code>Select payload → Add §</code><button class="copy-btn" onclick="copyText('Select payload -> Add Section Symbol',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">21. Attack Type: Sniper</div>
+      <div class="command-purpose">One payload position, one payload list — classic brute-force.</div>
+      <div class="code-block"><code>Intruder → Attack type: Sniper</code><button class="copy-btn" onclick="copyText('Intruder -> Attack type: Sniper',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">22. Attack Type: Battering Ram</div>
+      <div class="command-purpose">Same payload in all positions simultaneously.</div>
+      <div class="code-block"><code>Intruder → Attack type: Battering ram</code><button class="copy-btn" onclick="copyText('Intruder -> Attack type: Battering ram',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">23. Attack Type: Pitchfork</div>
+      <div class="command-purpose">Multiple payload lists used in parallel — one payload per position.</div>
+      <div class="code-block"><code>Intruder → Attack type: Pitchfork</code><button class="copy-btn" onclick="copyText('Intruder -> Attack type: Pitchfork',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">24. Attack Type: Cluster Bomb</div>
+      <div class="command-purpose">All combinations of multiple payload lists — exhaustive brute-force.</div>
+      <div class="code-block"><code>Intruder → Attack type: Cluster bomb</code><button class="copy-btn" onclick="copyText('Intruder -> Attack type: Cluster bomb',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">25. Payload: Simple List</div>
+      <div class="command-block"><code>Intruder → Payloads → Payload type: Simple list</code><button class="copy-btn" onclick="copyText('Intruder -> Payloads -> Payload type: Simple list',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">26. Payload: Runtime File</div>
+      <div class="command-purpose">Load a wordlist from disk.</div>
+      <div class="code-block"><code>Intruder → Payloads → Load from file (e.g., rockyou.txt)</code><button class="copy-btn" onclick="copyText('Intruder -> Payloads -> Load from file',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">27. Payload: Numbers</div>
+      <div class="command-purpose">Generate number sequences (for IDOR testing).</div>
+      <div class="code-block"><code>Intruder → Payloads → Payload type: Numbers</code><button class="copy-btn" onclick="copyText('Intruder -> Payloads -> Payload type: Numbers',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">28. Start Attack</div>
+      <div class="command-block"><code>Intruder → Click "Start attack"</code><button class="copy-btn" onclick="copyText('Intruder -> Click Start attack',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">29. Sort by Length</div>
+      <div class="command-purpose">Different lengths often indicate different responses — find anomalies.</div>
+      <div class="code-block"><code>Intruder → Results → Sort by Length</code><button class="copy-btn" onclick="copyText('Intruder -> Results -> Sort by Length',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">30. Sort by Status Code</div>
+      <div class="command-block"><code>Intruder → Results → Sort by Status</code><button class="copy-btn" onclick="copyText('Intruder -> Results -> Sort by Status',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Burp Decoder / Comparer</div>
+
+    <div class="command">
+      <div class="command-title">31. Decode Base64</div>
+      <div class="command-block"><code>Decoder → Paste value → Decode as Base64</code><button class="copy-btn" onclick="copyText('Decoder -> Paste -> Decode as Base64',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">32. Encode URL</div>
+      <div class="command-block"><code>Decoder → Encode as URL</code><button class="copy-btn" onclick="copyText('Decoder -> Encode as URL',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">33. Hash Value</div>
+      <div class="command-block"><code>Decoder → Hash → SHA-256</code><button class="copy-btn" onclick="copyText('Decoder -> Hash -> SHA-256',this)">COPY</button></div>
+    </div>
+
+    <div class="command">
+      <div class="command-title">34. Compare Two Requests</div>
+      <div class="command-block"><code>Comparer → Paste items → Compare</code><button class="copy-btn" onclick="copyText('Comparer -> Paste items -> Compare',this)">COPY</button></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Complete Workflow — Web Pentest</div>
+    <div class="workflow">
+      <div class="wf-step">
+        <div class="wf-title">Step 1: Start Burp Suite</div>
+        <div class="wf-desc"><div class="code-block" style="margin-top:10px"><code>burpsuite</code><button class="copy-btn" onclick="copyText('burpsuite',this)">COPY</button></div></div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 2: Configure Browser Proxy</div>
+        <div class="wf-desc">Set browser proxy to <code>127.0.0.1:8080</code>. Or use Burp's built-in browser (Pro).</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 3: Install CA Certificate</div>
+        <div class="wf-desc">Visit <code>http://burp</code> → Download CA cert → Import to browser.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 4: Map the Application</div>
+        <div class="wf-desc">Browse the target app. Burp records all endpoints in <strong>Target → Site map</strong>.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 5: Enable Intercept</div>
+        <div class="wf-desc">Turn on intercept. Modify requests manually to test input validation, auth, etc.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 6: Test Authentication</div>
+        <div class="wf-desc">Send login request to Repeater. Test: SQLi in username, weak passwords, MFA bypass.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 7: Test Authorization (IDOR)</div>
+        <div class="wf-desc">Send request with ID to Intruder. Fuzz ID values (1-1000) to test IDOR.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 8: Fuzz Parameters</div>
+        <div class="wf-desc">Send to Intruder → mark params → load payloads → attack. Look for XSS, SQLi, cmd injection.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 9: Check for Common Vulns</div>
+        <div class="wf-desc">CSRF, SSRF, XXE, SSTI, deserialization, JWT issues, file upload bypasses.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 10: Verify Findings Manually</div>
+        <div class="wf-desc">Use Repeater to confirm each finding. Document request/response pairs.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-title">Step 11: Generate Report</div>
+        <div class="wf-desc">Screenshot requests/responses. Document steps to reproduce.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Popular Burp Extensions (BApp Store)</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Extension</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Logger++</strong></td><td>Advanced logging and filtering</td></tr>
+          <tr><td><strong>Autorize</strong></td><td>Authorization testing automation</td></tr>
+          <tr><td><strong>JWT Editor</strong></td><td>JWT token manipulation</td></tr>
+          <tr><td><strong>Param Miner</strong></td><td>Discover hidden params</td></tr>
+          <tr><td><strong>Turbo Intruder</strong></td><td>Fast HTTP request engine</td></tr>
+          <tr><td><strong>Active Scan++</strong></td><td>Enhanced scanning</td></tr>
+          <tr><td><strong>Collaborator Everywhere</strong></td><td>OOB injection testing</td></tr>
+          <tr><td><strong>Retire.js</strong></td><td>Vulnerable JS library detection</td></tr>
+          <tr><td><strong>Backslash Powered Scanner</strong></td><td>Advanced injection detection</td></tr>
+          <tr><td><strong>Hackvertor</strong></td><td>Advanced encoding/decoding tags</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Keyboard Shortcuts</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td><code>Ctrl+R</code></td><td>Send to Repeater</td></tr>
+          <tr><td><code>Ctrl+I</code></td><td>Send to Intruder</td></tr>
+          <tr><td><code>Ctrl+Space</code></td><td>Send request (Repeater)</td></tr>
+          <tr><td><code>Ctrl+Shift+B</code></td><td>Send to Burp Collaborator</td></tr>
+          <tr><td><code>Ctrl+F</code></td><td>Find in response</td></tr>
+          <tr><td><code>Ctrl+U</code></td><td>URL-encode selection</td></tr>
+          <tr><td><code>Ctrl+Shift+U</code></td><td>URL-decode selection</td></tr>
+          <tr><td><code>Ctrl+B</code></td><td>Base64 encode selection</td></tr>
+          <tr><td><code>Ctrl+Shift+B</code></td><td>Base64 decode selection</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Burp vs Other Tools</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Purpose</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Burp Suite</strong></td><td>Complete web testing</td><td>Manual + automated web pentest</td></tr>
+          <tr><td><strong>OWASP ZAP</strong></td><td>Open-source alternative</td><td>Free scanning, CI/CD</td></tr>
+          <tr><td><strong>Caido</strong></td><td>Modern Rust-based proxy</td><td>Speed, lightweight</td></tr>
+          <tr><td><strong>Postman</strong></td><td>API testing</td><td>API development/testing</td></tr>
+          <tr><td><strong>mitmproxy</strong></td><td>CLI proxy</td><td>Scripting, automation</td></tr>
+          <tr><td><strong>Charles Proxy</strong></td><td>HTTP proxy</td><td>Mobile app debugging</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Troubleshooting</div>
+    <h3>"HTTPS sites show certificate errors"</h3>
+    <ul>
+      <li>Install Burp CA certificate: visit <code>http://burp</code> → Download CA</li>
+      <li>Import to browser's Trusted Root store</li>
+      <li>Firefox: about:preferences → Privacy → Certificates → View Certificates → Import</li>
+    </ul>
+
+    <h3>"Browser can't connect to Burp"</h3>
+    <ul>
+      <li>Check proxy: Burp → Proxy → Options → Proxy Listeners</li>
+      <li>Default: 127.0.0.1:8080</li>
+      <li>Some apps use custom proxy — check browser settings</li>
+    </ul>
+
+    <h3>"Burp freezes / slow"</h3>
+    <ul>
+      <li>Increase heap: <code>java -Xmx4G -jar burpsuite.jar</code></li>
+      <li>Delete old project files</li>
+      <li>Disable unused extensions</li>
+    </ul>
+
+    <h3>"Mobile app traffic not intercepted"</h3>
+    <ul>
+      <li>Set Burp listener to listen on all interfaces: <code>0.0.0.0:8080</code></li>
+      <li>Configure phone WiFi proxy to attacker IP:8080</li>
+      <li>Install Burp CA on mobile (Settings → Security → Install CA)</li>
+      <li>Apps with SSL pinning need Frida/objection to bypass</li>
+    </ul>
+
+    <h3>"Intruder is slow in Community edition"</h3>
+    <ul>
+      <li>Community is throttled to 1 req/sec</li>
+      <li>Use Turbo Intruder extension for speed</li>
+      <li>Or upgrade to Pro for unlimited speed</li>
+    </ul>
+
+    <h3>"Cannot save project"</h3>
+    <ul>
+      <li>Temporary projects can't be saved</li>
+      <li>Use <code>File → New Project</code> → choose disk-based project</li>
+    </ul>
+  </div>
+
+  <div class="warning">
+    <div class="warning-icon">⚠</div>
+    <div class="warning-text">
+      <strong>AUTHORIZED USE ONLY.</strong> Burp Suite intercepts and modifies web traffic — this is <strong>illegal</strong> against systems you don't own. Only use on:
+      <br>• Your own websites and applications
+      <br>• Authorized penetration tests (signed contract)
+      <br>• Bug bounty programs (stay within scope)
+      <br>• CTF and learning environments
+      <br>
+      <br>Unauthorized web attacks violate the CFAA (US), Computer Misuse Act (UK), IT Act (India), and similar laws worldwide. Always get written authorization before testing.
+    </div>
+  </div>
+
+  <div class="footer">SAINICOMMANDHUB · MASTER THE COMMAND. MASTER THE SYSTEM.</div>
+</div>
+
+<div class="toast" id="toast"><span>✓</span><span id="toastMsg">Copied</span></div>
+
+<script>
+function copyText(text,btn){
+  navigator.clipboard.writeText(text).then(function(){
+    var orig=btn.textContent;
+    btn.textContent='✓ COPIED';
+    btn.classList.add('copied');
+    var t=document.getElementById('toast');
+    document.getElementById('toastMsg').textContent='Copied to clipboard';
+    t.classList.add('show');
+    setTimeout(function(){t.classList.remove('show')},2000);
+    setTimeout(function(){btn.textContent=orig;btn.classList.remove('copied')},1500);
+  }).catch(function(){});
+}
+function initMatrix(){
+  var c=document.getElementById('matrix');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+  resize();
+  var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var fs=14;
+  var cols=Math.floor(c.width/fs);
+  var drops=[];
+  for(var k=0;k<cols;k++)drops[k]=1;
+  setInterval(function(){
+    ctx.fillStyle='rgba(8,5,13,.03)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle='#b800ff';
+    ctx.font=fs+'px JetBrains Mono, monospace';
+    for(var i=0;i<drops.length;i++){
+      ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*fs,drops[i]*fs);
+      if(drops[i]*fs>c.height&&Math.random()>0.975)drops[i]=0;
+      drops[i]++;
+    }
+  },60);
+  window.addEventListener('resize',function(){
+    resize();
+    cols=Math.floor(c.width/fs);
+    drops=[];
+    for(var k=0;k<cols;k++)drops[k]=1;
+  });
+}
+document.addEventListener('DOMContentLoaded',initMatrix);
+</script>
+</body>
+</html>
